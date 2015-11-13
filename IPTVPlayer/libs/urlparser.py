@@ -282,6 +282,7 @@ class urlparser:
                        'yocast.tv':            self.pp.parserYOCASTTV      ,
                        'liveonlinetv247.info': self.pp.parserLIVEONLINE247 ,
                        'liveonlinetv247.net':  self.pp.parserLIVEONLINE247 ,
+                       'filepup.net':          self.pp.parserFILEPUPNET    ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -539,7 +540,7 @@ class pageParser:
         self.COOKIE_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/cache/')
         #self.hd3d_login = config.plugins.iptvplayer.hd3d_login.value
         #self.hd3d_password = config.plugins.iptvplayer.hd3d_password.value
-        
+    
     def getYTParser(self):
         if self.ytParser == None:
             try:
@@ -977,9 +978,9 @@ class pageParser:
         
         url = 'http://www.dailymotion.com/embed/video/' + video_id
         familyUrl = 'http://www.dailymotion.com/family_filter?enable=false&urlback=' + urllib.quote_plus('/embed/video/' + video_id)
-        sts, data = self.cm.getPage(familyUrl, {'use_cookie': True, 'save_cookie': False, 'load_cookie': False, 'cookiefile': COOKIEFILE})
+        sts, data = self.cm.getPage(url, {'use_cookie': True, 'save_cookie': False, 'load_cookie': False, 'cookiefile': COOKIEFILE})
         if not sts or "player" not in data: 
-            sts, data = self.cm.getPage(url, {'use_cookie': True, 'save_cookie': False, 'load_cookie': False, 'cookiefile': COOKIEFILE})
+            sts, data = self.cm.getPage(familyUrl, {'use_cookie': True, 'save_cookie': False, 'load_cookie': False, 'cookiefile': COOKIEFILE})
             if not sts: return []
         
         vidTab = []
@@ -1382,14 +1383,20 @@ class pageParser:
             url = 'http://videomega.tv/cdn.php?ref=%s' % (video_id)
         HTTP_HEADER['Referer'] = iframe_url
         sts, data = self.cm.getPage(url, params)
-        if not sts: return False
+        if not sts: 
+            return False
+        
         adUrl =self.cm.ph.getSearchGroups(data, '"([^"]+?/ad\.php[^"]+?)"')[0]
-        if not adUrl.startswith("http"): 'http://videomega.tv' + adUrl
+        if adUrl.startswith("/"): 
+            adUrl = 'http://videomega.tv' + adUrl
+        
         params = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'load_cookie':True, 'save_cookie':False} 
         HTTP_HEADER['Referer'] = url
         sts, tmp = self.cm.getPage(adUrl, params)
-
         tmp  = self.cm.ph.getSearchGroups(data, 'src="([^"]+?)"[^>]+?type="video')[0]
+        printDBG('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+        printDBG(tmp)
+        printDBG('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
         if tmp.startswith('http'):
             linkVideo = urlparser.decorateUrl(tmp, {"Cookie": "__cfduid=1", 'Referer': url, 'User-Agent':HTTP_HEADER['User-Agent'], 'iptv_buffering':'required'})
         else: linkVideo = False
@@ -1590,7 +1597,7 @@ class pageParser:
             return []
     
     def parserYOUTUBE(self, url):
-        if None != self.ytParser:
+        if None != self.getYTParser():
             try:
                 formats = config.plugins.iptvplayer.ytformat.value
                 bitrate = config.plugins.iptvplayer.ytDefaultformat.value
@@ -3640,9 +3647,16 @@ class pageParser:
                 url = 'http://openload.io/embed/' + video_id
         else:
             url = baseUrl
-        post_data = None
-        sts, data = self.cm.getPage(url, {'header':HTTP_HEADER}, post_data)
-        if not sts: return False
+        
+        if True:
+            cmd = DMHelper.getBaseWgetCmd(HTTP_HEADER) + url + ' -O - 2> /dev/null'
+            data = iptv_execute()( cmd )
+            printDBG(data)
+            if not data['sts'] or 0 != data['code']: return False
+            data = data['data']
+        else:
+            sts, data = self.cm.getPage(url, {'header':HTTP_HEADER})
+            if not sts: return False
         
         # start https://github.com/whitecream01/WhiteCream-V0.0.1/blob/master/plugin.video.uwc/plugin.video.uwc-1.0.51.zip?raw=true
         def decodeOpenLoad(html):
@@ -3790,10 +3804,16 @@ class pageParser:
         if url2 != '':
             sts, data = self.cm.getPage(url2, {'header':HTTP_HEADER})
             if not sts: return False
+        
         curl = self.cm.ph.getSearchGroups(data, '''curl[ ]*?=[ ]*?["']([^"^']+?)["']''', 1, True)[0]
         curl = base64.b64decode(curl)
         if curl.split('?')[0].endswith('.m3u8'):
             return getDirectM3U8Playlist(curl, checkExt=False)
+        elif curl.startswith('rtmp'):
+            swfUrl = 'http://p.jwpcdn.com/6/12/jwplayer.flash.swf'
+            curl += ' swfUrl=%s pageUrl=%s token=OOG17t.x#K9Vh#| ' % (swfUrl, url2)
+            #curl += ' token=OOG17t.x#K9Vh#| '
+            return curl
         return False
         
     def parserYOCASTTV(self, baseUrl):
@@ -3830,7 +3850,43 @@ class pageParser:
             url += ' swfVfy=%s pageUrl=%s ' % (swfUrl, baseUrl)
             printDBG(url)
             return url
+        else:
+            data = self.cm.ph.getDataBeetwenMarkers(data, 'source:', '}', False)[1]
+            url = self.cm.ph.getSearchGroups(data, '''hls[^'^"]*?['"]([^'^"]+?)['"]''')[0]
+            return getDirectM3U8Playlist(url)
         return False
+        
+    def parserFILEPUPNET(self, baseUrl):
+        printDBG("parserFILEPUPNET baseUrl[%r]" % baseUrl)
+        sts, data = self.cm.getPage(baseUrl)
+        if not sts: return False
+        data = self.cm.ph.getDataBeetwenMarkers(data, 'window.onload', '</script>', False)[1]
+        qualities = self.cm.ph.getSearchGroups(data, 'qualities:[ ]*?\[([^\]]+?)\]')[0]
+        qualities = self.cm.ph.getAllItemsBeetwenMarkers(qualities, '"', '"', False)
+        defaultQuality = self.cm.ph.getSearchGroups(data, 'defaultQuality:[ ]*?"([^"]+?)"')[0]
+        qualities.remove(defaultQuality)
+        
+        sub_tracks = []
+        subData = self.cm.ph.getDataBeetwenMarkers(data, 'subtitles:', ']', False)[1].split('}')
+        for item in subData:
+            if '"subtitles"' in item:
+                label   = self.cm.ph.getSearchGroups(item, 'label:[ ]*?"([^"]+?)"')[0]
+                srclang = self.cm.ph.getSearchGroups(item, 'srclang:[ ]*?"([^"]+?)"')[0]
+                src     = self.cm.ph.getSearchGroups(item, 'src:[ ]*?"([^"]+?)"')[0]
+                if not src.startswith('http'): continue
+                sub_tracks.append({'title':label, 'url':src, 'lang':srclang, 'format':'srt'})
+                
+        printDBG(">>>>>>>>>>>>>>>>> sub_tracks[%s]\n[%s]" % (sub_tracks, subData))
+            
+        linksTab = []
+        data = self.cm.ph.getDataBeetwenMarkers(data, 'sources:', ']', False)[1]
+        defaultUrl = self.cm.ph.getSearchGroups(data, '"(http[^"]+?)"')[0]
+        linksTab.append({'name':defaultQuality, 'url': strwithmeta(defaultUrl, {'external_sub_tracks':sub_tracks})})
+        for item in qualities:
+            if '.mp4' in defaultUrl:
+                url = defaultUrl.replace('.mp4', '-%s.mp4' % item)
+                linksTab.append({'name':item, 'url': strwithmeta(url, {'external_sub_tracks':sub_tracks})})
+        return linksTab
         
     def parserCLOUDYEC(self, baseUrl):
         printDBG("parserCLOUDYEC baseUrl[%r]" % baseUrl)

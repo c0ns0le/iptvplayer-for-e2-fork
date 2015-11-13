@@ -44,7 +44,7 @@ from Plugins.Extensions.IPTVPlayer.tools.iptvtools import FreeSpace as iptvtools
                                                           printDBG, printExc, iptv_system, GetHostsList, \
                                                           eConnectCallback, GetSkinsDir, GetIconDir, GetPluginDir,\
                                                           SortHostsList, GetHostsOrderList, CSearchHistoryHelper, IsExecutable, \
-                                                          CMoviePlayerPerHost, GetFavouritesDir, CFakeMoviePlayerOption
+                                                          CMoviePlayerPerHost, GetFavouritesDir, CFakeMoviePlayerOption, GetAvailableIconSize
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdh import DMHelper
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvbuffui import IPTVPlayerBufferingWidget
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdmapi import IPTVDMApi, DMItem
@@ -136,7 +136,8 @@ class IPTVPlayerWidget(Screen):
         self.recorderMode = False #j00zek
 
         self.currentService = self.session.nav.getCurrentlyPlayingServiceReference()
-        #self.session.nav.stopService()
+        if config.plugins.iptvplayer.disable_live.value:
+            self.session.nav.stopService()
 
         self["key_red"]    = StaticText(_("Exit"))
         self["key_green"]  = StaticText(_("Player > Recorder"))
@@ -661,6 +662,7 @@ class IPTVPlayerWidget(Screen):
         if selItem and selItem.description != '':
             data = selItem.description
             sData = data.replace('\n','')
+            sData = data.replace('[/br]', '\n')
             self["console"].setText(sData)
         else:
             self["console"].setText('')
@@ -968,7 +970,7 @@ class IPTVPlayerWidget(Screen):
         return
 
     def displayListOfHosts(self, arg = None):
-        if config.plugins.iptvplayer.ListaGraficzna.value == False:
+        if config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
             self.session.openWithCallback(self.selectHostCallback, ChoiceBox, title=_("Select service"), list = self.displayHostsList)
         else:
             from playerselector import PlayerSelectorWidget
@@ -1333,7 +1335,8 @@ class IPTVPlayerWidget(Screen):
         
     def leaveMoviePlayer(self, answer = None, lastPosition = None, *args, **kwargs):
         self.writeCurrentTitleToFile("")
-        self.session.nav.playService(self.currentService)
+        if not config.plugins.iptvplayer.disable_live.value:
+            self.session.nav.playService(self.currentService)
         self.checkAutoPlaySequencer()
     
     def requestListFromHost(self, type, currSelIndex = -1, privateData = ''):

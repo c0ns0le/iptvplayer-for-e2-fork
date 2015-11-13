@@ -7,7 +7,7 @@
 ###################################################
 # LOCAL import
 ###################################################
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, IsHostEnabled, IsExecutable, CFakeMoviePlayerOption
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, IsHostEnabled, IsExecutable, CFakeMoviePlayerOption, GetAvailableIconSize
 from Plugins.Extensions.IPTVPlayer.iptvupdate.updatemainwindow import IPTVUpdateWindow, UpdateMainAppImpl
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _, IPTVPlayerNeedInit
 from Plugins.Extensions.IPTVPlayer.components.configbase import ConfigBaseWidget
@@ -132,6 +132,7 @@ config.plugins.iptvplayer.skin = ConfigSelection(default = "Default", choices = 
 from iptvpin import IPTVPinWidget
 config.plugins.iptvplayer.fakePin = ConfigSelection(default = "fake", choices = [("fake", "****")])
 config.plugins.iptvplayer.pin = ConfigText(default = "0000", fixed_size = False)
+config.plugins.iptvplayer.disable_live = ConfigYesNo(default = False)
 config.plugins.iptvplayer.configProtectedByPin = ConfigYesNo(default = False)
 config.plugins.iptvplayer.pluginProtectedByPin = ConfigYesNo(default = False)
 
@@ -225,6 +226,7 @@ class ConfigMenu(ConfigBaseWidget):
         list.append( getConfigListEntry(_("Update"), config.plugins.iptvplayer.fakeUpdate) )
         list.append( getConfigListEntry(_("Platform"), config.plugins.iptvplayer.plarform) )
         list.append( getConfigListEntry(_("Services configuration"), config.plugins.iptvplayer.fakeHostsList) )
+        list.append( getConfigListEntry(_("Disable live at plugin start"), config.plugins.iptvplayer.disable_live))
         list.append( getConfigListEntry(_("Pin protection for plugin"), config.plugins.iptvplayer.pluginProtectedByPin))
         list.append( getConfigListEntry(_("Pin protection for configuration"), config.plugins.iptvplayer.configProtectedByPin) )
         if config.plugins.iptvplayer.pluginProtectedByPin.value or config.plugins.iptvplayer.configProtectedByPin.value:
@@ -355,6 +357,12 @@ class ConfigMenu(ConfigBaseWidget):
            # plugin must be restarted if we wont to this options take effect
         if self.platformOld != config.plugins.iptvplayer.plarform.value:
             IPTVPlayerNeedInit(True)
+            
+    def getMessageAfterSave(self):
+        if config.plugins.iptvplayer.ListaGraficzna.value and 0 == GetAvailableIconSize(False):
+            return _('Some changes will be applied only after plugin update.')
+        else:
+            return ''
 
     def keyOK(self):
         curIndex = self["config"].getCurrentIndex()
