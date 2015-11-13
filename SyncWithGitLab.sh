@@ -13,3 +13,5 @@ echo 'Syncing Github...'
 cp -a ~/iptvplayer-GitLab-master-version/IPTVPlayer $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup_translate.py $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup.py $myDir/
+cd $myDir
+patch -p1 < ./iptvplayer-fork.patch

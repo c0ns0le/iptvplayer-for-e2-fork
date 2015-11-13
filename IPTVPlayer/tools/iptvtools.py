@@ -323,9 +323,12 @@ def printDBG( DBGtxt ):
         return
     elif DBG == 'console':
         print(DBGtxt)
-    elif DBG == 'debugfile':
+    elif DBG == 'debugfile' or DBG == 'debugfileTMP':
         try:
-            f = open('/hdd/iptv.dbg', 'a')
+            if DBG == 'debugfileTMP':
+                f = open('/tmp/iptv.dbg', 'a')
+            else:
+                f = open('/hdd/iptv.dbg', 'a')
             f.write(DBGtxt + '\n')
             f.close
         except:
@@ -334,7 +337,7 @@ def printDBG( DBGtxt ):
             print("========================================================")
             try:
                 msg = '%s' % traceback.format_exc()
-                f = open('/tmp/iptv.dbg', 'a')
+                f = open('/tmp/iptv_ex.dbg', 'a')
                 f.write(DBGtxt + '\n')
                 f.close
             except:

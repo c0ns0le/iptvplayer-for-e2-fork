@@ -1,0 +1,11 @@
+*~
+Makefile*
+rcsim.h
+version.h
+*.orig
+*.pyo
+*.pyc
+*.mo
+j00zekToolSet*
+*skins*
+UpdatePlugin.sh
