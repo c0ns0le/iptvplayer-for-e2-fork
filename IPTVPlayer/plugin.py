@@ -73,7 +73,9 @@ def runMain(session):
     #print config.plugins.iptvplayer.rtmpdumppath.value
     #print config.plugins.iptvplayer.f4mdumppath.value
     platform     = config.plugins.iptvplayer.plarform.value
-    if platform in ["auto", "unknown"] or not wgetpath or not rtmpdumppath or not f4mdumppath:
+    if platform in ["unknown"]:
+        doRunMain(session)
+    elif platform in ["auto"] or not wgetpath or not rtmpdumppath or not f4mdumppath:
         session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget)
     elif IPTVPlayerNeedInit():
         session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
