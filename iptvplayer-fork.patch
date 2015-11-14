@@ -1,55 +1,14 @@
+diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/bin/i686/platformtestera ./IPTVPlayer/bin/i686/platformtestera
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/bin/i686/platformtestera	1970-01-01 01:00:00.000000000 +0100
++++ ./IPTVPlayer/bin/i686/platformtestera	2015-11-14 07:32:30.000000000 +0100
+@@ -0,0 +1,2 @@
++echo "Test platform OK"
++exit 0
+\ No newline at end of file
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-13 12:39:29.426338488 +0100
-@@ -15,7 +15,7 @@
- from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget
- from Plugins.Extensions.IPTVPlayer.setup.iptvsetupwidget import IPTVSetupMainWidget
- ###################################################
--
-+from Plugins.Extensions.IPTVPlayer.tools.j00zekToolSet import *
- ###################################################
- # FOREIGN import
- ###################################################
-@@ -40,20 +40,33 @@
- 
- config.plugins.iptvplayer.exteplayer3path = ConfigText(default = "", fixed_size = False)
- config.plugins.iptvplayer.gstplayerpath   = ConfigText(default = "", fixed_size = False)
--config.plugins.iptvplayer.wgetpath        = ConfigText(default = "", fixed_size = False)
--config.plugins.iptvplayer.rtmpdumppath    = ConfigText(default = "", fixed_size = False)
--config.plugins.iptvplayer.f4mdumppath     = ConfigText(default = "", fixed_size = False)
-+
-+if os_path.exists('/usr/bin/wget') and not os_path.islink('/usr/bin/wget'):
-+    config.plugins.iptvplayer.wgetpath      = ConfigText(default = '/usr/bin/wget', fixed_size = False)
-+else:
-+    config.plugins.iptvplayer.wgetpath      = ConfigText(default = '', fixed_size = False)
-+
-+if os_path.exists('/usr/bin/rtmpdump') and not os_path.islink('/usr/bin/rtmpdump'):
-+    config.plugins.iptvplayer.rtmpdumppath  = ConfigText(default = '/usr/bin/rtmpdump', fixed_size = False)
-+else:
-+    config.plugins.iptvplayer.rtmpdumppath  = ConfigText(default = '', fixed_size = False)
-+
-+if os_path.exists('/usr/bin/f4dump') and not os_path.islink('/usr/bin/f4dump'):
-+    config.plugins.iptvplayer.f4mdumppath  = ConfigText(default = '/usr/bin/f4dump', fixed_size = False)
-+else:
-+    config.plugins.iptvplayer.f4mdumppath  = ConfigText(default = '', fixed_size = False)
-+    
- config.plugins.iptvplayer.uchardetpath    = ConfigText(default = "", fixed_size = False)
- config.plugins.iptvplayer.set_curr_title  = ConfigYesNo(default = False)
- config.plugins.iptvplayer.curr_title_file = ConfigText(default = "", fixed_size = False) 
--config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("unknown", _("unknown"))])
-+config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("arm", _("arm")),("i686", _("i686")),("unknown", _("unknown"))])
- 
- config.plugins.iptvplayer.showcover          = ConfigYesNo(default = True)
- config.plugins.iptvplayer.deleteIcons        = ConfigSelection(default = "3", choices = [("0", _("after closing")),("1", _("after day")),("3", _("after three days")),("7", _("after a week"))]) 
- config.plugins.iptvplayer.allowedcoverformats= ConfigSelection(default = "jpeg,png", choices = [("jpeg,png,gif", _("jpeg,png,gif")),("jpeg,png", _("jpeg,png")),("jpeg", _("jpeg")),("all", _("all"))]) 
- config.plugins.iptvplayer.showinextensions   = ConfigYesNo(default = True)
- config.plugins.iptvplayer.showinMainMenu     = ConfigYesNo(default = False)
--config.plugins.iptvplayer.ListaGraficzna     = ConfigYesNo(default = True)
-+config.plugins.iptvplayer.ListaGraficzna     = ConfigYesNo(default = False)
- config.plugins.iptvplayer.NaszaSciezka       = ConfigDirectory(default = "/hdd/movie/") #, fixed_size = False)
- config.plugins.iptvplayer.bufferingPath      = ConfigDirectory(default = config.plugins.iptvplayer.NaszaSciezka.value) #, fixed_size = False)
- config.plugins.iptvplayer.buforowanie        = ConfigYesNo(default = False)
-@@ -119,7 +132,7 @@
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-14 08:44:22.247446456 +0100
+@@ -119,7 +119,7 @@
  config.plugins.iptvplayer.opensuborg_login    = ConfigText(default="", fixed_size = False)
  config.plugins.iptvplayer.opensuborg_password = ConfigText(default="", fixed_size = False)
  
@@ -60,7 +19,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  config.plugins.iptvplayer.IconsSize = ConfigSelection(default = "135", choices = [("135", "135x135"),("120", "120x120"),("100", "100x100")]) 
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py ./IPTVPlayer/components/iptvpin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/iptvpin.py	2015-11-13 11:24:07.406338488 +0100
++++ ./IPTVPlayer/components/iptvpin.py	2015-11-14 08:44:22.251446456 +0100
 @@ -15,22 +15,14 @@
  from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, GetIconDir
  from cover import Cover3
@@ -88,7 +47,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.session = session
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-11-13 06:08:35.326342999 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-13 11:21:28.554338488 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-14 08:44:22.251446456 +0100
 @@ -7,10 +7,14 @@
  # 
  
@@ -185,9 +144,37 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  message += "Używając IPTVPlayer na tej dystrybucji systemu E2 łamiesz licencje.\n\n"
                  message += "WARNING (phase 1/3)\n"
                  message += "You are breaking license using IPTVPlayer on your E2 distribution.\n\n"
+diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-11-11 07:16:27.451252000 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-14 08:46:02.299446456 +0100
+@@ -166,7 +166,23 @@
+             self.setOpenSSLVersion()
+         else:
+             _saveConfig( "unknown" )
+-            self.showMessage(_("Fatal Error!\nPlugin is not supported with your platform."), MessageBox.TYPE_ERROR, boundFunction(self.finish, False) )
++            missingComponents= _("Warning!!! At least external players will NOT work on your platform.\n\n")
++            if os_path.exists('/usr/bin/wget') and not os_path.islink('/usr/bin/wget'):
++                config.plugins.iptvplayer.wgetpath.value = '/usr/bin/wget'
++            else:
++                missingComponents += _("To enable buffering/recording of http streams install full version of wget manually\n")
++
++            if os_path.exists('/usr/bin/rtmpdump') and not os_path.islink('/usr/bin/rtmpdump'):
++                config.plugins.iptvplayer.rtmpdumppath.value = '/usr/bin/rtmpdump'
++            else:
++                missingComponents += _("To enable buffering/recording of rtmp streams install rtmpdump manually\n")
++
++            if os_path.exists('/usr/bin/f4dump') and not os_path.islink('/usr/bin/f4dump'):
++                config.plugins.iptvplayer.f4mdumppath.value = '/usr/bin/f4dump'
++            else:
++                missingComponents += _("To enable buffering/recording of f4 streams install f4dump manually\n")
++                
++            self.showMessage(missingComponents, MessageBox.TYPE_ERROR, boundFunction(self.finish, False) )
+             
+     ###################################################
+     # STEP: OpenSSL DETECTION
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py ./IPTVPlayer/tools/iptvtools.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py	2015-11-11 07:16:45.122412000 +0100
-+++ ./IPTVPlayer/tools/iptvtools.py	2015-11-13 11:59:56.754338488 +0100
++++ ./IPTVPlayer/tools/iptvtools.py	2015-11-14 08:44:22.255446456 +0100
 @@ -323,9 +323,12 @@
          return
      elif DBG == 'console':

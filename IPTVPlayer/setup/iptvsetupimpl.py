@@ -166,7 +166,23 @@ class IPTVSetupImpl:
             self.setOpenSSLVersion()
         else:
             _saveConfig( "unknown" )
-            self.showMessage(_("Fatal Error!\nPlugin is not supported with your platform."), MessageBox.TYPE_ERROR, boundFunction(self.finish, False) )
+            missingComponents= _("Warning!!! At least external players will NOT work on your platform.\n\n")
+            if os_path.exists('/usr/bin/wget') and not os_path.islink('/usr/bin/wget'):
+                config.plugins.iptvplayer.wgetpath.value = '/usr/bin/wget'
+            else:
+                missingComponents += _("To enable buffering/recording of http streams install full version of wget manually\n")
+
+            if os_path.exists('/usr/bin/rtmpdump') and not os_path.islink('/usr/bin/rtmpdump'):
+                config.plugins.iptvplayer.rtmpdumppath.value = '/usr/bin/rtmpdump'
+            else:
+                missingComponents += _("To enable buffering/recording of rtmp streams install rtmpdump manually\n")
+
+            if os_path.exists('/usr/bin/f4dump') and not os_path.islink('/usr/bin/f4dump'):
+                config.plugins.iptvplayer.f4mdumppath.value = '/usr/bin/f4dump'
+            else:
+                missingComponents += _("To enable buffering/recording of f4 streams install f4dump manually\n")
+                
+            self.showMessage(missingComponents, MessageBox.TYPE_ERROR, boundFunction(self.finish, False) )
             
     ###################################################
     # STEP: OpenSSL DETECTION
