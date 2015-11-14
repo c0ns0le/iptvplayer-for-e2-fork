@@ -12,7 +12,6 @@ from Plugins.Extensions.IPTVPlayer.iptvupdate.updatemainwindow import IPTVUpdate
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _, IPTVPlayerNeedInit
 from Plugins.Extensions.IPTVPlayer.components.configbase import ConfigBaseWidget
 from Plugins.Extensions.IPTVPlayer.components.confighost import ConfigHostsMenu
-from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetupwidget import IPTVSetupMainWidget
 ###################################################
 
@@ -46,7 +45,7 @@ config.plugins.iptvplayer.f4mdumppath     = ConfigText(default = "", fixed_size 
 config.plugins.iptvplayer.uchardetpath    = ConfigText(default = "", fixed_size = False)
 config.plugins.iptvplayer.set_curr_title  = ConfigYesNo(default = False)
 config.plugins.iptvplayer.curr_title_file = ConfigText(default = "", fixed_size = False) 
-config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("unknown", _("unknown"))])
+config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("unknown", _("unsupported"))])
 
 config.plugins.iptvplayer.showcover          = ConfigYesNo(default = True)
 config.plugins.iptvplayer.deleteIcons        = ConfigSelection(default = "3", choices = [("0", _("after closing")),("1", _("after day")),("3", _("after three days")),("7", _("after a week"))]) 
@@ -217,13 +216,15 @@ class ConfigMenu(ConfigBaseWidget):
             
             list.append(getConfigListEntry("exteplayer3path", config.plugins.iptvplayer.exteplayer3path))
             list.append(getConfigListEntry("gstplayerpath", config.plugins.iptvplayer.gstplayerpath))
+        if hiddenOptions or config.plugins.iptvplayer.plarform.value == 'unknown':
             list.append(getConfigListEntry("wgetpath", config.plugins.iptvplayer.wgetpath))
             list.append(getConfigListEntry("rtmpdumppath", config.plugins.iptvplayer.rtmpdumppath))
             list.append(getConfigListEntry("f4mdumppath", config.plugins.iptvplayer.f4mdumppath))
             list.append(getConfigListEntry("uchardetpath", config.plugins.iptvplayer.uchardetpath))
         
-        list.append( getConfigListEntry(_("Auto check for plugin update"), config.plugins.iptvplayer.autoCheckForUpdate) )
-        list.append( getConfigListEntry(_("Update"), config.plugins.iptvplayer.fakeUpdate) )
+        if config.plugins.iptvplayer.plarform.value != 'unknown':
+            list.append( getConfigListEntry(_("Auto check for plugin update"), config.plugins.iptvplayer.autoCheckForUpdate) )
+            list.append( getConfigListEntry(_("Update"), config.plugins.iptvplayer.fakeUpdate) )
         list.append( getConfigListEntry(_("Platform"), config.plugins.iptvplayer.plarform) )
         list.append( getConfigListEntry(_("Services configuration"), config.plugins.iptvplayer.fakeHostsList) )
         list.append( getConfigListEntry(_("Disable live at plugin start"), config.plugins.iptvplayer.disable_live))
@@ -370,7 +371,12 @@ class ConfigMenu(ConfigBaseWidget):
         if isinstance(currItem, ConfigDirectory):
             def SetDirPathCallBack(curIndex, newPath):
                 if None != newPath: self["config"].list[curIndex][1].value = newPath
-            self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), IPTVDirectorySelectorWidget, currDir=currItem.value, title="Wybierz katalog")
+            if config.plugins.iptvplayer.plarform.value == 'unknown':
+                from Plugins.Extensions.IPTVPlayer.components.filebrowserwidget import DirectorySelectorWidget
+                self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), DirectorySelectorWidget, currDir=currItem.value, title="Wybierz katalog")
+            else:
+                from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget
+                self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), IPTVDirectorySelectorWidget, currDir=currItem.value, title="Wybierz katalog")
         elif config.plugins.iptvplayer.fakePin == currItem:
             self.changePin(start = True)
         elif config.plugins.iptvplayer.fakeUpdate == currItem:

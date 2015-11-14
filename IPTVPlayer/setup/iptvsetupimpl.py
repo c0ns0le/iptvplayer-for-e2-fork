@@ -166,14 +166,17 @@ class IPTVSetupImpl:
             self.setOpenSSLVersion()
         else:
             _saveConfig( "unknown" )
+            config.plugins.iptvplayer.autoCheckForUpdate.value = False
             missingComponents= _("Warning!!! At least external players will NOT work on your platform.\n\n")
             if os_path.exists('/usr/bin/wget') and not os_path.islink('/usr/bin/wget'):
                 config.plugins.iptvplayer.wgetpath.value = '/usr/bin/wget'
+                config.plugins.iptvplayer.buforowanie.value = True
             else:
                 missingComponents += _("To enable buffering/recording of http streams install full version of wget manually\n")
 
             if os_path.exists('/usr/bin/rtmpdump') and not os_path.islink('/usr/bin/rtmpdump'):
                 config.plugins.iptvplayer.rtmpdumppath.value = '/usr/bin/rtmpdump'
+                config.plugins.iptvplayer.buforowanie_rtmp.value = True
             else:
                 missingComponents += _("To enable buffering/recording of rtmp streams install rtmpdump manually\n")
 

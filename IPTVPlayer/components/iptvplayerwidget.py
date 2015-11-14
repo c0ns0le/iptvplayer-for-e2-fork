@@ -833,7 +833,7 @@ class IPTVPlayerWidget(Screen):
     
     def __requestCheckUpdate(self):
         lastVerUrl = 'http://iptvplayer.pl/download/update/lastversion.php'
-        if config.plugins.iptvplayer.autoCheckForUpdate.value:
+        if config.plugins.iptvplayer.autoCheckForUpdate.value and config.plugins.iptvplayer.plarform.value != 'unknown':
             self.checkUpdateTimer.start(self.checkUpdateTimer_interval, True)
             if IsExecutable( DMHelper.GET_WGET_PATH() ):
                 cmd = '%s "%s" -O - 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
