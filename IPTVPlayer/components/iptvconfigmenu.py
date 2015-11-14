@@ -15,7 +15,7 @@ from Plugins.Extensions.IPTVPlayer.components.confighost import ConfigHostsMenu
 from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetupwidget import IPTVSetupMainWidget
 ###################################################
-from Plugins.Extensions.IPTVPlayer.tools.j00zekToolSet import *
+
 ###################################################
 # FOREIGN import
 ###################################################
@@ -40,33 +40,20 @@ from Plugins.Extensions.IPTVPlayer.components.configextmovieplayer import Config
 
 config.plugins.iptvplayer.exteplayer3path = ConfigText(default = "", fixed_size = False)
 config.plugins.iptvplayer.gstplayerpath   = ConfigText(default = "", fixed_size = False)
-
-if os_path.exists('/usr/bin/wget') and not os_path.islink('/usr/bin/wget'):
-    config.plugins.iptvplayer.wgetpath      = ConfigText(default = '/usr/bin/wget', fixed_size = False)
-else:
-    config.plugins.iptvplayer.wgetpath      = ConfigText(default = '', fixed_size = False)
-
-if os_path.exists('/usr/bin/rtmpdump') and not os_path.islink('/usr/bin/rtmpdump'):
-    config.plugins.iptvplayer.rtmpdumppath  = ConfigText(default = '/usr/bin/rtmpdump', fixed_size = False)
-else:
-    config.plugins.iptvplayer.rtmpdumppath  = ConfigText(default = '', fixed_size = False)
-
-if os_path.exists('/usr/bin/f4dump') and not os_path.islink('/usr/bin/f4dump'):
-    config.plugins.iptvplayer.f4mdumppath  = ConfigText(default = '/usr/bin/f4dump', fixed_size = False)
-else:
-    config.plugins.iptvplayer.f4mdumppath  = ConfigText(default = '', fixed_size = False)
-    
+config.plugins.iptvplayer.wgetpath        = ConfigText(default = "", fixed_size = False)
+config.plugins.iptvplayer.rtmpdumppath    = ConfigText(default = "", fixed_size = False)
+config.plugins.iptvplayer.f4mdumppath     = ConfigText(default = "", fixed_size = False)
 config.plugins.iptvplayer.uchardetpath    = ConfigText(default = "", fixed_size = False)
 config.plugins.iptvplayer.set_curr_title  = ConfigYesNo(default = False)
 config.plugins.iptvplayer.curr_title_file = ConfigText(default = "", fixed_size = False) 
-config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("arm", _("arm")),("i686", _("i686")),("unknown", _("unknown"))])
+config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("unknown", _("unknown"))])
 
 config.plugins.iptvplayer.showcover          = ConfigYesNo(default = True)
 config.plugins.iptvplayer.deleteIcons        = ConfigSelection(default = "3", choices = [("0", _("after closing")),("1", _("after day")),("3", _("after three days")),("7", _("after a week"))]) 
 config.plugins.iptvplayer.allowedcoverformats= ConfigSelection(default = "jpeg,png", choices = [("jpeg,png,gif", _("jpeg,png,gif")),("jpeg,png", _("jpeg,png")),("jpeg", _("jpeg")),("all", _("all"))]) 
 config.plugins.iptvplayer.showinextensions   = ConfigYesNo(default = True)
 config.plugins.iptvplayer.showinMainMenu     = ConfigYesNo(default = False)
-config.plugins.iptvplayer.ListaGraficzna     = ConfigYesNo(default = False)
+config.plugins.iptvplayer.ListaGraficzna     = ConfigYesNo(default = True)
 config.plugins.iptvplayer.NaszaSciezka       = ConfigDirectory(default = "/hdd/movie/") #, fixed_size = False)
 config.plugins.iptvplayer.bufferingPath      = ConfigDirectory(default = config.plugins.iptvplayer.NaszaSciezka.value) #, fixed_size = False)
 config.plugins.iptvplayer.buforowanie        = ConfigYesNo(default = False)
