@@ -19,7 +19,7 @@ from Plugins.Extensions.IPTVPlayer.components.ihost         import ArticleConten
 from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
 ###################################################
-
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 ###################################################
 # FOREIGN import
 ###################################################
@@ -35,7 +35,6 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 try:    import json
 except: import simplejson as json
 
-from os import path as os_path, remove as os_remove, listdir as os_listdir
 ###################################################
 
 
@@ -88,6 +87,7 @@ class IPTVUpdateWindow(Screen):
         self["list"].setList([])
 
     def layoutFinished(self):
+        self.close()
         self.setTitle( self.updateObjImpl.getTitle() )
         self["sub_title"].setText( self.updateObjImpl.getSubTitle() )
         self["list"].setSelectionState(enabled = False)

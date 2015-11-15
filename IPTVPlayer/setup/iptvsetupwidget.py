@@ -12,7 +12,7 @@ from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT
 from Plugins.Extensions.IPTVPlayer.components.cover          import Cover3
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetupimpl       import IPTVSetupImpl
 ###################################################
-from Plugins.Extensions.IPTVPlayer.tools.j00zekToolSet import *
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 ###################################################
 # FOREIGN import
 ###################################################
