@@ -15,3 +15,8 @@ cp -a ~/iptvplayer-GitLab-master-version/setup_translate.py $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup.py $myDir/
 cd $myDir
 patch -p1 < ./iptvplayer-fork.patch
+
+#change numbering
+sed -i 's/\(IPTV_VERSION="\)/\1j/' ./IPTVPlayer/version.py
+#temporary for tests of unknowne
+rm -rf ./IPTVPlayer/bin/i686/*
