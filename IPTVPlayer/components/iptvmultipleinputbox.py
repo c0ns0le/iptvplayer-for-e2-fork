@@ -12,7 +12,7 @@
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetIconDir
 from Plugins.Extensions.IPTVPlayer.components.cover import Cover3
 ###################################################
-
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 ###################################################
 # FOREIGN import
 ###################################################

@@ -15,7 +15,7 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, GetIconDir
 from cover import Cover3
     
-from Plugins.Extensions.IPTVPlayer.tools.j00zekToolSet import *
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 #########################################################
 #                    GLOBALS
 #########################################################

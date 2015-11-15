@@ -12,7 +12,7 @@ from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT
 from Plugins.Extensions.IPTVPlayer.components.iptvlist import IPTVMainNavigatorList
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, mkdir, IsValidFileName, GetBinDir, eConnectCallback, E2PrioFix
 ###################################################
- 
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 ###################################################
 # FOREIGN import
 ###################################################
@@ -26,7 +26,6 @@ from Components.Sources.StaticText import StaticText
 from Components.Label import Label
 from Components.ActionMap import ActionMap
 from Tools.BoundFunction import boundFunction
-from os import path as os_path, chmod as os_chmod
 ###################################################
 
 class CListItem:

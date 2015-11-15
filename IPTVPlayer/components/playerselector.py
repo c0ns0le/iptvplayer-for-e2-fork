@@ -14,6 +14,7 @@ from Components.config import config
 
 from Plugins.Extensions.IPTVPlayer.components.cover import Cover3
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, GetIPTVPlayerVerstion, GetIconDir, GetAvailableIconSize
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 
 
 class PlayerSelectorWidget(Screen):

@@ -12,6 +12,7 @@ from Tools.LoadPixmap import LoadPixmap
 
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc
 from cover import Cover2
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
     
 
 #########################################################

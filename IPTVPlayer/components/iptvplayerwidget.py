@@ -7,13 +7,12 @@
 # 
 
 from time import sleep as time_sleep
-from Plugins.Extensions.IPTVPlayer.tools.j00zekToolSet import *
 from urllib import quote as urllib_quote
 
 ####################################################
 #                  j00zek E2
 ####################################################
-from Plugins.Extensions.IPTVPlayer.tools.j00zekToolSet import ClearMemory
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 ####################################################
 #                   E2 components
 ####################################################
@@ -960,7 +959,10 @@ class IPTVPlayerWidget(Screen):
                 self.close()
                 return
             elif ret[1] == "update":
-                self.session.openWithCallback(self.displayListOfHosts, IPTVUpdateWindow, UpdateMainAppImpl(self.session))
+                if config.plugins.iptvplayer.plarform.value == 'unknown':
+                    self.session.openWithCallback(self.displayListOfHosts, j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
+                else:
+                    self.session.openWithCallback(self.displayListOfHosts, IPTVUpdateWindow, UpdateMainAppImpl(self.session))
                 return
             elif ret[1] == "IPTVDM":
                 self.runIPTVDM(self.selectHost)
@@ -1499,11 +1501,12 @@ class IPTVPlayerWidget(Screen):
         cItem = None
         index = -1
         # we need to check if fav is available
-        if favouritesHostActive and len(self.hostFavTypes) and self.visible and \
-           None != self.getSelectedItem() and \
-           self.getSelItem().type in self.hostFavTypes:
+        if not self.isInWorkThread() and favouritesHostActive and len(self.hostFavTypes) and self.visible:
             cItem = self.getSelItem()
-            index = self.getSelIndex()
+            if None != cItem and cItem.type in self.hostFavTypes:
+                index = self.getSelIndex()
+            else:
+                cItem = None
         return index, cItem
         
     def getFavouriteItemCallback(self, thread, ret):
