@@ -11,3 +11,5 @@ j00zekToolSet*
 UpdatePlugin.sh
 lsdir
 platformtester
+wget
+version.py

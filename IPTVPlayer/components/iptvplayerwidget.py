@@ -831,11 +831,15 @@ class IPTVPlayerWidget(Screen):
         self.askUpdateAvailable(self.selectHost)
     
     def __requestCheckUpdate(self):
-        lastVerUrl = 'http://iptvplayer.pl/download/update/lastversion.php'
-        if config.plugins.iptvplayer.autoCheckForUpdate.value and config.plugins.iptvplayer.plarform.value != 'unknown':
+        if config.plugins.iptvplayer.autoCheckForUpdate.value:
             self.checkUpdateTimer.start(self.checkUpdateTimer_interval, True)
             if IsExecutable( DMHelper.GET_WGET_PATH() ):
-                cmd = '%s "%s" -O - 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
+                if 'j00zekFork' in globals():
+                    lastVerUrl = 'https://raw.githubusercontent.com/j00zek/iptvplayer-for-e2-fork/master/IPTVPlayer/version.py'
+                    cmd = '%s -q "%s" -O -|grep IPTV_VERSION|grep -o "[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]" 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
+                else:
+                    lastVerUrl = 'http://iptvplayer.pl/download/update/lastversion.php'
+                    cmd = '%s "%s" -O - 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
                 if None != self.checkUpdateConsole: self.checkUpdateConsole.terminate()
                 printDBG("__requestCheckUpdate cmd[%r]" % cmd)
                 self.checkUpdateConsole = iptv_system( cmd, self.__checkUpdateCmdFinished )
@@ -848,7 +852,7 @@ class IPTVPlayerWidget(Screen):
     def askUpdateAvailable(self, NoUpdateCallback):
         if  config.plugins.iptvplayer.autoCheckForUpdate.value \
             and  0 < GetVersionNum( self.lastPluginVersion ) \
-            and GetVersionNum( self.lastPluginVersion ) > GetVersionNum( GetIPTVPlayerVerstion() ) \
+            and GetVersionNum( self.lastPluginVersion ) > GetVersionNum( GetIPTVPlayerVerstion().replace('j','') ) \
             and self.lastPluginVersion != config.plugins.iptvplayer.updateLastCheckedVersion.value:
             
             message = _('There is a new version available do you want to update? \nYour version [%s], latest version on server [%s]') % (GetIPTVPlayerVerstion(), self.lastPluginVersion)
@@ -959,7 +963,7 @@ class IPTVPlayerWidget(Screen):
                 self.close()
                 return
             elif ret[1] == "update":
-                if config.plugins.iptvplayer.plarform.value == 'unknown':
+                if 'j00zekFork' in globals():
                     self.session.openWithCallback(self.displayListOfHosts, j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
                 else:
                     self.session.openWithCallback(self.displayListOfHosts, IPTVUpdateWindow, UpdateMainAppImpl(self.session))

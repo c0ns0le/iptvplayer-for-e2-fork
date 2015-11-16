@@ -1,5 +1,6 @@
 #
 ##### permanents
+j00zekFork=True
 PluginName = 'IPTVPlayer'
 PluginGroup = 'Extensions'
 
@@ -8,6 +9,7 @@ from os import path as os_path, environ as os_environ, listdir as os_listdir, ch
 
 ###### openPLI imports
 from Components.config import *
+from Plugins.Extensions.IPTVPlayer.version import IPTV_VERSION
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG
 from Screens.Screen import Screen
 from Tools.Directories import *
@@ -21,7 +23,7 @@ ExtPluginsPath = resolveFilename(SCOPE_PLUGINS, '%s/' %(PluginGroup))
 j00zekRunUpdateList = []
 j00zekRunUpdateList.append( ('cp -a %s/j00zekScripts/UpdatePlugin.sh /tmp/PluginUpdate.sh' % PluginPath) ) #to have clear path of updating this script too ;)
 j00zekRunUpdateList.append( ('chmod 755 /tmp/PluginUpdate.sh') )
-j00zekRunUpdateList.append( ('/tmp/PluginUpdate.sh') )
+j00zekRunUpdateList.append( ('/tmp/PluginUpdate.sh "%s"') % IPTV_VERSION)
 j00zekRunUpdateList.append( ('rm -f /tmp/PluginUpdate.sh') )
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
@@ -48,7 +50,6 @@ def LoadSkin(SkinName):
 ##################################################### CLEAR CACHE - tuners with small amount of memory need it #####################################################
 def ClearMemory(): #avoid GS running os.* (e.g. os.system) on tuners with small amount of RAM
     with open("/proc/sys/vm/drop_caches", "w") as f: f.write("1\n")
-    
 ##################################################### getPlatform #####################################################
 def getPlatform():
     fc=''
@@ -56,15 +57,15 @@ def getPlatform():
         fc=f.read()
         f.close()
     if fc.find('sh4') > -1:
-        return 'sh4'
+        return _('unsupported') + ' SH4'
     elif fc.find('BMIPS') > -1:
-        return 'mipsel'
+        return _('unsupported') + ' MIPSEL'
     elif fc.find('GenuineIntel') > -1:
         return 'i686'
     elif fc.find('ARMv') > -1:
-        return 'arm'
+        return _('unsupported') + ' ARM'
     else:
-       return 'unknown'
+       return _('unsupported')
 ##################################################### translated Console #####################################################
 class j00zekIPTVPlayerConsole(Screen):
 #TODO move this to skin.xml

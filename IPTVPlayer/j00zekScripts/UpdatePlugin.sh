@@ -1,13 +1,13 @@
 #
-if [ -z "$1" ];then
+if [ -z "$2" ];then
   UpdateType='public'
 else
-  UpdateType=$1
+  UpdateType='dev'
 fi
-if [ -z "$2" ];then
-  CurrentPublic='no-version'
+if [ -z "$1" ];then
+  CurrentPublic='version-unknown'
 else
-  CurrentPublic=$2
+  CurrentPublic=$1
 fi
 
 [ -e /tmp/iptvp.tar.gz ] && rm -rf /tmp/iptvp.tar.gz
@@ -45,13 +45,13 @@ fi
 if [ "$UpdateType" == "public" ]; then
   echo "_(Checking web version...)"
   GITversion=`curl -kLs https://raw.githubusercontent.com/j00zek/iptvplayer-for-e2-fork/master/IPTVPlayer/version.py|grep IPTV_VERSION|cut -d '"' -f2`
-  echo "_(Installed Version:) $CurrentPublic"
+  echo "_(Version installed:) $CurrentPublic"
   echo "_(Version available:) $GITversion"
   if [ -z "$GITversion" ]; then
     echo "_(Error checking web version)"
     exit 0
   elif [ "$GITversion" == "$CurrentPublic" ]; then
-    echo "_(Latest version already installed)"
+    echo "_(Latest version already installed. Press OK to close the window)"
     exit 0
   else
     echo "_(Vew version available on the web)"
