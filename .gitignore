@@ -1,3 +1,4 @@
+/IPTVPlayer/bin/wget
 *.orig
 *.last
 # Byte-compiled / optimized / DLL files
