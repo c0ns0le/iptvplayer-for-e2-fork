@@ -7,14 +7,14 @@
 ###################################################
 # LOCAL import
 ###################################################
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, IsHostEnabled, IsExecutable, CFakeMoviePlayerOption, GetAvailableIconSize
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, IsHostEnabled, IsExecutable, GetBinDir, CFakeMoviePlayerOption, GetAvailableIconSize
 from Plugins.Extensions.IPTVPlayer.iptvupdate.updatemainwindow import IPTVUpdateWindow, UpdateMainAppImpl
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _, IPTVPlayerNeedInit
 from Plugins.Extensions.IPTVPlayer.components.configbase import ConfigBaseWidget
 from Plugins.Extensions.IPTVPlayer.components.confighost import ConfigHostsMenu
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetupwidget import IPTVSetupMainWidget
 ###################################################
-
+j00zekFork=True
 ###################################################
 # FOREIGN import
 ###################################################
@@ -216,15 +216,14 @@ class ConfigMenu(ConfigBaseWidget):
             
             list.append(getConfigListEntry("exteplayer3path", config.plugins.iptvplayer.exteplayer3path))
             list.append(getConfigListEntry("gstplayerpath", config.plugins.iptvplayer.gstplayerpath))
-        if hiddenOptions or config.plugins.iptvplayer.plarform.value == 'unknown':
+        if hiddenOptions or 'j00zekFork' in globals():
             list.append(getConfigListEntry("wgetpath", config.plugins.iptvplayer.wgetpath))
             list.append(getConfigListEntry("rtmpdumppath", config.plugins.iptvplayer.rtmpdumppath))
             list.append(getConfigListEntry("f4mdumppath", config.plugins.iptvplayer.f4mdumppath))
             list.append(getConfigListEntry("uchardetpath", config.plugins.iptvplayer.uchardetpath))
         
-        if config.plugins.iptvplayer.plarform.value != 'unknown':
-            list.append( getConfigListEntry(_("Auto check for plugin update"), config.plugins.iptvplayer.autoCheckForUpdate) )
-            list.append( getConfigListEntry(_("Update"), config.plugins.iptvplayer.fakeUpdate) )
+        list.append( getConfigListEntry(_("Auto check for plugin update"), config.plugins.iptvplayer.autoCheckForUpdate) )
+        list.append( getConfigListEntry(_("Update"), config.plugins.iptvplayer.fakeUpdate) )
         list.append( getConfigListEntry(_("Platform"), config.plugins.iptvplayer.plarform) )
         list.append( getConfigListEntry(_("Services configuration"), config.plugins.iptvplayer.fakeHostsList) )
         list.append( getConfigListEntry(_("Disable live at plugin start"), config.plugins.iptvplayer.disable_live))
@@ -233,7 +232,7 @@ class ConfigMenu(ConfigBaseWidget):
         if config.plugins.iptvplayer.pluginProtectedByPin.value or config.plugins.iptvplayer.configProtectedByPin.value:
             list.append( getConfigListEntry(_("Set pin code"), config.plugins.iptvplayer.fakePin) )
         
-        if config.plugins.iptvplayer.plarform.value != 'unknown':
+        if not 'j00zekFork' in globals():
             list.append(getConfigListEntry(_("Skin"), config.plugins.iptvplayer.skin))
         list.append(getConfigListEntry(_("Display thumbnails"), config.plugins.iptvplayer.showcover))
         if config.plugins.iptvplayer.showcover.value:
@@ -322,8 +321,9 @@ class ConfigMenu(ConfigBaseWidget):
         list.append(getConfigListEntry(_("Show IPTVPlayer in main menu"), config.plugins.iptvplayer.showinMainMenu))
         list.append(getConfigListEntry(_("Show update icon in service selection menu"), config.plugins.iptvplayer.AktualizacjaWmenu))
         list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
-        list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
-        list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
+        if not 'j00zekFork' in globals():
+            list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
+            list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
 
     def runSetup(self):
         self.list = []
@@ -372,12 +372,12 @@ class ConfigMenu(ConfigBaseWidget):
         if isinstance(currItem, ConfigDirectory):
             def SetDirPathCallBack(curIndex, newPath):
                 if None != newPath: self["config"].list[curIndex][1].value = newPath
-            if config.plugins.iptvplayer.plarform.value == 'unknown':
-                from Plugins.Extensions.IPTVPlayer.components.filebrowserwidget import DirectorySelectorWidget
-                self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), DirectorySelectorWidget, currDir=currItem.value, title="Wybierz katalog")
-            else:
+            if IsExecutable(GetBinDir('lsdir')):
                 from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget
                 self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), IPTVDirectorySelectorWidget, currDir=currItem.value, title="Wybierz katalog")
+            else:
+                from Plugins.Extensions.IPTVPlayer.components.filebrowserwidget import DirectorySelectorWidget
+                self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), DirectorySelectorWidget, currDir=currItem.value, title="Wybierz katalog")
         elif config.plugins.iptvplayer.fakePin == currItem:
             self.changePin(start = True)
         elif config.plugins.iptvplayer.fakeUpdate == currItem:

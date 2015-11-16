@@ -98,6 +98,7 @@ class OpenSubOrgProvider:
         
     def doLogin(self, callback, login, password, lang='en'):
         self.outerCallback = callback
+        self.tmpData = {}
         self.login = login
         params = [login, hex_md5(password), lang, OpenSubOrgProvider.USER_AGENT]
         self._methodCall(self.doLoginCallback, "LogIn", params)
@@ -159,13 +160,39 @@ class OpenSubOrgProvider:
         
     def doGetItemType(self, callback, privateData):
         self.outerCallback = callback
+        self.tmpData = {}
+        self.itemTypeCache = {'type':'movie'}        
+        url     = "'https://api.themoviedb.org/3/find/tt{0}?api_key={1}&external_source=imdb_id'".format(privateData['id'], base64.b64decode('NjMxMWY4MmQ1MjAxNDI2NWQ3NjVkMzk4MDJhYWZhYTc='))
+        cmd = DMHelper.getBaseWgetCmd({}) + url + ' -O - 2> /dev/null '
+        self.iptv_sys = iptv_system(cmd, self._doGetItemTypeCallback)
+        
+    def _doGetItemTypeCallback(self, code, data):
+        sts = False
+        itemType = 'movie'
+        if code == 0:
+            try:
+                data = byteify(json.loads(data))
+                if len(data["tv_results"]):
+                    data = data["tv_results"][0]
+                    itemType = 'series'
+                    year = data["first_air_date"][0:4]
+                    self.itemTypeCache = {'type':itemType, 'title':data["original_name"], 'year':year}
+                    sts = True
+            except:
+                printExc()
+                self.lastApiError = {'code':-999, 'message':_('json load error')}
+        self.outerCallback(sts, itemType)
+        
+    def doGetItemTypeOLD(self, callback, privateData):
+        self.outerCallback = callback
+        self.tmpData = {}
         self.itemTypeCache = {'type':'movie'}        
         url     = "'http://www.omdbapi.com/?i=tt{0}&plot=short&r=json'".format(privateData['id'])
         cmd = DMHelper.getBaseWgetCmd({}) + url + ' -O - 2> /dev/null '
         printDBG('doGetItemType cmd[%s]' % cmd)
         self.iptv_sys = iptv_system(cmd, self._doGetItemTypeCallback)
         
-    def _doGetItemTypeCallback(self, code, data):
+    def _doGetItemTypeCallbackOLD(self, code, data):
         sts = False
         itemType = 'movie'
         if code == 0:
@@ -181,9 +208,9 @@ class OpenSubOrgProvider:
                 self.lastApiError = {'code':-999, 'message':_('json load error')}
         self.outerCallback(sts, itemType)
         
-    def doGetEpisodes(self, callback, privateData):
+    def doGetEpisodes(self, callback, privateData, episodeData):
         self.outerCallback = callback
-        self.tmpData = {'private_data':privateData}
+        self.tmpData = {'private_data':privateData, 'episode_data':episodeData}
         
         year = self.itemTypeCache.get('year', '')
         if year != '':
@@ -199,24 +226,35 @@ class OpenSubOrgProvider:
     def _doGetEpisodesCallback(self, code, data):
         sts = False
         list = []
+        promotItem = {}
         if code == 0:
             try:
+                season = self.tmpData['episode_data'].get('season', -1)
+                episode = self.tmpData['episode_data'].get('episode', -1)
+                printDBG("_doGetEpisodesCallback s[%s] e[%s]" % (season, episode) )
+                
                 data = byteify(json.loads(data))
                 key, value = data.popitem()
                 for item in value["episodes"]:
                     params = dict(self.tmpData['private_data'])
                     params.update({"season": item["season"], "episode_title":item["name"], "episode":item["number"]})
                     title = 's{0}e{1} {2}'.format(str(item["season"]).zfill(2), str(item["number"]).zfill(2), item['name'])
-                    list.append({'title':title, 'private_data':params})
+                    if season == item["season"] and episode == item["number"] and promotItem == {}:
+                        promotItem = {'title':title, 'private_data':params}
+                    else:
+                        list.append({'title':title, 'private_data':params})
                 sts = True
             except:
                 printExc()
                 self.lastApiError = {'code':-999, 'message':_('json load error 2')}
+        if promotItem != {}:
+            list.insert(0, promotItem)
         self.tmpData = {}
         self.outerCallback(sts, list)
         
     def doSearchSubtitle(self, callback, privateData, langItem):       
         self.outerCallback = callback
+        self.tmpData = {}
         if 'episode' in privateData and 'season' in privateData :
             self.tmpData = {'private_data':privateData, 'langItem':langItem}
             self.goGetEpisodeType(privateData)
@@ -328,6 +366,7 @@ class OpenSubOrgProvider:
         
     def doGetLanguages(self, callback, lang):        
         self.outerCallback = callback
+        self.tmpData = {}
         self.defaultLanguage = lang
         if len(self.langsCache):
             self._dummyCall(self._doGetLanguagesCallback)
@@ -356,8 +395,8 @@ class OpenSubOrgProvider:
         self.outerCallback(sts, list)
         
     def doDowanloadSubtitle(self, callback, subItem, tmpDir, subDir):
-        self.tmpData = {'subItem':subItem, 'tmpDir':tmpDir, 'subDir':subDir}
         self.outerCallback = callback
+        self.tmpData = {'subItem':subItem, 'tmpDir':tmpDir, 'subDir':subDir}
         # subItem === private_data
         
         tmpFile = tmpDir + OpenSubOrgProvider.TMP_FILE_NAME

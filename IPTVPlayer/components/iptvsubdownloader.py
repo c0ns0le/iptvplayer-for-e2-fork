@@ -70,6 +70,13 @@ class IPTVSubDownloaderWidget(Screen):
         
         self.searchPattern = CParsingHelper.getNormalizeStr( self.params.get('movie_title', '') )
         
+        # try to guess season and episode number
+        try:
+            tmp = CParsingHelper.getSearchGroups(self.searchPattern + ' ', 's([0-9]+?)e([0-9]+?)[^0-9]', 2)
+            self.episodeData = {'season': int(tmp[0]), 'episode':int(tmp[1])}
+        except:
+            self.episodeData = {'season':-1, 'episode':-1}
+
         self.onShown.append(self.onStart)
         self.onClose.append(self.__onClose)
         
@@ -221,7 +228,7 @@ class IPTVSubDownloaderWidget(Screen):
         self.setListMode(False)
         self["console"].setText(_('Get episodes list.'))
         self["console"].show()
-        self.subProvider.doGetEpisodes(self.doGetEpisodesCallback, item)
+        self.subProvider.doGetEpisodes(self.doGetEpisodesCallback, item, self.episodeData)
         
     def doGetEpisodesCallback(self, sts, data):
         if not sts:
@@ -292,6 +299,8 @@ class IPTVSubDownloaderWidget(Screen):
         iconType = CDisplayListItem.TYPE_CATEGORY
         if type == 'movie':
             self["title"].setText(_("Select movie"))
+        if type == 'episode':
+            self["title"].setText(_("Select episode"))
         elif type == "lang":
             self["title"].setText(_("Select language"))
         elif type == "sub":
@@ -340,9 +349,11 @@ class IPTVSubDownloaderWidget(Screen):
             
     def keyOK(self):
         if False == self.listMode: return
+        printDBG(">>>>>>>>>>>>>>>>>>>>>>>>> len(self.stackList)[%d]" % (len(self.stackList)))
         idx, item = self.getSelectedItem()
         if None != item:
             type = self.stackList[-1]['type']
+            printDBG(">>>>>>>>>>>>>>>>>>>>>>>>> type[%s]" % type);
             self.stackItems.append({'item':item, 'idx':idx, 'type':type})
             if type == 'episode':
                 self.doGetLanguageForSubtitle()
