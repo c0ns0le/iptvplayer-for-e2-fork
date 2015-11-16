@@ -33,12 +33,12 @@ class IPTVSetupImpl:
         self.termination  = False
         
         self.tmpDir = GetTmpDir()
-        self.resourceServers = ["http://iptvplayer.pl/resources/", "http://iptvplayer.vline.pl/resources/"]
+        self.resourceServers = ["http://iptvplayer.pl/resources/", "http://iptvplayer.vline.pl/resources/", "http://hybrid.xunil.pl/IPTVPlayer_resources/"]
         
         self.ffmpegVersion = ""
         self.gstreamerVersion = ""
         self.openSSLVersion = ""
-        self.supportedPlatforms = ["sh4", "mipsel", "i686"]
+        self.supportedPlatforms = ["sh4", "mipsel", "i686", "arm"]
         self.platform = "unknown"
         
         # wget members
@@ -637,6 +637,7 @@ class IPTVSetupImpl:
         for server in self.resourceServers:
             cmd = self.stepHelper.getDownloadCmdBuilder()(self.stepHelper.getName(), self.platform, self.openSSLVersion, server, self.tmpDir)
             cmdTabs.append(cmd)
+        print cmdTabs
         self.workingObj = CCmdValidator(self.binaryDownloadFinished, self.stepHelper.getDownloadValidator(), cmdTabs)
         self.workingObj.start()
     

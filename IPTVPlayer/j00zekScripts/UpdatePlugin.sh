@@ -45,7 +45,8 @@ fi
 if [ "$UpdateType" == "public" ]; then
   echo "_(Checking web version...)"
   GITversion=`curl -kLs https://raw.githubusercontent.com/j00zek/iptvplayer-for-e2-fork/master/IPTVPlayer/version.py|grep IPTV_VERSION|cut -d '"' -f2`
-  echo $GITversion
+  echo "_(Installed Version:) $CurrentPublic"
+  echo "_(Version available:) $GITversion"
   if [ -z "$GITversion" ]; then
     echo "_(Error checking web version)"
     exit 0

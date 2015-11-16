@@ -45,7 +45,7 @@ config.plugins.iptvplayer.f4mdumppath     = ConfigText(default = "", fixed_size 
 config.plugins.iptvplayer.uchardetpath    = ConfigText(default = "", fixed_size = False)
 config.plugins.iptvplayer.set_curr_title  = ConfigYesNo(default = False)
 config.plugins.iptvplayer.curr_title_file = ConfigText(default = "", fixed_size = False) 
-config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("unknown", _("unsupported"))])
+config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("arm", _("arm")),("unknown", _("unsupported"))])
 
 config.plugins.iptvplayer.showcover          = ConfigYesNo(default = True)
 config.plugins.iptvplayer.deleteIcons        = ConfigSelection(default = "3", choices = [("0", _("after closing")),("1", _("after day")),("3", _("after three days")),("7", _("after a week"))]) 
@@ -233,7 +233,8 @@ class ConfigMenu(ConfigBaseWidget):
         if config.plugins.iptvplayer.pluginProtectedByPin.value or config.plugins.iptvplayer.configProtectedByPin.value:
             list.append( getConfigListEntry(_("Set pin code"), config.plugins.iptvplayer.fakePin) )
         
-        list.append(getConfigListEntry(_("Skin"), config.plugins.iptvplayer.skin))
+        if config.plugins.iptvplayer.plarform.value != 'unknown':
+            list.append(getConfigListEntry(_("Skin"), config.plugins.iptvplayer.skin))
         list.append(getConfigListEntry(_("Display thumbnails"), config.plugins.iptvplayer.showcover))
         if config.plugins.iptvplayer.showcover.value:
             list.append(getConfigListEntry(_("    Allowed formats of thumbnails"), config.plugins.iptvplayer.allowedcoverformats))
