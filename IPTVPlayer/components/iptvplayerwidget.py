@@ -7,12 +7,13 @@
 # 
 
 from time import sleep as time_sleep
+from os import remove as os_remove, path as os_path
 from urllib import quote as urllib_quote
 
 ####################################################
 #                  j00zek E2
 ####################################################
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+j00zekFork=True
 ####################################################
 #                   E2 components
 ####################################################
@@ -72,6 +73,7 @@ gDownloadManager = None
 
 class IPTVPlayerWidget(Screen):
     IPTV_VERSION = GetIPTVPlayerVerstion()
+    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
     skin=LoadSkin('IPTVPlayerWidget')
     
     def __init__(self, session):
@@ -936,10 +938,8 @@ class IPTVPlayerWidget(Screen):
     def selectHostCallback(self, ret):
         try:
             if os_path.isfile('/etc/init.d/graterlia_init'):
-                message = "Ostrzeżenie (faza 1/3)\n"
-                message += "Używając IPTVPlayer na tej dystrybucji systemu E2 łamiesz licencje.\n\n"
-                message += "WARNING (phase 1/3)\n"
-                message += "You are breaking license using IPTVPlayer on your E2 distribution.\n\n"
+                message = _("WARNING (phase 1/3)\n")
+                message += _("You are breaking license using IPTVPlayer on your E2 distribution.\n\n")
                 #self.session.openWithCallback(self.close, MessageBox, text=message, type=MessageBox.TYPE_ERROR)
                 self.session.open(MessageBox, text=message, type=MessageBox.TYPE_ERROR)
         except:
@@ -964,6 +964,7 @@ class IPTVPlayerWidget(Screen):
                 return
             elif ret[1] == "update":
                 if 'j00zekFork' in globals():
+                    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import j00zekIPTVPlayerConsole, j00zekRunUpdateList
                     self.session.openWithCallback(self.displayListOfHosts, j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
                 else:
                     self.session.openWithCallback(self.displayListOfHosts, IPTVUpdateWindow, UpdateMainAppImpl(self.session))
