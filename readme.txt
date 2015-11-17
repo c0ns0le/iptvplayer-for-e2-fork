@@ -1,14 +1,14 @@
 This is fork of https://gitlab.com/iptvplayer-for-e2/iptvplayer-for-e2.gitlab project
 All credits goes to its author(s)
 
-Planned changes:
-- change the update mechanism to not interfere with main project
-- change reporting mechanism to not interfere with main project, if needed
-- make plugin platform independent,
-  - use standard binaries installable from opkg (e.g. full wget, rtmpdump)
-  - detect platform based on standard e2 definitions, special binary is not needed
-  - browse directories using standard e2 mechanism, lsdir binary is not needed
-- make the plugin skinable
-- implement transcoding on highend tuners, possibly limit a need for special external players
+Changes:
+- The update mechanism has been CHANGED to not interfere with main project.
+- lsdir binary is not reuired anymore to browse directories, Plugin will use standard mechanism, if lsdir not existing for specific platform.
+- arm platform has been added, main binaries compiled, new resource server for arm initiated
 
-NOTE: All original licenses applies to it too.
+Planned changes:
+- make the plugin skinable - Patially finished, all sk
+- detect platform based on standard e2 definitions, special binary is not needed
+- use standard binaries installable from opkg (e.g. full wget, rtmpdump) 
+- change reporting mechanism to not interfere with main project, if needed
+- implement transcoding on highend tuners, possibly limit a need for special external players

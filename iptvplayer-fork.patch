@@ -1,6 +1,6 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-11-16 06:19:04.566308000 +0100
-+++ ./IPTVPlayer/components/configbase.py	2015-11-16 14:56:18.203862999 +0100
++++ ./IPTVPlayer/components/configbase.py	2015-11-17 06:34:24.442226000 +0100
 @@ -8,10 +8,9 @@
  ###################################################
  # LOCAL import
@@ -27,50 +27,9 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              self.session.openWithCallback(boundFunction(SetDirPathCallBack, curIndex), IPTVDirectorySelectorWidget, currDir=currItem.value,  title=_('Select the directory'))
              return
          elif isinstance(currItem, ConfigText):
-diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/filebrowserwidget.py.rej ./IPTVPlayer/components/filebrowserwidget.py.rej
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/filebrowserwidget.py.rej	1970-01-01 01:00:00.000000000 +0100
-+++ ./IPTVPlayer/components/filebrowserwidget.py.rej	2015-11-16 14:56:18.207861000 +0100
-+@@ -10,7 +10,7 @@
-+ ###################################################
-+ from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, mkdir, IsValidFileName
-+ ###################################################
-+- 
-++
-+ ###################################################
-+ # FOREIGN import
-+ ###################################################
-+@@ -29,25 +29,9 @@
-+ ###################################################
-+  
-+ class DirectorySelectorWidget(Screen):
-+-    screenwidth = getDesktop(0).size().width()
-+-    if screenwidth and screenwidth == 1920:  
-+-        skin = """
-+-        <screen name="IPTVDirectorySelectorWidget" position="center,center" size="820,860" title="">
-+-            <widget name="key_red"     position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;28" transparent="1" foregroundColor="red" />
-+-            <widget name="key_blue"    position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="center" font="Regular;28" transparent="1" foregroundColor="blue" />
-+-            <widget name="key_green"   position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="right"  font="Regular;28" transparent="1" foregroundColor="green" />
-+-            <widget name="curr_dir"    position="10,50"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;28" transparent="1" foregroundColor="white" />
-+-            <widget name="filelist"    position="10,95"  zPosition="1"  size="800,725" transparent="1" scrollbarMode="showOnDemand" />
-+-        </screen>"""
-+-    else:
-+-        skin = """
-+-        <screen name="IPTVDirectorySelectorWidget" position="center,center" size="620,440" title="">
-+-            <widget name="key_red"     position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;22" transparent="1" foregroundColor="red" />
-+-            <widget name="key_blue"    position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="center" font="Regular;22" transparent="1" foregroundColor="blue" />
-+-            <widget name="key_green"   position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="right"  font="Regular;22" transparent="1" foregroundColor="green" />
-+-            <widget name="curr_dir"    position="10,50"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;18" transparent="1" foregroundColor="white" />
-+-            <widget name="filelist"    position="10,85"  zPosition="1"  size="580,335" transparent="1" scrollbarMode="showOnDemand" />
-+-        </screen>"""      
-++    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
-++    LoadSkin('DirectorySelectorWidget')
-++    
-+     def __init__(self, session, currDir, title="Directory browser"):
-+         printDBG("DirectorySelectorWidget.__init__ -------------------------------")
-+         Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvchoicebox.py ./IPTVPlayer/components/iptvchoicebox.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvchoicebox.py	2015-11-11 07:16:27.391282027 +0100
-+++ ./IPTVPlayer/components/iptvchoicebox.py	2015-11-16 14:56:18.207861000 +0100
++++ ./IPTVPlayer/components/iptvchoicebox.py	2015-11-17 06:34:24.442226000 +0100
 @@ -11,7 +11,7 @@
  from Plugins.Extensions.IPTVPlayer.components.iptvmultipleinputbox import IPTVMultipleInputBox
  from Plugins.Extensions.IPTVPlayer.components.iptvlist import IPTVRadioButtonList
@@ -82,7 +41,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-16 14:56:18.207861000 +0100
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-17 07:49:32.163237997 +0100
 @@ -7,15 +7,14 @@
  ###################################################
  # LOCAL import
@@ -140,7 +99,22 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  
      def runSetup(self):
          self.list = []
-@@ -370,7 +372,12 @@
+@@ -345,8 +347,12 @@
+             self.doUpdate()
+ 
+     def doUpdate(self):
+-        printDBG("ConfigMenu.doUpdate")
+-        self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
++        if 'j00zekFork' in globals():
++            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import j00zekIPTVPlayerConsole, j00zekRunUpdateList
++            self.session.open(j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
++        else:
++            printDBG("ConfigMenu.doUpdate")
++            self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
+         
+ 
+     def save(self):
+@@ -370,7 +376,12 @@
          if isinstance(currItem, ConfigDirectory):
              def SetDirPathCallBack(curIndex, newPath):
                  if None != newPath: self["config"].list[curIndex][1].value = newPath
@@ -156,7 +130,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif config.plugins.iptvplayer.fakeUpdate == currItem:
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py ./IPTVPlayer/components/iptvpin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/iptvpin.py	2015-11-16 14:56:18.211858999 +0100
++++ ./IPTVPlayer/components/iptvpin.py	2015-11-17 06:40:26.157278000 +0100
 @@ -22,15 +22,8 @@
  
  class IPTVPinWidget(Screen):
@@ -170,30 +144,26 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 -         <widget name="cover_3" zPosition="4" position="215,80" size="60,60" transparent="1" alphatest="on" />
 -         <ePixmap position="100,150" zPosition="4" size="100,100" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/icons/Pin/lock.png" transparent="1" alphatest="on" />
 -        </screen>"""
-+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
++    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 +    skin = LoadSkin("IPTVPinWidget")
     
      def __init__(self, session, title = ""):
          self.session = session
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-11-16 06:19:04.570306000 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-16 14:56:18.211858999 +0100
-@@ -7,10 +7,13 @@
- # 
- 
- from time import sleep as time_sleep
--from os import remove as os_remove, path as os_path
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-17 07:59:57.894216012 +0100
+@@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
  ####################################################
 +#                  j00zek E2
 +####################################################
-+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
++j00zekFork=True
 +####################################################
  #                   E2 components
  ####################################################
  from Screens.Screen import Screen
-@@ -69,59 +72,8 @@
+@@ -69,59 +73,9 @@
  
  class IPTVPlayerWidget(Screen):
      IPTV_VERSION = GetIPTVPlayerVerstion()
@@ -250,12 +220,13 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 -                            <widget name="spinner_4" zPosition="1" position="511,200" size="16,16" transparent="1" alphatest="blend" />
 -                    </screen>
 -                """ %( IPTV_VERSION, GetIconDir('red.png'), GetIconDir('green.png'), GetIconDir('yellow.png'), GetIconDir('blue.png'), GetIconDir('line.png'))      
++    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
 +    skin=LoadSkin('IPTVPlayerWidget')
 +    
      def __init__(self, session):
          printDBG("IPTVPlayerWidget.__init__ desktop IPTV_VERSION[%s]\n" % (IPTVPlayerWidget.IPTV_VERSION) )
          self.session = session
-@@ -318,7 +270,7 @@
+@@ -318,7 +272,7 @@
          try:
              asynccall.gMainFunctionsQueue.setProcFun(None)
              asynccall.gMainFunctionsQueue.clearQueue()
@@ -264,7 +235,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          except:
              printExc()
          self.activePlayer = None
-@@ -879,11 +831,15 @@
+@@ -879,11 +833,15 @@
          self.askUpdateAvailable(self.selectHost)
      
      def __requestCheckUpdate(self):
@@ -282,7 +253,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  if None != self.checkUpdateConsole: self.checkUpdateConsole.terminate()
                  printDBG("__requestCheckUpdate cmd[%r]" % cmd)
                  self.checkUpdateConsole = iptv_system( cmd, self.__checkUpdateCmdFinished )
-@@ -896,7 +852,7 @@
+@@ -896,7 +854,7 @@
      def askUpdateAvailable(self, NoUpdateCallback):
          if  config.plugins.iptvplayer.autoCheckForUpdate.value \
              and  0 < GetVersionNum( self.lastPluginVersion ) \
@@ -291,21 +262,26 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              and self.lastPluginVersion != config.plugins.iptvplayer.updateLastCheckedVersion.value:
              
              message = _('There is a new version available do you want to update? \nYour version [%s], latest version on server [%s]') % (GetIPTVPlayerVerstion(), self.lastPluginVersion)
-@@ -980,7 +936,7 @@
+@@ -980,10 +938,8 @@
      def selectHostCallback(self, ret):
          try:
              if os_path.isfile('/etc/init.d/graterlia_init'):
 -                message = "Ostrzężenie (faza 1/3)\n"
-+                message = "Ostrzeżenie (faza 1/3)\n"
-                 message += "Używając IPTVPlayer na tej dystrybucji systemu E2 łamiesz licencje.\n\n"
-                 message += "WARNING (phase 1/3)\n"
-                 message += "You are breaking license using IPTVPlayer on your E2 distribution.\n\n"
-@@ -1007,7 +963,10 @@
+-                message += "Używając IPTVPlayer na tej dystrybucji systemu E2 łamiesz licencje.\n\n"
+-                message += "WARNING (phase 1/3)\n"
+-                message += "You are breaking license using IPTVPlayer on your E2 distribution.\n\n"
++                message = _("WARNING (phase 1/3)\n")
++                message += _("You are breaking license using IPTVPlayer on your E2 distribution.\n\n")
+                 #self.session.openWithCallback(self.close, MessageBox, text=message, type=MessageBox.TYPE_ERROR)
+                 self.session.open(MessageBox, text=message, type=MessageBox.TYPE_ERROR)
+         except:
+@@ -1007,7 +963,11 @@
                  self.close()
                  return
              elif ret[1] == "update":
 -                self.session.openWithCallback(self.displayListOfHosts, IPTVUpdateWindow, UpdateMainAppImpl(self.session))
 +                if 'j00zekFork' in globals():
++                    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import j00zekIPTVPlayerConsole, j00zekRunUpdateList
 +                    self.session.openWithCallback(self.displayListOfHosts, j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
 +                else:
 +                    self.session.openWithCallback(self.displayListOfHosts, IPTVUpdateWindow, UpdateMainAppImpl(self.session))
@@ -314,7 +290,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  self.runIPTVDM(self.selectHost)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py ./IPTVPlayer/iptvdm/iptvdmui.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py	2015-11-11 07:16:27.435260000 +0100
-+++ ./IPTVPlayer/iptvdm/iptvdmui.py	2015-11-16 14:56:18.215856999 +0100
++++ ./IPTVPlayer/iptvdm/iptvdmui.py	2015-11-17 06:34:24.442226000 +0100
 @@ -30,7 +30,7 @@
  from Components.Sources.StaticText import StaticText
  from Components.config import config
@@ -359,7 +335,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-16 14:56:18.219855000 +0100
++++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-17 06:34:24.442226000 +0100
 @@ -19,7 +19,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -386,8 +362,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self["sub_title"].setText( self.updateObjImpl.getSubTitle() )
          self["list"].setSelectionState(enabled = False)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py ./IPTVPlayer/plugin.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-05 22:26:57.957660252 +0100
-+++ ./IPTVPlayer/plugin.py	2015-11-16 14:56:18.219855000 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-17 06:34:21.247824000 +0100
++++ ./IPTVPlayer/plugin.py	2015-11-17 06:34:24.442226000 +0100
 @@ -73,7 +73,9 @@
      #print config.plugins.iptvplayer.rtmpdumppath.value
      #print config.plugins.iptvplayer.f4mdumppath.value
@@ -401,7 +377,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-11-16 06:19:04.570306000 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-16 14:56:18.219855000 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-17 06:34:24.442226000 +0100
 @@ -33,12 +33,12 @@
          self.termination  = False
          
@@ -455,7 +431,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupwidget.py ./IPTVPlayer/setup/iptvsetupwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupwidget.py	2015-11-05 22:26:57.957660252 +0100
-+++ ./IPTVPlayer/setup/iptvsetupwidget.py	2015-11-16 14:56:18.219855000 +0100
++++ ./IPTVPlayer/setup/iptvsetupwidget.py	2015-11-17 06:34:24.442226000 +0100
 @@ -12,7 +12,7 @@
  from Plugins.Extensions.IPTVPlayer.components.cover          import Cover3
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetupimpl       import IPTVSetupImpl

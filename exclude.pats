@@ -15,4 +15,5 @@ wget
 version.py
 lsdir.arm
 platformtester.arm
+platformtester.i386
 *.rej
