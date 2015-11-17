@@ -13,3 +13,6 @@ lsdir
 platformtester
 wget
 version.py
+lsdir.arm
+platformtester.arm
+*.rej
