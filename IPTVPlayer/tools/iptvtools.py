@@ -350,12 +350,9 @@ def printDBG( DBGtxt ):
         return
     elif DBG == 'console':
         print(DBGtxt)
-    elif DBG == 'debugfile' or DBG == 'debugfileTMP':
+    elif DBG == 'debugfile':
         try:
-            if DBG == 'debugfileTMP':
-                f = open('/tmp/iptv.dbg', 'a')
-            else:
-                f = open('/hdd/iptv.dbg', 'a')
+            f = open('/hdd/iptv.dbg', 'a')
             f.write(DBGtxt + '\n')
             f.close
         except:
@@ -364,7 +361,7 @@ def printDBG( DBGtxt ):
             print("========================================================")
             try:
                 msg = '%s' % traceback.format_exc()
-                f = open('/tmp/iptv_ex.dbg', 'a')
+                f = open('/tmp/iptv.dbg', 'a')
                 f.write(DBGtxt + '\n')
                 f.close
             except:
@@ -407,30 +404,30 @@ def SortHostsList(hostsList):
     sortedList.extend(hostsList)
     return sortedList
 
-def SaveHostsOrderList(lhosts):
+def SaveHostsOrderList(list, fileName="iptvplayerhostsorder"):
     printDBG('SaveHostsOrderList begin')
-    fname = GetConfigDir("iptvplayerhostsorder")
+    fname = GetConfigDir(fileName)
     try:
         f = open(fname, 'w')
-        for item in lhosts:
+        for item in list:
             f.write(item + '\n')
         f.close()
     except:
         printExc()
     
-def GetHostsOrderList():
+def GetHostsOrderList(fileName="iptvplayerhostsorder"):
     printDBG('GetHostsOrderList begin')
-    fname = GetConfigDir("iptvplayerhostsorder")
-    lhosts = []
+    fname = GetConfigDir(fileName)
+    list = []
     try:
         with open(fname, 'r') as f:
             content = f.readlines()
         for item in content:
             item = item.strip()
-            if len(item): lhosts.append(item)
+            if len(item): list.append(item)
     except:
         printExc()
-    return lhosts
+    return list
 
 def GetSkinsList():
     printDBG('getSkinsList begin')

@@ -15,13 +15,14 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, GetIconDir
 from cover import Cover3
     
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+
 #########################################################
 #                    GLOBALS
 #########################################################
 
 class IPTVPinWidget(Screen):
     PIN_LEN = 4
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
     skin = LoadSkin("IPTVPinWidget")
    
     def __init__(self, session, title = ""):

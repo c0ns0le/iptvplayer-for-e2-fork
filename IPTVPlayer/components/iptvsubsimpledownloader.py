@@ -13,7 +13,7 @@ from Plugins.Extensions.IPTVPlayer.components.cover import Cover3
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdh import DMHelper
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdownloadercreator import DownloaderCreator
 ###################################################
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+
 ###################################################
 # FOREIGN import
 ###################################################

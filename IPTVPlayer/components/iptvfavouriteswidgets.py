@@ -11,7 +11,7 @@ from Plugins.Extensions.IPTVPlayer.components.ihost import CFavItem, CDisplayLis
 from Plugins.Extensions.IPTVPlayer.components.iptvmultipleinputbox import IPTVMultipleInputBox
 from Plugins.Extensions.IPTVPlayer.components.iptvlist import IPTVMainNavigatorList
 ###################################################
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+
 ###################################################
 # FOREIGN import
 ###################################################

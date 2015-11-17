@@ -17,7 +17,7 @@ from Plugins.Extensions.IPTVPlayer.libs.subproviders.opensubtitlesorg import Ope
 from Components.Language import language
 from Components.config import config
 ###################################################
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+
 ###################################################
 # FOREIGN import
 ###################################################
