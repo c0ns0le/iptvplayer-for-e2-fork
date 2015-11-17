@@ -88,7 +88,7 @@ rm -rf /tmp/iptvp.tar.gz
 
 version=`ls /tmp/ | grep j00zek-iptvplayer-for-e2-fork-`
 if [ -f /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/$version ];then
-  echo "_(Latest version already installed)"
+  echo "_(Latest version already installed. Press OK to exit.)"
   exit 0
 fi
 
