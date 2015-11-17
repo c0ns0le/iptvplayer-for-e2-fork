@@ -13,8 +13,9 @@ else
 fi
 
 [ -e /tmp/iptvp.tar.gz ] && rm -rf /tmp/iptvp.tar.gz
-rm -rf /tmp/j00zek-FreePlayer-* 2>/dev/null
-sudo rm -rf /tmp/j00zek-FreePlayer-* 2>/dev/null
+rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
+sudo rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
+
 curl --help 1>/dev/null 2>%1
 if [ $? -gt 0 ]; then
   echo "_(Required program 'curl' is not installed. Trying to install it via OPKG.)"
@@ -100,9 +101,9 @@ else
   rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/j00zek-FreePlayer-* 2>/dev/null
   touch /tmp/$version/IPTVPlayer/$version 2>/dev/null
   cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/
-  rm -rf /tmp/j00zek-FreePlayer-* 2>/dev/null
+  #rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
   echo
-  echo "_(Success: Restart GUI to use new plugin version)"
+  echo "_(Success: Restart GUI manually to use new plugin version)"
 fi
 
 exit 0
