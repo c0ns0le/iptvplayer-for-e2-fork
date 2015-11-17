@@ -23,7 +23,7 @@ ExtPluginsPath = resolveFilename(SCOPE_PLUGINS, '%s/' %(PluginGroup))
 j00zekRunUpdateList = []
 j00zekRunUpdateList.append( ('cp -a %s/j00zekScripts/UpdatePlugin.sh /tmp/PluginUpdate.sh' % PluginPath) ) #to have clear path of updating this script too ;)
 j00zekRunUpdateList.append( ('chmod 755 /tmp/PluginUpdate.sh') )
-j00zekRunUpdateList.append( ('/tmp/PluginUpdate.sh "%s"') % IPTV_VERSION)
+j00zekRunUpdateList.append( ('/tmp/PluginUpdate.sh "%s"' % IPTV_VERSION) )
 j00zekRunUpdateList.append( ('rm -f /tmp/PluginUpdate.sh') )
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
@@ -57,15 +57,15 @@ def getPlatform():
         fc=f.read()
         f.close()
     if fc.find('sh4') > -1:
-        return _('unsupported') + ' SH4'
+        return 'sh4'
     elif fc.find('BMIPS') > -1:
-        return _('unsupported') + ' MIPSEL'
+        return 'mipsel'
     elif fc.find('GenuineIntel') > -1:
         return 'i686'
     elif fc.find('ARMv') > -1:
-        return _('unsupported') + ' ARM'
+        return 'arm'
     else:
-       return _('unsupported')
+       return 'unknown'
 ##################################################### translated Console #####################################################
 class j00zekIPTVPlayerConsole(Screen):
 #TODO move this to skin.xml

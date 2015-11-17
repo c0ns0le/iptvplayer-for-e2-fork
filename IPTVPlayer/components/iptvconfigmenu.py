@@ -347,8 +347,12 @@ class ConfigMenu(ConfigBaseWidget):
             self.doUpdate()
 
     def doUpdate(self):
-        printDBG("ConfigMenu.doUpdate")
-        self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
+        if 'j00zekFork' in globals():
+            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import j00zekIPTVPlayerConsole, j00zekRunUpdateList
+            self.session.open(j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
+        else:
+            printDBG("ConfigMenu.doUpdate")
+            self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
         
 
     def save(self):

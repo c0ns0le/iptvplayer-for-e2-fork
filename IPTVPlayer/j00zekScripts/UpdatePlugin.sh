@@ -1,8 +1,10 @@
 #
-if [ -z "$2" ];then
-  UpdateType='public'
-else
+if `grep -q 'config.plugins.iptvplayer.debugprint=' < /etc/enigma2/settings`;then
   UpdateType='dev'
+elif `grep -q 'config.plugins.iptvplayer.debugprint=' < /usr/local/e2/etc/enigma2/settings`;then
+  UpdateType='dev'
+else
+  UpdateType='public'
 fi
 if [ -z "$1" ];then
   CurrentPublic='version-unknown'
@@ -27,13 +29,13 @@ if [ $? -gt 0 ]; then
   fi
 fi
 
-if [ "$UpdateType" != "public" ]; then # in debug mode we download data directly from GIT server
-  echo "_(Checking installation mode...)"
-  if `opkg list-installed 2>/dev/null | tr '[:upper:]' '[:lower:]'| grep -q 'iptvplayer'`;then
-    echo "_(IPTVPlayer controlled by OPKG. Please use it for updates.)"
-    exit 0
-  fi
+echo "_(Checking installation mode...)"
+if `opkg list-installed 2>/dev/null | tr '[:upper:]' '[:lower:]'| grep -q 'iptvplayer'`;then
+  echo "_(IPTVPlayer controlled by OPKG. Please use it for updates.)"
+  exit 0
 fi
+
+echo "_(Update type:) $UpdateType"
 
 echo "_(Checking internet connection...)"
 ping -c 1 github.com 1>/dev/null 2>%1
@@ -91,22 +93,16 @@ if [ -f /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/$version ];then
 fi
 
 echo "_(Installing new version...)"
-if [ ! -e /DuckboxDisk ]; then
+if [ -e /DuckboxDisk ]; then
+  echo
+  echo "_(github is always up-2-date, no sync required)"
+else
   rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/j00zek-FreePlayer-* 2>/dev/null
   touch /tmp/$version/IPTVPlayer/$version 2>/dev/null
   cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/
-else
+  rm -rf /tmp/j00zek-FreePlayer-* 2>/dev/null
   echo
-  echo "_(github is always up-2-date)"
+  echo "_(Success: Restart GUI to use new plugin version)"
 fi
-
-#if [ $? -gt 0 ]; then
-#  echo
-#  echo "_(Installation incorrect!!!)"
-#else
-#  echo
-#  echo "_(Success: Restart system to use new plugin version)"
-#fi
-rm -rf /tmp/j00zek-FreePlayer-* 2>/dev/null
 
 exit 0

@@ -22,7 +22,7 @@ from cover import Cover3
 
 class IPTVPinWidget(Screen):
     PIN_LEN = 4
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
     skin = LoadSkin("IPTVPinWidget")
    
     def __init__(self, session, title = ""):
