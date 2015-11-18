@@ -7,7 +7,7 @@ from Plugins.Extensions.IPTVPlayer.tools.iptvtools           import printDBG, pr
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
 ###################################################
-
+j00zekFork=True
 ###################################################
 # FOREIGN import
 ###################################################
@@ -137,6 +137,18 @@ class IPTVSetupImpl:
     def platformDetect(self):
         printDBG("IPTVSetupImpl.platformDetect")
         self.setInfo(_("Detection of the platform."), _("Plugin can be run on one of the following platforms: sh4, mipsel, i686."))
+        if 'j00zekFork' in globals():
+            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import getPlatform
+            platform = getPlatform()
+            if platform != 'unknown':
+                print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + platform
+                self.platform = platform
+                config.plugins.iptvplayer.plarform.value = self.platform
+                printDBG("IPTVSetupImpl.j00zekFork platform[%s]" % self.platform)
+                config.plugins.iptvplayer.plarform.save()
+                configfile.save()
+                self.setOpenSSLVersion()
+                return
         cmdTabs = []
         for platform in self.supportedPlatforms:
             platformtesterPath = resolveFilename(SCOPE_PLUGINS, "Extensions/IPTVPlayer/bin/%s/platformtester" % platform)
@@ -166,26 +178,7 @@ class IPTVSetupImpl:
             self.setOpenSSLVersion()
         else:
             _saveConfig( "unknown" )
-            config.plugins.iptvplayer.autoCheckForUpdate.value = False
-            missingComponents= _("Warning!!! At least external players will NOT work on your platform.\n\n")
-            if os_path.exists('/usr/bin/wget') and not os_path.islink('/usr/bin/wget'):
-                config.plugins.iptvplayer.wgetpath.value = '/usr/bin/wget'
-                config.plugins.iptvplayer.buforowanie.value = True
-            else:
-                missingComponents += _("To enable buffering/recording of http streams install full version of wget manually\n")
-
-            if os_path.exists('/usr/bin/rtmpdump') and not os_path.islink('/usr/bin/rtmpdump'):
-                config.plugins.iptvplayer.rtmpdumppath.value = '/usr/bin/rtmpdump'
-                config.plugins.iptvplayer.buforowanie_rtmp.value = True
-            else:
-                missingComponents += _("To enable buffering/recording of rtmp streams install rtmpdump manually\n")
-
-            if os_path.exists('/usr/bin/f4dump') and not os_path.islink('/usr/bin/f4dump'):
-                config.plugins.iptvplayer.f4mdumppath.value = '/usr/bin/f4dump'
-            else:
-                missingComponents += _("To enable buffering/recording of f4 streams install f4dump manually\n")
-                
-            self.showMessage(missingComponents, MessageBox.TYPE_ERROR, boundFunction(self.finish, False) )
+            self.showMessage(_("Fatal Error!\nPlugin is not supported with your platform."), MessageBox.TYPE_ERROR, boundFunction(self.finish, False) )
             
     ###################################################
     # STEP: OpenSSL DETECTION
