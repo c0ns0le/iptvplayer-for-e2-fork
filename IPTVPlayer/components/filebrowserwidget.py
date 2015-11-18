@@ -29,25 +29,9 @@ from os import path as os_path
 ###################################################
  
 class DirectorySelectorWidget(Screen):
-    screenwidth = getDesktop(0).size().width()
-    if screenwidth and screenwidth == 1920:  
-        skin = """
-        <screen name="IPTVDirectorySelectorWidget" position="center,center" size="820,860" title="">
-            <widget name="key_red"     position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;28" transparent="1" foregroundColor="red" />
-            <widget name="key_blue"    position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="center" font="Regular;28" transparent="1" foregroundColor="blue" />
-            <widget name="key_green"   position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="right"  font="Regular;28" transparent="1" foregroundColor="green" />
-            <widget name="curr_dir"    position="10,50"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;28" transparent="1" foregroundColor="white" />
-            <widget name="filelist"    position="10,95"  zPosition="1"  size="800,725" transparent="1" scrollbarMode="showOnDemand" />
-        </screen>"""
-    else:
-        skin = """
-        <screen name="IPTVDirectorySelectorWidget" position="center,center" size="620,440" title="">
-            <widget name="key_red"     position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;22" transparent="1" foregroundColor="red" />
-            <widget name="key_blue"    position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="center" font="Regular;22" transparent="1" foregroundColor="blue" />
-            <widget name="key_green"   position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="right"  font="Regular;22" transparent="1" foregroundColor="green" />
-            <widget name="curr_dir"    position="10,50"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;18" transparent="1" foregroundColor="white" />
-            <widget name="filelist"    position="10,85"  zPosition="1"  size="580,335" transparent="1" scrollbarMode="showOnDemand" />
-        </screen>"""      
+    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
+    skin=LoadSkin('DirectorySelectorWidget')
+    
     def __init__(self, session, currDir, title="Directory browser"):
         printDBG("DirectorySelectorWidget.__init__ -------------------------------")
         Screen.__init__(self, session)
