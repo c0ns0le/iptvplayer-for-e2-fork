@@ -14,7 +14,7 @@ from Plugins.Extensions.IPTVPlayer.components.configbase import ConfigBaseWidget
 from Plugins.Extensions.IPTVPlayer.components.confighost import ConfigHostsMenu
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetupwidget import IPTVSetupMainWidget
 ###################################################
-j00zekFork=True
+
 ###################################################
 # FOREIGN import
 ###################################################
@@ -163,7 +163,9 @@ config.plugins.iptvplayer.hidden_ext_player_def_aspect_ratio = ConfigSelection(d
 config.plugins.iptvplayer.search_history_size  = ConfigInteger(50, (0, 1000000))
 
 ###################################################
-
+j00zekFork=True
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import AlternateOptionsList, ExtendConfigsList
+ExtendConfigsList()
 ########################################################
 # Generate list of hosts options for Enabling/Disabling
 ########################################################
@@ -206,6 +208,9 @@ class ConfigMenu(ConfigBaseWidget):
         
     @staticmethod
     def fillConfigList(list, hiddenOptions=False):
+        if 'j00zekFork' in globals():
+          AlternateOptionsList(list)
+          return
         if hiddenOptions:
             list.append( getConfigListEntry(_("Last checked version"), config.plugins.iptvplayer.updateLastCheckedVersion) )
             list.append( getConfigListEntry(_("Show all version in the update menu"), config.plugins.iptvplayer.hiddenAllVersionInUpdate) )
@@ -216,7 +221,6 @@ class ConfigMenu(ConfigBaseWidget):
             
             list.append(getConfigListEntry("exteplayer3path", config.plugins.iptvplayer.exteplayer3path))
             list.append(getConfigListEntry("gstplayerpath", config.plugins.iptvplayer.gstplayerpath))
-        if hiddenOptions or 'j00zekFork' in globals():
             list.append(getConfigListEntry("wgetpath", config.plugins.iptvplayer.wgetpath))
             list.append(getConfigListEntry("rtmpdumppath", config.plugins.iptvplayer.rtmpdumppath))
             list.append(getConfigListEntry("f4mdumppath", config.plugins.iptvplayer.f4mdumppath))
@@ -232,8 +236,7 @@ class ConfigMenu(ConfigBaseWidget):
         if config.plugins.iptvplayer.pluginProtectedByPin.value or config.plugins.iptvplayer.configProtectedByPin.value:
             list.append( getConfigListEntry(_("Set pin code"), config.plugins.iptvplayer.fakePin) )
         
-        if not 'j00zekFork' in globals():
-            list.append(getConfigListEntry(_("Skin"), config.plugins.iptvplayer.skin))
+        list.append(getConfigListEntry(_("Skin"), config.plugins.iptvplayer.skin))
         list.append(getConfigListEntry(_("Display thumbnails"), config.plugins.iptvplayer.showcover))
         if config.plugins.iptvplayer.showcover.value:
             list.append(getConfigListEntry(_("    Allowed formats of thumbnails"), config.plugins.iptvplayer.allowedcoverformats))
@@ -321,9 +324,8 @@ class ConfigMenu(ConfigBaseWidget):
         list.append(getConfigListEntry(_("Show IPTVPlayer in main menu"), config.plugins.iptvplayer.showinMainMenu))
         list.append(getConfigListEntry(_("Show update icon in service selection menu"), config.plugins.iptvplayer.AktualizacjaWmenu))
         list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
-        if not 'j00zekFork' in globals():
-            list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
-            list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
+        list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
+        list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
 
     def runSetup(self):
         self.list = []

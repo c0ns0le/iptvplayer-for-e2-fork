@@ -1,3 +1,4 @@
+# @j00zek 18.11.2015
 #
 if `grep -q 'config.plugins.iptvplayer.debugprint=' < /etc/enigma2/settings`;then
   UpdateType='dev'
