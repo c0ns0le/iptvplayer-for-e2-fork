@@ -71,13 +71,13 @@ config.plugins.iptvplayer.devHelper = ConfigYesNo(default = False)
 
 
 def GetMoviePlayerName(player):
-    map = {"auto":_("auto"), "mini": _("internal"), "standard":_("standard"), 'exteplayer': _("external eplayer3"), 'extgstplayer': _("external gstplayer")}
+    map = {"auto":_("auto"), "mini": _("internal"), "standard":_("standard"), "afp":_("Advanced Free Player"), 'exteplayer': _("external eplayer3"), 'extgstplayer': _("external gstplayer")}
     return map.get(player, _('unknown'))
     
 def ConfigPlayer(player):
     return (player, GetMoviePlayerName(player))
 
-config.plugins.iptvplayer.NaszPlayer = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"), ConfigPlayer("mini"), ConfigPlayer('extgstplayer'), ConfigPlayer("standard")])
+config.plugins.iptvplayer.NaszPlayer = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"), ConfigPlayer("mini"), ConfigPlayer("afp"), ConfigPlayer('extgstplayer'), ConfigPlayer("standard")])
 
 # without buffering mode
 #sh4
