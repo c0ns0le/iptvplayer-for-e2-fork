@@ -208,9 +208,6 @@ class ConfigMenu(ConfigBaseWidget):
         
     @staticmethod
     def fillConfigList(list, hiddenOptions=False):
-        if 'j00zekFork' in globals():
-          AlternateOptionsList(list)
-          return
         if hiddenOptions:
             list.append( getConfigListEntry(_("Last checked version"), config.plugins.iptvplayer.updateLastCheckedVersion) )
             list.append( getConfigListEntry(_("Show all version in the update menu"), config.plugins.iptvplayer.hiddenAllVersionInUpdate) )
@@ -327,6 +324,8 @@ class ConfigMenu(ConfigBaseWidget):
         list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
         list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
         list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
+        if 'j00zekFork' in globals():
+          AlternateOptionsList(list)
 
     def runSetup(self):
         self.list = []
