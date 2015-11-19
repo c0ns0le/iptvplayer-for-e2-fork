@@ -63,9 +63,9 @@ def AlternateOptionsList(list):
             list.append( getConfigListEntry(_("Set pin code"), config.plugins.iptvplayer.fakePin) )
         
         list.append(getConfigListEntry(_("Display thumbnails"), config.plugins.iptvplayer.showcover))
-        if config.plugins.iptvplayer.showcover.value:
-            list.append(getConfigListEntry(_("    Allowed formats of thumbnails"), config.plugins.iptvplayer.allowedcoverformats))
-            list.append(getConfigListEntry(_("    Remove thumbnails"), config.plugins.iptvplayer.deleteIcons))
+        #if config.plugins.iptvplayer.showcover.value:
+            #list.append(getConfigListEntry(_("    Allowed formats of thumbnails"), config.plugins.iptvplayer.allowedcoverformats))
+            #list.append(getConfigListEntry(_("    Remove thumbnails"), config.plugins.iptvplayer.deleteIcons))
         #list.append(getConfigListEntry("Sort lists?", config.plugins.iptvplayer.sortuj))            
         
         list.append(getConfigListEntry(_("https - validate SSL certificates"), config.plugins.iptvplayer.httpssslcertvalidation))
@@ -163,6 +163,7 @@ def ExtendConfigsList():
     #setting default values, we do not need from original plugin
     myConfig.downgradePossible.value = False
     myConfig.possibleUpdateType.value = 'sourcecode'
+    myConfig.deleteIcons.value = "0"
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
     from enigma import getDesktop

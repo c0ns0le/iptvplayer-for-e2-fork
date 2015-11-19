@@ -9,11 +9,14 @@ else
 	if [ $? -eq 0 ]; then
 		echo "$1 installed correctly"
 		echo "$1 installed correctly">/tmp/IPTV-opkg.log
+	else
+                echo "$1 NOT available in opkg and NOT installed properly :("
 	fi
 fi
 }
 echo "Installing necessary packages..."
 install_package curl
+install_package libidn11
 install_package python-compression
 install_package python-json
 install_package python-simplejson

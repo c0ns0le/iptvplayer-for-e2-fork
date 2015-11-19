@@ -299,7 +299,7 @@ class IPTVSetupImpl:
     def rtmpdumpStep(self, ret=None):
         printDBG("IPTVSetupImpl.rtmpdumpStep")
         def _detectValidator(code, data):
-            if self.rtmpdumpVersion in data: return True,False
+            if self.rtmpdumpVersion in data or 'K-S-V patch' in data: return True,False
             else: return False,True
         def _deprecatedHandler(paths, stsTab, dataTab):
             sts, retPath = False, ""
