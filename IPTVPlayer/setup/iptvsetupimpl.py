@@ -341,7 +341,7 @@ class IPTVSetupImpl:
         def _detectValidator(code, data):
             if self.binaryInstalledSuccessfully: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList2 )
             else: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList )
-            if self.uchardetVersion in data: return True,False
+            if self.uchardetVersion or "Version 0.0.3" in data: return True,False
             else: return False,True
         def _deprecatedHandler(paths, stsTab, dataTab):
             sts, retPath = False, ""
