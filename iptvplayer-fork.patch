@@ -1,6 +1,6 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-11-16 06:19:04.566308000 +0100
-+++ ./IPTVPlayer/components/configbase.py	2015-11-19 09:57:39.961961999 +0100
++++ ./IPTVPlayer/components/configbase.py	2015-11-19 18:55:50.286954999 +0100
 @@ -8,10 +8,9 @@
  ###################################################
  # LOCAL import
@@ -61,7 +61,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif isinstance(currItem, ConfigText):
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/filebrowserwidget.py ./IPTVPlayer/components/filebrowserwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/filebrowserwidget.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/filebrowserwidget.py	2015-11-19 09:57:39.961961999 +0100
++++ ./IPTVPlayer/components/filebrowserwidget.py	2015-11-19 18:55:50.286954999 +0100
 @@ -29,25 +29,9 @@
  ###################################################
   
@@ -93,7 +93,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvchoicebox.py ./IPTVPlayer/components/iptvchoicebox.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvchoicebox.py	2015-11-11 07:16:27.391282027 +0100
-+++ ./IPTVPlayer/components/iptvchoicebox.py	2015-11-19 09:57:39.969957999 +0100
++++ ./IPTVPlayer/components/iptvchoicebox.py	2015-11-19 18:55:50.286954999 +0100
 @@ -11,7 +11,7 @@
  from Plugins.Extensions.IPTVPlayer.components.iptvmultipleinputbox import IPTVMultipleInputBox
  from Plugins.Extensions.IPTVPlayer.components.iptvlist import IPTVRadioButtonList
@@ -105,7 +105,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-11-19 06:26:29.092565999 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-19 10:34:06.983904004 +0100
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-20 08:39:17.392617999 +0100
 @@ -7,12 +7,11 @@
  ###################################################
  # LOCAL import
@@ -151,21 +151,30 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
 -
 +j00zekFork=True
-+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import AlternateOptionsList, ExtendConfigsList
++from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import AlternateOptionsList, ExtendConfigsList, RemoveDuplicatesFromList
 +ExtendConfigsList()
  ########################################################
  # Generate list of hosts options for Enabling/Disabling
  ########################################################
-@@ -323,6 +324,8 @@
+@@ -207,6 +208,8 @@
+         
+     @staticmethod
+     def fillConfigList(list, hiddenOptions=False):
++        if 'j00zekFork' in globals():
++            AlternateOptionsList(list)
+         if hiddenOptions:
+             list.append( getConfigListEntry(_("Last checked version"), config.plugins.iptvplayer.updateLastCheckedVersion) )
+             list.append( getConfigListEntry(_("Show all version in the update menu"), config.plugins.iptvplayer.hiddenAllVersionInUpdate) )
+@@ -323,6 +326,8 @@
          list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
          list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
          list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
 +        if 'j00zekFork' in globals():
-+          AlternateOptionsList(list)
++            RemoveDuplicatesFromList(list)
  
      def runSetup(self):
          self.list = []
-@@ -346,8 +349,12 @@
+@@ -346,8 +351,12 @@
              self.doUpdate()
  
      def doUpdate(self):
@@ -180,7 +189,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          
  
      def save(self):
-@@ -371,7 +378,12 @@
+@@ -371,7 +380,12 @@
          if isinstance(currItem, ConfigDirectory):
              def SetDirPathCallBack(curIndex, newPath):
                  if None != newPath: self["config"].list[curIndex][1].value = newPath
@@ -196,7 +205,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif config.plugins.iptvplayer.fakeUpdate == currItem:
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvdirbrowser.py ./IPTVPlayer/components/iptvdirbrowser.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvdirbrowser.py	2015-11-11 07:16:27.391282027 +0100
-+++ ./IPTVPlayer/components/iptvdirbrowser.py	2015-11-19 09:57:39.969957999 +0100
++++ ./IPTVPlayer/components/iptvdirbrowser.py	2015-11-19 18:55:50.290953000 +0100
 @@ -41,25 +41,8 @@
          IPTVMainNavigatorList.__init__(self)
  
@@ -227,7 +236,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          printDBG("IPTVDirectorySelectorWidget.__init__ -------------------------------")
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvfavouriteswidgets.py ./IPTVPlayer/components/iptvfavouriteswidgets.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvfavouriteswidgets.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/iptvfavouriteswidgets.py	2015-11-19 09:57:39.969957999 +0100
++++ ./IPTVPlayer/components/iptvfavouriteswidgets.py	2015-11-19 18:55:50.290953000 +0100
 @@ -133,30 +133,8 @@
          self.close(self.result)
  
@@ -263,7 +272,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.session = session
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py ./IPTVPlayer/components/iptvpin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/iptvpin.py	2015-11-19 09:57:39.969957999 +0100
++++ ./IPTVPlayer/components/iptvpin.py	2015-11-19 18:55:50.290953000 +0100
 @@ -22,15 +22,8 @@
  
  class IPTVPinWidget(Screen):
@@ -284,7 +293,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.session = session
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-11-16 06:19:04.570306000 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-19 09:57:39.973956000 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-19 18:55:50.290953000 +0100
 @@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
@@ -423,7 +432,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  self.runIPTVDM(self.selectHost)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py ./IPTVPlayer/iptvdm/iptvdmui.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py	2015-11-11 07:16:27.435260000 +0100
-+++ ./IPTVPlayer/iptvdm/iptvdmui.py	2015-11-19 09:57:39.977953999 +0100
++++ ./IPTVPlayer/iptvdm/iptvdmui.py	2015-11-19 18:55:50.290953000 +0100
 @@ -30,7 +30,7 @@
  from Components.Sources.StaticText import StaticText
  from Components.config import config
@@ -468,7 +477,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-19 09:57:39.977953999 +0100
++++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-19 18:55:50.294951000 +0100
 @@ -19,7 +19,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -496,7 +505,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self["list"].setSelectionState(enabled = False)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py ./IPTVPlayer/plugin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-17 06:34:21.247824000 +0100
-+++ ./IPTVPlayer/plugin.py	2015-11-19 09:57:39.977953999 +0100
++++ ./IPTVPlayer/plugin.py	2015-11-19 18:55:50.298949000 +0100
 @@ -73,7 +73,9 @@
      #print config.plugins.iptvplayer.rtmpdumppath.value
      #print config.plugins.iptvplayer.f4mdumppath.value
@@ -510,7 +519,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-11-16 06:19:04.570306000 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-19 09:57:39.981951999 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-19 18:55:50.298949000 +0100
 @@ -7,7 +7,7 @@
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -573,7 +582,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupwidget.py ./IPTVPlayer/setup/iptvsetupwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupwidget.py	2015-11-05 22:26:57.957660252 +0100
-+++ ./IPTVPlayer/setup/iptvsetupwidget.py	2015-11-19 09:57:39.981951999 +0100
++++ ./IPTVPlayer/setup/iptvsetupwidget.py	2015-11-19 18:55:50.298949000 +0100
 @@ -12,7 +12,7 @@
  from Plugins.Extensions.IPTVPlayer.components.cover          import Cover3
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetupimpl       import IPTVSetupImpl
