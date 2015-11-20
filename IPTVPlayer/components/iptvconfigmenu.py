@@ -164,7 +164,7 @@ config.plugins.iptvplayer.search_history_size  = ConfigInteger(50, (0, 1000000))
 
 ###################################################
 j00zekFork=True
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import AlternateOptionsList, ExtendConfigsList
+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import AlternateOptionsList, ExtendConfigsList, RemoveDuplicatesFromList
 ExtendConfigsList()
 ########################################################
 # Generate list of hosts options for Enabling/Disabling
@@ -208,6 +208,8 @@ class ConfigMenu(ConfigBaseWidget):
         
     @staticmethod
     def fillConfigList(list, hiddenOptions=False):
+        if 'j00zekFork' in globals():
+            AlternateOptionsList(list)
         if hiddenOptions:
             list.append( getConfigListEntry(_("Last checked version"), config.plugins.iptvplayer.updateLastCheckedVersion) )
             list.append( getConfigListEntry(_("Show all version in the update menu"), config.plugins.iptvplayer.hiddenAllVersionInUpdate) )
@@ -325,7 +327,7 @@ class ConfigMenu(ConfigBaseWidget):
         list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
         list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
         if 'j00zekFork' in globals():
-          AlternateOptionsList(list)
+            RemoveDuplicatesFromList(list)
 
     def runSetup(self):
         self.list = []

@@ -29,49 +29,71 @@ j00zekRunUpdateList.append( ('/tmp/PluginUpdate.sh "%s"' % IPTV_VERSION) )
 j00zekRunUpdateList.append( ('rm -f /tmp/PluginUpdate.sh') )
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def AlternateOptionsList(list):
-        myConfig=config.plugins.iptvplayer
+        #we build our own order :)
+        list.append( getConfigListEntry(_("--- General options ---"), config.plugins.iptvplayer.j00zekSeparator))
+        list.append( getConfigListEntry(_("Detected platform"), config.plugins.iptvplayer.plarform) )
+        list.append( getConfigListEntry(_("Services configuration"), config.plugins.iptvplayer.fakeHostsList) )
+        list.append( getConfigListEntry(_("Show IPTVPlayer in extension list"), config.plugins.iptvplayer.showinextensions))
+        list.append( getConfigListEntry(_("Show IPTVPlayer in main menu"), config.plugins.iptvplayer.showinMainMenu))
+        list.append( getConfigListEntry(_("Show update icon in service selection menu"), config.plugins.iptvplayer.AktualizacjaWmenu))
+        list.append( getConfigListEntry(_("Enable hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelector))
+        if config.plugins.iptvplayer.j00zekTreeHostsSelector.value == False:
+            list.append( getConfigListEntry(_("Graphic services selector"), config.plugins.iptvplayer.ListaGraficzna))
+            if config.plugins.iptvplayer.ListaGraficzna.value == True:
+                list.append( getConfigListEntry(_("    Service icon size"), config.plugins.iptvplayer.IconsSize))
+                list.append( getConfigListEntry(_("    Number of rows"), config.plugins.iptvplayer.numOfRow))
+                list.append( getConfigListEntry(_("    Number of columns"), config.plugins.iptvplayer.numOfCol))
         #
-        list.insert(0, getConfigListEntry(_("--- General options ---"), myConfig.j00zekSeparator))
-        list.insert(1, getConfigListEntry(_("Detected platform"), myConfig.plarform) )
-        list.insert(2,  getConfigListEntry(_("Services configuration"), myConfig.fakeHostsList) )
-        list.insert(3, getConfigListEntry(_("Show IPTVPlayer in extension list"), myConfig.showinextensions))
-        list.insert(4, getConfigListEntry(_("Show IPTVPlayer in main menu"), myConfig.showinMainMenu))
-        list.insert(5, getConfigListEntry(_("Show update icon in service selection menu"), myConfig.AktualizacjaWmenu))
-        list.insert(6, getConfigListEntry(_("Enable hosts tree selector"), myConfig.j00zekTreeHostsSelector))
-        if myConfig.j00zekTreeHostsSelector.value == False:
-            list.insert(7, getConfigListEntry(_("Graphic services selector"), myConfig.ListaGraficzna))
-            if myConfig.ListaGraficzna.value == True:
-                list.insert(8, getConfigListEntry(_("    Service icon size"), config.plugins.iptvplayer.IconsSize))
-                list.insert(9, getConfigListEntry(_("    Number of rows"), config.plugins.iptvplayer.numOfRow))
-                list.insert(10, getConfigListEntry(_("    Number of columns"), config.plugins.iptvplayer.numOfCol))
+        list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
+        list.append( getConfigListEntry(_("--- Paths to utilities ---"), config.plugins.iptvplayer.j00zekSeparator))
+        list.append( getConfigListEntry("wgetpath", config.plugins.iptvplayer.wgetpath))
+        list.append( getConfigListEntry("rtmpdumppath", config.plugins.iptvplayer.rtmpdumppath))
+        list.append( getConfigListEntry("f4mdumppath", config.plugins.iptvplayer.f4mdumppath))
+        list.append( getConfigListEntry("uchardetpath", config.plugins.iptvplayer.uchardetpath))
+        list.append( getConfigListEntry("exteplayer3path", config.plugins.iptvplayer.exteplayer3path))
+        list.append( getConfigListEntry("gstplayerpath", config.plugins.iptvplayer.gstplayerpath))
         #
-        list.insert(11, getConfigListEntry("", myConfig.j00zekSeparator))
-        list.insert(12, getConfigListEntry(_("--- Paths to utilities ---"), myConfig.j00zekSeparator))
-        list.insert(13, getConfigListEntry("wgetpath", config.plugins.iptvplayer.wgetpath))
-        list.insert(14, getConfigListEntry("rtmpdumppath", config.plugins.iptvplayer.rtmpdumppath))
-        list.insert(15, getConfigListEntry("f4mdumppath", config.plugins.iptvplayer.f4mdumppath))
-        list.insert(16, getConfigListEntry("uchardetpath", config.plugins.iptvplayer.uchardetpath))
-        list.insert(17, getConfigListEntry("exteplayer3path", config.plugins.iptvplayer.exteplayer3path))
-        list.insert(18, getConfigListEntry("gstplayerpath", config.plugins.iptvplayer.gstplayerpath))
+        list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
+        list.append( getConfigListEntry(_("--- Debug ---"), config.plugins.iptvplayer.j00zekSeparator))
+        list.append( getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
+        list.append( getConfigListEntry(_("Disable host protection (error == GS)"), config.plugins.iptvplayer.devHelper))
         #
-        list.insert(19, getConfigListEntry("", myConfig.j00zekSeparator))
-        list.insert(20, getConfigListEntry(_("--- Debug ---"), myConfig.j00zekSeparator))
-        list.insert(21, getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
-        list.insert(22, getConfigListEntry(_("Disable host protection (error == GS)"), config.plugins.iptvplayer.devHelper))
-        #
-        list.insert(23, getConfigListEntry("", myConfig.j00zekSeparator))
-        list.insert(24, getConfigListEntry(_("--- Standard IPTVPlayer Config options ---"), myConfig.j00zekSeparator))
+        list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
+        list.append( getConfigListEntry(_("--- Other IPTVPlayer Config options ---"), config.plugins.iptvplayer.j00zekSeparator))
+
+##################################################### Noew configs definition #####################################################
+def RemoveDuplicatesFromList(list):
+        #make some options hidden
+        myList=[]
+        myList.append(config.plugins.iptvplayer.downgradePossible)
+        myList.append(config.plugins.iptvplayer.possibleUpdateType)
+        myList.append(config.plugins.iptvplayer.skin)
+        
+        for x in range(len(list)-1,0, -1):
+            if list[x][1] in myList:
+                list.pop(x)
+        
+        #remove duplicates
+        myList=[]
+        myIDs=[]
+        for x in range(0, len(list)-1):
+            if list[x][1] not in myList or list[x][1] is config.plugins.iptvplayer.j00zekSeparator:
+                myIDs.append(x)
+                myList.append(list[x][1])
+
+        for x in range(len(list)-1,0, -1):
+            if x not in myIDs:
+                list.pop(x)
 
 ##################################################### Noew configs definition #####################################################
 def ExtendConfigsList():
-    myConfig=config.plugins.iptvplayer
-    myConfig.j00zekSeparator = NoSave(ConfigNothing())
-    myConfig.j00zekTreeHostsSelector = ConfigYesNo(default = True)
+    config.plugins.iptvplayer.j00zekSeparator = NoSave(ConfigNothing())
+    config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = True)
     
     #setting default values, we do not need from original plugin
-    myConfig.downgradePossible.value = False
-    myConfig.possibleUpdateType.value = 'sourcecode'
-    myConfig.deleteIcons.value = "0"
+    config.plugins.iptvplayer.downgradePossible.value = False
+    config.plugins.iptvplayer.possibleUpdateType.value = 'sourcecode'
+    config.plugins.iptvplayer.deleteIcons.value = "0"
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
     from enigma import getDesktop
