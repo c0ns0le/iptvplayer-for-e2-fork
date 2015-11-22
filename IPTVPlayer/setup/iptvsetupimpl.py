@@ -63,7 +63,7 @@ class IPTVSetupImpl:
                                           (_("Do not install (not recommended)"), "")]
                                           
         # uchardet member
-        self.uchardetVersion = "Version 0.0.2"
+        self.uchardetVersion = 2
         self.uchardetpaths = ["/usr/bin/uchardet", GetBinDir("uchardet", "")]
         self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/uchardet (%s)" % _("recommended")), "/usr/bin/uchardet"),
                                           (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet", GetBinDir("uchardet", "")),
@@ -341,7 +341,9 @@ class IPTVSetupImpl:
         def _detectValidator(code, data):
             if self.binaryInstalledSuccessfully: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList2 )
             else: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList )
-            if self.uchardetVersion or "Version 0.0.3" in data: return True,False
+            try: ver = int(re.search("Version ([0-9]+?\.[0-9]+?\.[0-9]+?)", data).group(1).replace('.',''))
+            except: ver = 0
+            if ver >= self.uchardetVersion: return True,False
             else: return False,True
         def _deprecatedHandler(paths, stsTab, dataTab):
             sts, retPath = False, ""
