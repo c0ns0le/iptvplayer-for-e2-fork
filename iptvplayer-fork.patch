@@ -293,7 +293,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.session = session
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-11-16 06:19:04.570306000 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-20 08:52:42.369928000 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-23 07:35:44.508430003 +0100
 @@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
@@ -404,7 +404,19 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              and self.lastPluginVersion != config.plugins.iptvplayer.updateLastCheckedVersion.value:
              
              message = _('There is a new version available do you want to update? \nYour version [%s], latest version on server [%s]') % (GetIPTVPlayerVerstion(), self.lastPluginVersion)
-@@ -980,10 +938,8 @@
+@@ -970,7 +928,10 @@
+         return
+ 
+     def displayListOfHosts(self, arg = None):
+-        if config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
++        if 'j00zekFork' in globals() and config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
++            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekTreeHostSelector import j00zekTreeHostSelector
++            self.session.openWithCallback(self.selectHostCallback2, j00zekTreeHostSelector, title=_("Select service"), list = self.displayHostsList)
++        elif config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
+             self.session.openWithCallback(self.selectHostCallback, ChoiceBox, title=_("Select service"), list = self.displayHostsList)
+         else:
+             from playerselector import PlayerSelectorWidget
+@@ -980,10 +941,8 @@
      def selectHostCallback(self, ret):
          try:
              if os_path.isfile('/etc/init.d/graterlia_init'):
@@ -417,7 +429,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  #self.session.openWithCallback(self.close, MessageBox, text=message, type=MessageBox.TYPE_ERROR)
                  self.session.open(MessageBox, text=message, type=MessageBox.TYPE_ERROR)
          except:
-@@ -1007,7 +963,11 @@
+@@ -1007,7 +966,11 @@
                  self.close()
                  return
              elif ret[1] == "update":
@@ -519,7 +531,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-11-16 06:19:04.570306000 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-20 23:17:57.290283832 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-22 10:06:13.464896005 +0100
 @@ -7,7 +7,7 @@
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -544,6 +556,15 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.platform = "unknown"
          
          # wget members
+@@ -63,7 +63,7 @@
+                                           (_("Do not install (not recommended)"), "")]
+                                           
+         # uchardet member
+-        self.uchardetVersion = "Version 0.0.2"
++        self.uchardetVersion = 2
+         self.uchardetpaths = ["/usr/bin/uchardet", GetBinDir("uchardet", "")]
+         self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/uchardet (%s)" % _("recommended")), "/usr/bin/uchardet"),
+                                           (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet", GetBinDir("uchardet", "")),
 @@ -137,6 +137,18 @@
      def platformDetect(self):
          printDBG("IPTVSetupImpl.platformDetect")
@@ -572,16 +593,18 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              else: return False,True
          def _deprecatedHandler(paths, stsTab, dataTab):
              sts, retPath = False, ""
-@@ -329,7 +341,7 @@
+@@ -329,7 +341,9 @@
          def _detectValidator(code, data):
              if self.binaryInstalledSuccessfully: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList2 )
              else: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList )
 -            if self.uchardetVersion in data: return True,False
-+            if self.uchardetVersion or "Version 0.0.3" in data: return True,False
++            try: ver = int(re.search("Version ([0-9]+?\.[0-9]+?\.[0-9]+?)", data).group(1).replace('.',''))
++            except: ver = 0
++            if ver >= self.uchardetVersion: return True,False
              else: return False,True
          def _deprecatedHandler(paths, stsTab, dataTab):
              sts, retPath = False, ""
-@@ -620,6 +632,7 @@
+@@ -620,6 +634,7 @@
          for server in self.resourceServers:
              cmd = self.stepHelper.getDownloadCmdBuilder()(self.stepHelper.getName(), self.platform, self.openSSLVersion, server, self.tmpDir)
              cmdTabs.append(cmd)

@@ -6,7 +6,7 @@ version.h
 *.pyo
 *.pyc
 *.mo
-j00zekToolSet*
+*j00zekScripts*
 *skins*
 UpdatePlugin.sh
 lsdir
