@@ -928,7 +928,10 @@ class IPTVPlayerWidget(Screen):
         return
 
     def displayListOfHosts(self, arg = None):
-        if config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
+        if 'j00zekFork' in globals() and config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
+            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekTreeHostSelector import j00zekTreeHostSelector
+            self.session.openWithCallback(self.selectHostCallback2, j00zekTreeHostSelector, title=_("Select service"), list = self.displayHostsList)
+        elif config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
             self.session.openWithCallback(self.selectHostCallback, ChoiceBox, title=_("Select service"), list = self.displayHostsList)
         else:
             from playerselector import PlayerSelectorWidget

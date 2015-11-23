@@ -36,7 +36,7 @@ def AlternateOptionsList(list):
         list.append( getConfigListEntry(_("Show IPTVPlayer in extension list"), config.plugins.iptvplayer.showinextensions))
         list.append( getConfigListEntry(_("Show IPTVPlayer in main menu"), config.plugins.iptvplayer.showinMainMenu))
         list.append( getConfigListEntry(_("Show update icon in service selection menu"), config.plugins.iptvplayer.AktualizacjaWmenu))
-        list.append( getConfigListEntry(_("Enable hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelector))
+        #list.append( getConfigListEntry(_("Enable hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelector))
         if config.plugins.iptvplayer.j00zekTreeHostsSelector.value == False:
             list.append( getConfigListEntry(_("Graphic services selector"), config.plugins.iptvplayer.ListaGraficzna))
             if config.plugins.iptvplayer.ListaGraficzna.value == True:
@@ -88,7 +88,7 @@ def RemoveDuplicatesFromList(list):
 ##################################################### Noew configs definition #####################################################
 def ExtendConfigsList():
     config.plugins.iptvplayer.j00zekSeparator = NoSave(ConfigNothing())
-    config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = True)
+    config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = False)
     
     #setting default values, we do not need from original plugin
     config.plugins.iptvplayer.downgradePossible.value = False
