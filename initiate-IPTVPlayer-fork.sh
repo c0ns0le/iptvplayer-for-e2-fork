@@ -33,14 +33,6 @@ install_package gst-plugins-good
 install_package gst-plugins-bad-cdxaparse
 install_package gst-plugins-bad-vcdsrc 
 
-if [ -e /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer ];then
- echo "Cleaning existing folder"
- rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/*
-else
- echo "Creating IPTVPlayer folder"
- mkdir -p /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/
-fi
-
 curl --help 1>/dev/null 2>%1
 if [ $? -gt 0 ]; then
   echo
@@ -80,6 +72,15 @@ if [ ! -e /tmp/j00zek-iptvplayer-for-e2-fork-* ]; then
   exit 0
 fi
 rm -rf /tmp/iptvp.tar.gz
+
+
+if [ -e /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer ];then
+ echo "Cleaning existing folder"
+ rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/*
+else
+ echo "Creating IPTVPlayer folder"
+ mkdir -p /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/
+fi
 
 echo "Installing new version..."
 if [ -e /DuckboxDisk ]; then
