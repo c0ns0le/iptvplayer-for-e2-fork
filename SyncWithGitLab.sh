@@ -9,6 +9,15 @@ else
   cd ~/iptvplayer-GitLab-master-version
   git pull
 fi
+if [ ! -d ~/iptvplayerXXX-GitLab-master-version ];then
+  echo 'Cloning XXX host...'
+  git clone https://gitlab.com/iptv-host-xxx/iptv-host-xxx.git ~/iptvplayerXXX-GitLab-master-version
+else
+  echo 'Syncing GitLab XXX host...'
+  cd ~/iptvplayerXXX-GitLab-master-version
+  git pull
+fi
+
 echo 'Syncing Github...'
 cp -a ~/iptvplayer-GitLab-master-version/IPTVPlayer $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup_translate.py $myDir/
@@ -18,5 +27,8 @@ patch -p1 < ./iptvplayer-fork.patch
 
 #change numbering
 sed -i 's/\(IPTV_VERSION="\)/\1j/' ./IPTVPlayer/version.py
-#temporary for tests of unknowne
-rm -rf ./IPTVPlayer/bin/i686/*
+
+mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTVPlayer/hosts/hostipla.py
+cp -af ~/iptvplayerXXX-GitLab-master-version/IPTVPlayer/* $myDir/IPTVPlayer/
+rm -rf $myDir//IPTVPlayer/iptvupdate/custom/xxx.sh
+
