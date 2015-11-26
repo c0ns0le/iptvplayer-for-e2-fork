@@ -23,7 +23,6 @@ cp -a ~/iptvplayer-GitLab-master-version/IPTVPlayer $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup_translate.py $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup.py $myDir/
 cd $myDir
-patch -p1 < ./iptvplayer-fork.patch
 
 #change numbering
 sed -i 's/\(IPTV_VERSION="\)/\1j/' ./IPTVPlayer/version.py
@@ -32,3 +31,4 @@ mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTV
 cp -af ~/iptvplayerXXX-GitLab-master-version/IPTVPlayer/* $myDir/IPTVPlayer/
 rm -rf $myDir//IPTVPlayer/iptvupdate/custom/xxx.sh
 
+patch -p1 < ./iptvplayer-fork.patch

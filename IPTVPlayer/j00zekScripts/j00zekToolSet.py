@@ -267,12 +267,3 @@ def ManageHostsAndCategories(HostName, CategoryName):
         os_system('ln -sf %s %s' % ( (hostsDir + HostName + '.pyc'), (categoryDir + HostName + '.pyc') ) )
     else:
         print "unknown " + hostsDir + HostName
-##################################################### Add_to/remove_from category #####################################################
-def Category4Host(HostName):
-    myHostName=HostName[1]
-    def CB(ret):
-        if ret:
-            ManageHostsAndCategories(myHostName, ret[1])
-
-    from Screens.ChoiceBox import ChoiceBox
-    self.session.openWithCallback(CB, ChoiceBox, title=_("Assign to/Remove from Category"), list = GetHostsCategories() )
