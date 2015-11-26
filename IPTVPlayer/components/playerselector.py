@@ -15,6 +15,7 @@ from Components.config import config
 from Plugins.Extensions.IPTVPlayer.components.cover import Cover3
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, GetIPTVPlayerVerstion, GetIconDir, GetAvailableIconSize
 
+
 class PlayerSelectorWidget(Screen):
     LAST_SELECTION = 0
     def __init__(self, session, list):
