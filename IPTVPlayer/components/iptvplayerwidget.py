@@ -444,7 +444,6 @@ class IPTVPlayerWidget(Screen):
         except: printExc()
         options.append((_("Info"), "info"))
         options.append((_("IPTV download manager"), "IPTVDM"))
-        options.append((_("Assign Host to current Category"), "Host2Category"))
         self.session.openWithCallback(self.blue_pressed_next, ChoiceBox, title = _("Select option"), list = options)
 
     def pause_pressed(self):
@@ -512,9 +511,6 @@ class IPTVPlayerWidget(Screen):
             if ret[1] == "info": #informacje o wtyczce
                 TextMSG = _("Autors: samsamsam, zdzislaw22, mamrot, MarcinO, skalita, huball, matzg, tomashj291")
                 self.session.open(MessageBox, TextMSG, type = MessageBox.TYPE_INFO, timeout = 10 )
-            elif ret[1] == "Host2Category": #Assigning host to specific category
-                from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import Host2Category as j00zekHost2Category
-                j00zekHost2Category(self.currHostsCategory)
             elif ret[1] == "IPTVDM":
                 self.runIPTVDM()
             elif ret[1] == "HostConfig":
