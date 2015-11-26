@@ -15,7 +15,6 @@ from Components.config import config
 from Plugins.Extensions.IPTVPlayer.components.cover import Cover3
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, GetIPTVPlayerVerstion, GetIconDir, GetAvailableIconSize
 
-
 class PlayerSelectorWidget(Screen):
     LAST_SELECTION = 0
     def __init__(self, session, list):
@@ -210,6 +209,8 @@ class PlayerSelectorWidget(Screen):
             "up":    self.keyUp,
             "down":  self.keyDown,
             "blue":  self.keyBlue,
+            "green":  self.keyGreen,
+
         }, -1)
         
 
@@ -369,6 +370,16 @@ class PlayerSelectorWidget(Screen):
         
     def keyBlue(self):
         self.close((_("IPTV download manager"), "IPTVDM"))
+
+    def keyGreen(self):
+        myHostName=self.currList[self.currLine * self.numOfCol +  self.dispX][1]
+        def CB(ret):
+            if ret:
+                ManageHostsAndCategories(myHostName, ret[1])
+                
+        from Screens.ChoiceBox import ChoiceBox
+        from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import ManageHostsAndCategories, GetHostsCategories
+        self.session.openWithCallback(CB, ChoiceBox, title=_("Assign to/Remove from Category"), list = GetHostsCategories() )
     
     def hideWindow(self):
         self.visible = False

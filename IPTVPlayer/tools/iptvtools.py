@@ -372,9 +372,9 @@ def printDBG( DBGtxt ):
 #####################################################
 # get host list based on files in /hosts folder
 #####################################################
-def GetHostsList():
+def GetHostsList( subfolder = '' ):
     printDBG('getHostsList begin')
-    HOST_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/hosts/')
+    HOST_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/hosts/%s' % subfolder)
     lhosts = [] 
     
     try:

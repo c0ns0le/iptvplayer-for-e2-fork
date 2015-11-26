@@ -7,7 +7,7 @@ PluginName = 'IPTVPlayer'
 PluginGroup = 'Extensions'
 
 ##### System Imports
-from os import path as os_path, environ as os_environ, listdir as os_listdir, chmod as os_chmod, remove as os_remove, mkdir as os_mkdir
+from os import path as os_path, environ as os_environ, listdir as os_listdir, chmod as os_chmod, remove as os_remove, mkdir as os_mkdir, system as os_system
 
 ###### openPLI imports
 from Components.config import *
@@ -36,13 +36,12 @@ def AlternateOptionsList(list):
         list.append( getConfigListEntry(_("Show IPTVPlayer in extension list"), config.plugins.iptvplayer.showinextensions))
         list.append( getConfigListEntry(_("Show IPTVPlayer in main menu"), config.plugins.iptvplayer.showinMainMenu))
         list.append( getConfigListEntry(_("Show update icon in service selection menu"), config.plugins.iptvplayer.AktualizacjaWmenu))
-        #list.append( getConfigListEntry(_("Enable hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelector))
-        if config.plugins.iptvplayer.j00zekTreeHostsSelector.value == False:
-            list.append( getConfigListEntry(_("Graphic services selector"), config.plugins.iptvplayer.ListaGraficzna))
-            if config.plugins.iptvplayer.ListaGraficzna.value == True:
-                list.append( getConfigListEntry(_("    Service icon size"), config.plugins.iptvplayer.IconsSize))
-                list.append( getConfigListEntry(_("    Number of rows"), config.plugins.iptvplayer.numOfRow))
-                list.append( getConfigListEntry(_("    Number of columns"), config.plugins.iptvplayer.numOfCol))
+        list.append( getConfigListEntry(_("Enable hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelector))
+        list.append( getConfigListEntry(_("Graphic services selector"), config.plugins.iptvplayer.ListaGraficzna))
+        if config.plugins.iptvplayer.ListaGraficzna.value == True:
+            list.append( getConfigListEntry(_("    Service icon size"), config.plugins.iptvplayer.IconsSize))
+            list.append( getConfigListEntry(_("    Number of rows"), config.plugins.iptvplayer.numOfRow))
+            list.append( getConfigListEntry(_("    Number of columns"), config.plugins.iptvplayer.numOfCol))
         #
         list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
         list.append( getConfigListEntry(_("--- Paths to utilities ---"), config.plugins.iptvplayer.j00zekSeparator))
@@ -88,7 +87,7 @@ def RemoveDuplicatesFromList(list):
 ##################################################### Noew configs definition #####################################################
 def ExtendConfigsList():
     config.plugins.iptvplayer.j00zekSeparator = NoSave(ConfigNothing())
-    config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = False)
+    config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = True)
     
     #setting default values, we do not need from original plugin
     config.plugins.iptvplayer.downgradePossible.value = False
@@ -235,3 +234,45 @@ class j00zekIPTVPlayerConsole(Screen):
                 if index == 10:
                     break
         return txt
+
+##################################################### List all categories #####################################################
+def GetHostsCategories():
+    HostsCategories = []
+    myDir=PluginPath + '/hosts'
+    for CH in os_listdir(myDir):
+        if os_path.isdir(os_path.join(myDir, CH)) and CH != 'favourite':
+            HostsCategories.append((_(CH),CH))
+    if not os_path.exists(myDir + '/favourite'):
+        os_mkdir( myDir + '/favourite' )
+    HostsCategories.sort()
+    HostsCategories.insert(0,(_("Favourite hosts"),'Favourite'))
+    return HostsCategories
+##################################################### assign/remove host from/to category #####################################################
+def ManageHostsAndCategories(HostName, CategoryName):
+    print HostName, CategoryName
+    ClearMemory()
+    hostsDir='%s/hosts/host' % PluginPath
+    categoryDir='%s/hosts/%s/host' % (PluginPath,CategoryName)
+    if os_path.exists(categoryDir + HostName + '.py') or os_path.exists(categoryDir + HostName + '.pyo') or os_path.exists(categoryDir + HostName + '.pyc'):
+        print "Removing %s from category %s" % (HostName,CategoryName)
+        os_system('rm -rf %s%s.py*' % (categoryDir,HostName) )
+    elif os_path.exists('%s%s.py' %(hostsDir,HostName)):
+        print "Assigning %s to category %s" % (HostName,CategoryName)
+        os_system('ln -sf %s.py %s' % ( (hostsDir + HostName), (categoryDir + HostName + '.py') ) )
+    elif os_path.exists('%s%s.pyo' %(hostsDir,HostName)):
+        print "Assigning %s to category %s" % (HostName,CategoryName)
+        os_system('ln -sf %s %s' % ( (hostsDir + HostName + '.pyo'), (categoryDir + HostName + '.pyo') ) )
+    elif os_path.exists('%s%s.pyc' %(hostsDir,HostName)):
+        print "Assigning %s to category %s" % (HostName,CategoryName)
+        os_system('ln -sf %s %s' % ( (hostsDir + HostName + '.pyc'), (categoryDir + HostName + '.pyc') ) )
+    else:
+        print "unknown " + hostsDir + HostName
+##################################################### Add_to/remove_from category #####################################################
+def Category4Host(HostName):
+    myHostName=HostName[1]
+    def CB(ret):
+        if ret:
+            ManageHostsAndCategories(myHostName, ret[1])
+
+    from Screens.ChoiceBox import ChoiceBox
+    self.session.openWithCallback(CB, ChoiceBox, title=_("Assign to/Remove from Category"), list = GetHostsCategories() )

@@ -75,6 +75,23 @@ class IPTVPlayerWidget(Screen):
     IPTV_VERSION = GetIPTVPlayerVerstion()
     from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
     skin=LoadSkin('IPTVPlayerWidget')
+    currHostsCategory = ''
+    def j00zekSelectHostCategory(self):
+        def CB(ret):
+            if ret:
+                if ret[1] == 'ClosePlugin':
+                    self.selectHostCallback2('noupdate')
+                else:
+                    self.currHostsCategory=ret[1]
+            else:
+                self.currHostsCategory=''
+            self.selectHost()
+        HostsCategories=[]
+        from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import GetHostsCategories
+        HostsCategories=GetHostsCategories()
+        HostsCategories.append((_("all"),''))
+        #HostsCategories.append((_("Exit"),'ClosePlugin'))
+        self.session.openWithCallback(CB, ChoiceBox, title=_("Select Category"), list = HostsCategories)
     
     def __init__(self, session):
         printDBG("IPTVPlayerWidget.__init__ desktop IPTV_VERSION[%s]\n" % (IPTVPlayerWidget.IPTV_VERSION) )
@@ -427,6 +444,7 @@ class IPTVPlayerWidget(Screen):
         except: printExc()
         options.append((_("Info"), "info"))
         options.append((_("IPTV download manager"), "IPTVDM"))
+        options.append((_("Assign Host to current Category"), "Host2Category"))
         self.session.openWithCallback(self.blue_pressed_next, ChoiceBox, title = _("Select option"), list = options)
 
     def pause_pressed(self):
@@ -494,6 +512,9 @@ class IPTVPlayerWidget(Screen):
             if ret[1] == "info": #informacje o wtyczce
                 TextMSG = _("Autors: samsamsam, zdzislaw22, mamrot, MarcinO, skalita, huball, matzg, tomashj291")
                 self.session.open(MessageBox, TextMSG, type = MessageBox.TYPE_INFO, timeout = 10 )
+            elif ret[1] == "Host2Category": #Assigning host to specific category
+                from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import Host2Category as j00zekHost2Category
+                j00zekHost2Category(self.currHostsCategory)
             elif ret[1] == "IPTVDM":
                 self.runIPTVDM()
             elif ret[1] == "HostConfig":
@@ -830,7 +851,10 @@ class IPTVPlayerWidget(Screen):
         #self.onLayoutFinish.remove(self.onStart)
         self.loadSpinner()
         self.hideSpinner()
-        self.askUpdateAvailable(self.selectHost)
+        if 'j00zekFork' in globals() and config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
+            self.currHostsCategory = self.askUpdateAvailable(self.j00zekSelectHostCategory)
+        else:
+            self.askUpdateAvailable(self.selectHost)
     
     def __requestCheckUpdate(self):
         if config.plugins.iptvplayer.autoCheckForUpdate.value:
@@ -880,8 +904,8 @@ class IPTVPlayerWidget(Screen):
         self.currList = []
         self.currItem = CDisplayListItem()
 
-        self.displayHostsList = [] 
-        sortedList = SortHostsList( GetHostsList() )
+        self.displayHostsList = []
+        sortedList = SortHostsList( GetHostsList(self.currHostsCategory) )
         brokenHostList = []
         for hostName in sortedList:
             hostEnabled  = False
@@ -928,10 +952,7 @@ class IPTVPlayerWidget(Screen):
         return
 
     def displayListOfHosts(self, arg = None):
-        if 'j00zekFork' in globals() and config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
-            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekTreeHostSelector import j00zekTreeHostSelector
-            self.session.openWithCallback(self.selectHostCallback2, j00zekTreeHostSelector, title=_("Select service"), list = self.displayHostsList)
-        elif config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
+        if config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
             self.session.openWithCallback(self.selectHostCallback, ChoiceBox, title=_("Select service"), list = self.displayHostsList)
         else:
             from playerselector import PlayerSelectorWidget
