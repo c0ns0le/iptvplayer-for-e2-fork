@@ -1,8 +1,8 @@
 # @j00zek 18.11.2015
 #
-if `grep -q 'config.plugins.iptvplayer.debugprint=' < /etc/enigma2/settings`;then
+if `grep -q 'config.plugins.iptvplayer.debugprint=' 2>/dev/null </etc/enigma2/settings`;then
   UpdateType='dev'
-elif `grep -q 'config.plugins.iptvplayer.debugprint=' < /usr/local/e2/etc/enigma2/settings`;then
+elif `grep -q 'config.plugins.iptvplayer.debugprint=' 2>/dev/null </usr/local/e2/etc/enigma2/settings`;then
   UpdateType='dev'
 else
   UpdateType='public'
