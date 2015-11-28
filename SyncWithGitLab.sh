@@ -22,6 +22,7 @@ echo 'Syncing Github...'
 cp -a ~/iptvplayer-GitLab-master-version/IPTVPlayer $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup_translate.py $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup.py $myDir/
+rm -rf $myDir/IPTVPlayer/bin/armv7
 cd $myDir
 
 #change numbering
