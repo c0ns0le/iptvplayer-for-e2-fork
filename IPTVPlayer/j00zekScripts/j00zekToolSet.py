@@ -96,7 +96,6 @@ def ExtendConfigsList():
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
     from enigma import getDesktop
-    
     model=''
     if os_path.exists("/proc/stb/info/vumodel"):
         with open("/proc/stb/info/vumodel", "r") as f:
@@ -107,25 +106,25 @@ def LoadSkin(SkinName):
         SkinName=SkinName[:-4]
     skinDef=None
     
-    if getDesktop(0).size().width() == 1920 and os_path.exists("%sskins/%s%sFHD.xml" % (PluginPath,SkinName,model)):
-        with open("%sskins/%s%sFHD.xml" % (PluginPath,SkinName,model),'r') as skinfile:
+    if getDesktop(0).size().width() == 1920 and os_path.exists("%s/skins/%s%sFHD.xml" % (PluginPath,SkinName,model)):
+        with open("%s/skins/%s%sFHD.xml" % (PluginPath,SkinName,model),'r') as skinfile:
             skinDef=skinfile.read()
             skinfile.close()
-    elif getDesktop(0).size().width() == 1920 and os_path.exists("%sskins/%sFHD.xml" % (PluginPath,SkinName)):
-        with open("%sskins/%sFHD.xml" % (PluginPath,SkinName),'r') as skinfile:
+    elif getDesktop(0).size().width() == 1920 and os_path.exists("%s/skins/%sFHD.xml" % (PluginPath,SkinName)):
+        with open("%s/skins/%sFHD.xml" % (PluginPath,SkinName),'r') as skinfile:
             skinDef=skinfile.read()
             skinfile.close()
             
-    elif os_path.exists("%sskins/%s%s.xml" % (PluginPath,SkinName,model)):
-        with open("%sskins/%s%s.xml" % (PluginPath,SkinName,model),'r') as skinfile:
+    elif os_path.exists("%s/skins/%s%s.xml" % (PluginPath,SkinName,model)):
+        with open("%s/skins/%s%s.xml" % (PluginPath,SkinName,model),'r') as skinfile:
             skinDef=skinfile.read()
             skinfile.close()
-    elif os_path.exists("%sskins/%s.xml" % (PluginPath,SkinName)):
-        with open("%sskins/%s.xml" % (PluginPath,SkinName),'r') as skinfile:
+    elif os_path.exists("%s/skins/%s.xml" % (PluginPath,SkinName)):
+        with open("%s/skins/%s.xml" % (PluginPath,SkinName),'r') as skinfile:
             skinDef=skinfile.read()
             skinfile.close()
     else:
-        printDEBUG("%s does not exists")
+        printDEBUG("[LoadSkin] %s does not exists" % SkinName )
     return skinDef
 
 ##################################################### CLEAR CACHE - tuners with small amount of memory need it #####################################################
