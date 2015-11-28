@@ -515,6 +515,7 @@ class IPTVPlayerWidget(Screen):
                                  {'nick':'mamrot',     'mail':''},
                                  {'nick':'MarcinO',    'mail':''},
                                  {'nick':'skalita',    'mail':''},
+                                 {'nick':'atilaks',    'mail':''},
                                  {'nick':'huball',     'mail':''},
                                  {'nick':'matzg',      'mail':''},
                                  {'nick':'tomashj291', 'mail':''},

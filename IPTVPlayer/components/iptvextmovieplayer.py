@@ -1362,7 +1362,7 @@ class IPTVExtMoviePlayer(Screen):
                     cmd += ' -h "%s"' % headers
             if config.plugins.iptvplayer.aac_software_decode.value:
                 cmd += ' -a -p 10'
-            elif config.plugins.iptvplayer.plarform.value in ('mipsel', 'armv7'):
+            elif config.plugins.iptvplayer.plarform.value in ('mipsel', 'arm'):
                 cmd += ' -p 2'
             audioTrackIdx = self.metaHandler.getAudioTrackIdx()
             printDBG(">>>>>>>>>>>>>>>>>>>>>>>> audioTrackIdx[%d]" % audioTrackIdx)
