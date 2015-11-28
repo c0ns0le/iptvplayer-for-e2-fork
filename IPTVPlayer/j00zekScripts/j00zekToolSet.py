@@ -12,7 +12,7 @@ from os import path as os_path, environ as os_environ, listdir as os_listdir, ch
 ###### openPLI imports
 from Components.config import *
 from Plugins.Extensions.IPTVPlayer.version import IPTV_VERSION
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG as printDEBUG
 from Screens.Screen import Screen
 from Tools.Directories import *
 
@@ -97,22 +97,35 @@ def ExtendConfigsList():
 def LoadSkin(SkinName):
     from enigma import getDesktop
     
+    model=''
+    if os_path.exists("/proc/stb/info/vumodel"):
+        with open("/proc/stb/info/vumodel", "r") as f:
+            model=f.read().strip()
+            f.close()
+            
     if SkinName.endswith('.xml'):
         SkinName=SkinName[:-4]
     skinDef=None
     
-    if getDesktop(0).size().width() == 1920 and os_path.exists("%s/skins/%sFHD.xml" % (PluginPath,SkinName) ):
-        printDBG('LoadSkin %sFHD.xml' %SkinName )
-        with open("%s/skins/%sFHD.xml" % (PluginPath,SkinName),'r') as skinfile:
+    if getDesktop(0).size().width() == 1920 and os_path.exists("%sskins/%s%sFHD.xml" % (PluginPath,SkinName,model)):
+        with open("%sskins/%s%sFHD.xml" % (PluginPath,SkinName,model),'r') as skinfile:
             skinDef=skinfile.read()
             skinfile.close()
-    elif os_path.exists("%s/skins/%s.xml" % (PluginPath,SkinName)):
-        printDBG('LoadSkin %s.xml' %SkinName )
-        with open("%s/skins/%s.xml" % (PluginPath,SkinName),'r') as skinfile:
+    elif getDesktop(0).size().width() == 1920 and os_path.exists("%sskins/%sFHD.xml" % (PluginPath,SkinName)):
+        with open("%sskins/%sFHD.xml" % (PluginPath,SkinName),'r') as skinfile:
+            skinDef=skinfile.read()
+            skinfile.close()
+            
+    elif os_path.exists("%sskins/%s%s.xml" % (PluginPath,SkinName,model)):
+        with open("%sskins/%s%s.xml" % (PluginPath,SkinName,model),'r') as skinfile:
+            skinDef=skinfile.read()
+            skinfile.close()
+    elif os_path.exists("%sskins/%s.xml" % (PluginPath,SkinName)):
+        with open("%sskins/%s.xml" % (PluginPath,SkinName),'r') as skinfile:
             skinDef=skinfile.read()
             skinfile.close()
     else:
-        printDBG('LoadSkin %s/skins/%s.xml not found!!!' % (PluginPath,SkinName) )
+        printDEBUG("%s does not exists")
     return skinDef
 
 ##################################################### CLEAR CACHE - tuners with small amount of memory need it #####################################################

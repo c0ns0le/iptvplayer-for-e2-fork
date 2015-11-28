@@ -508,9 +508,26 @@ class IPTVPlayerWidget(Screen):
     def blue_pressed_next(self, ret):
         TextMSG = ''
         if ret:
-            if ret[1] == "info": #informacje o wtyczce
-                TextMSG = _("Autors: samsamsam, zdzislaw22, mamrot, MarcinO, skalita, huball, matzg, tomashj291")
-                self.session.open(MessageBox, TextMSG, type = MessageBox.TYPE_INFO, timeout = 10 )
+            if ret[1] == "info": #information about plugin
+                TextMSG  = _("Main developer, architect, coordinator: ") + "\n\t- samsamsam\n"
+                TextMSG += _("Developers: ") 
+                developersTab = [{'nick':'zdzislaw22', 'mail':''},
+                                 {'nick':'mamrot',     'mail':''},
+                                 {'nick':'MarcinO',    'mail':''},
+                                 {'nick':'skalita',    'mail':''},
+                                 {'nick':'huball',     'mail':''},
+                                 {'nick':'matzg',      'mail':''},
+                                 {'nick':'tomashj291', 'mail':''},
+                                 {'nick':'a4tech',     'mail':''},
+                                ]
+                # present alphabetically, the order does not mean validity
+                sortedList = sorted(developersTab, key=lambda k: k['nick'].upper())
+                for item in sortedList:
+                    TextMSG += "\n\t- {0}, ".format(item['nick'])
+                TextMSG += "\n"
+                TextMSG += _("Testers: ") + "\n\t- ??\n"
+                TextMSG += _("Webpages: ") + "\n\t- http://iptvplayer.vline.pl/, \n\t- http://iptvplayer.pl/\n"
+                self.session.open(MessageBox, TextMSG, type = MessageBox.TYPE_INFO )
             elif ret[1] == "IPTVDM":
                 self.runIPTVDM()
             elif ret[1] == "HostConfig":
@@ -956,14 +973,17 @@ class IPTVPlayerWidget(Screen):
         return
     
     def selectHostCallback(self, ret):
-        try:
-            if os_path.isfile('/etc/init.d/graterlia_init'):
-                message = _("WARNING (phase 1/3)\n")
-                message += _("You are breaking license using IPTVPlayer on your E2 distribution.\n\n")
-                #self.session.openWithCallback(self.close, MessageBox, text=message, type=MessageBox.TYPE_ERROR)
-                self.session.open(MessageBox, text=message, type=MessageBox.TYPE_ERROR)
-        except:
-            printExc()
+        if 0:
+            try:
+                if os_path.isfile('/etc/init.d/graterlia_init'):
+                    message = "Ostrzężenie (faza 1/3)\n"
+                    message += "Używając IPTVPlayer na tej dystrybucji systemu E2 łamiesz licencje.\n\n"
+                    message += "WARNING (phase 1/3)\n"
+                    message += "You are breaking license using IPTVPlayer on your E2 distribution.\n\n"
+                    #self.session.openWithCallback(self.close, MessageBox, text=message, type=MessageBox.TYPE_ERROR)
+                    self.session.open(MessageBox, text=message, type=MessageBox.TYPE_ERROR)
+            except:
+                printExc()
         checkUpdate = True
         try: 
             if 0 < len(ret) and ret[1] == "update": checkUpdate = False
