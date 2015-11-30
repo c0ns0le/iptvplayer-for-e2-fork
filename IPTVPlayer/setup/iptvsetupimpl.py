@@ -78,7 +78,7 @@ class IPTVSetupImpl:
                                           (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
                                           (_("Do not install (not recommended)"), "")]
         # exteplayer3
-        self.exteplayer3Version = {'sh4': 9, 'mipsel': 12}
+        self.exteplayer3Version = {'sh4': 9, 'mipsel': 13}
         self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
         self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/exteplayer3 (%s)" % _("recommended")), "/usr/bin/exteplayer3"),
                                           (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
@@ -415,7 +415,7 @@ class IPTVSetupImpl:
 
     def f4mdumpStepFinished(self, sts, ret=None):
         printDBG("IPTVSetupImpl.f4mdumpStepFinished sts[%r]" % sts)
-        if self.platform in ['sh4'] and self.ffmpegVersion in ['1.0', '1.1.1', '1.2', '1.2.1', '2.0.3', '2.0.2', '2.2.1', '2.5', '2.6.2', '2.7.1']: 
+        if self.platform in ['sh4'] and self.ffmpegVersion in ['1.0', '1.1.1', '1.2', '1.2.1', '2.0.3', '2.0.2', '2.2.1', '2.5', '2.6.2', '2.7.1', '2.8.1', '2.8.2']: 
             self.exteplayer3Step()
         elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1']: # no exteplayer3 binaries for 'arm' at now
             self.exteplayer3Step()
