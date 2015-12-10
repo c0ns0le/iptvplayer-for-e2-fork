@@ -261,9 +261,11 @@ def ManageHostsAndCategories(HostName, CategoryName = ''):
     ClearMemory()
     hostsDir='%s/hosts' % PluginPath
     categoryDir='%s/hosts/%s' % (PluginPath,CategoryName)
-    if os_path.exists('%s/%s' %(categoryDir,HostName) ):
+    #first delete, when exists
+    if os_path.exists('%s/%s.py' %(categoryDir,HostName[:-4])) or os_path.exists('%s/%s' %(categoryDir,HostName)):
         print "Removing %s from category %s" % (HostName,CategoryName)
-        os_system('rm -rf %s/%s' % (categoryDir,HostName) )
+        os_system('rm -rf %s/%s*' % (categoryDir,HostName[:-4]) )
+    #assign to category
     elif os_path.exists('%s/%s' %(hostsDir,HostName)):
         print "Assigning %s to category %s" % (HostName,CategoryName)
         os_system('ln -sf %s/%s %s/%s' % ( hostsDir, HostName, categoryDir, HostName) )

@@ -108,6 +108,7 @@ class j00zekHostTreeSelector(Screen):
         self.setInfo()
 
     def lineUp(self):
+      
         self["filelist"].up()
         self.setInfo()
 
