@@ -11,7 +11,7 @@ from Plugins.Extensions.IPTVPlayer.components.ihost import CFavItem, CDisplayLis
 from Plugins.Extensions.IPTVPlayer.components.iptvmultipleinputbox import IPTVMultipleInputBox
 from Plugins.Extensions.IPTVPlayer.components.iptvlist import IPTVRadioButtonList
 ###################################################
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+
 ###################################################
 # FOREIGN import
 ###################################################
@@ -46,7 +46,7 @@ class IPTVChoiceBoxWidget(Screen):
         skin = """
             <screen name="IPTVChoiceBoxWidget" position="center,center" title="%s" size="%d,%d">
                 <widget name="title" position="5,10"  zPosition="1" size="%d,30" font="Regular;20"            transparent="1"  backgroundColor="#00000000"/>
-                <widget name="list"  position="5,50"  zPosition="2" size="%d,%d" scrollbarMode="showOnDemand" transparent="1"  backgroundColor="#00000000" />
+                <widget name="list"  position="5,50"  zPosition="2" size="%d,%d" scrollbarMode="showOnDemand" transparent="1"  backgroundColor="#00000000" enableWrapAround="1" />
             </screen>""" %(
                 self.params.get('title', _("Select option")),
                 width, height, # size

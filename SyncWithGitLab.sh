@@ -30,7 +30,7 @@ sed -i 's/\(IPTV_VERSION="\)/\1j/' ./IPTVPlayer/version.py
 
 mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTVPlayer/hosts/hostipla.py
 cp -af ~/iptvplayerXXX-GitLab-master-version/IPTVPlayer/* $myDir/IPTVPlayer/
-sed -i "s/\(self.exteplayer3Version = {'sh4': [0-9]*, 'mipsel': [0-9]*\), 'armv7': 11}/\1}/" ./IPTVPlayer/setup/iptvsetupimpl.py
+#sed -i "s/\(self.exteplayer3Version = {'sh4': [0-9]*, 'mipsel': [0-9]*\), 'armv7': 11}/\1}/" ./IPTVPlayer/setup/iptvsetupimpl.py
 rm -rf $myDir//IPTVPlayer/iptvupdate/custom/xxx.sh
 
 patch -p1 < ./iptvplayer-fork.patch

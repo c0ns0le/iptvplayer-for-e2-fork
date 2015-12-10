@@ -1,6 +1,6 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-11-16 06:19:04.566308000 +0100
-+++ ./IPTVPlayer/components/configbase.py	2015-11-28 23:32:28.532748559 +0100
++++ ./IPTVPlayer/components/configbase.py	2015-12-10 11:38:00.914219999 +0100
 @@ -8,10 +8,9 @@
  ###################################################
  # LOCAL import
@@ -61,7 +61,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif isinstance(currItem, ConfigText):
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/filebrowserwidget.py ./IPTVPlayer/components/filebrowserwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/filebrowserwidget.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/filebrowserwidget.py	2015-11-28 23:32:28.532748559 +0100
++++ ./IPTVPlayer/components/filebrowserwidget.py	2015-12-10 11:38:00.914219999 +0100
 @@ -29,25 +29,9 @@
  ###################################################
   
@@ -91,21 +91,9 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      def __init__(self, session, currDir, title="Directory browser"):
          printDBG("DirectorySelectorWidget.__init__ -------------------------------")
          Screen.__init__(self, session)
-diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvchoicebox.py ./IPTVPlayer/components/iptvchoicebox.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvchoicebox.py	2015-11-11 07:16:27.391282027 +0100
-+++ ./IPTVPlayer/components/iptvchoicebox.py	2015-11-28 23:32:28.532748559 +0100
-@@ -11,7 +11,7 @@
- from Plugins.Extensions.IPTVPlayer.components.iptvmultipleinputbox import IPTVMultipleInputBox
- from Plugins.Extensions.IPTVPlayer.components.iptvlist import IPTVRadioButtonList
- ###################################################
--
-+from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
- ###################################################
- # FOREIGN import
- ###################################################
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-11-28 22:44:46.680748559 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-11-28 23:32:28.540748559 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-11-30 16:23:05.251030000 +0100
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-12-10 11:38:00.922215998 +0100
 @@ -7,12 +7,11 @@
  ###################################################
  # LOCAL import
@@ -314,87 +302,46 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          player = config.plugins.iptvplayer.NaszPlayer
          alternativePlayer = config.plugins.iptvplayer.NaszPlayer
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvdirbrowser.py ./IPTVPlayer/components/iptvdirbrowser.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvdirbrowser.py	2015-11-11 07:16:27.391282027 +0100
-+++ ./IPTVPlayer/components/iptvdirbrowser.py	2015-11-28 23:32:28.540748559 +0100
-@@ -41,25 +41,8 @@
-         IPTVMainNavigatorList.__init__(self)
- 
- class IPTVDirectorySelectorWidget(Screen):
--    screenwidth = getDesktop(0).size().width()
--    if screenwidth and screenwidth == 1920:  
--        skin = """
--        <screen name="IPTVDirectorySelectorWidget" position="center,center" size="820,860" title="">
--            <widget name="key_red"     position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;28" transparent="1" foregroundColor="red" />
--            <widget name="key_green"   position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="center"  font="Regular;28" transparent="1" foregroundColor="green" />
--            <widget name="key_blue"    position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="right" font="Regular;28" transparent="1" foregroundColor="blue" />
--            <widget name="curr_dir"    position="10,50"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;28" transparent="1" foregroundColor="white" />
--            <widget name="list"        position="10,95"  zPosition="1"  size="800,725" transparent="1" scrollbarMode="showOnDemand" />
--        </screen>"""
--    else:
--        skin = """
--        <screen name="IPTVDirectorySelectorWidget" position="center,center" size="620,440" title="">
--            <widget name="key_red"     position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;22" transparent="1" foregroundColor="red" />
--            <widget name="key_green"   position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="center"  font="Regular;22" transparent="1" foregroundColor="green" />
--            <widget name="key_blue"    position="10,10"  zPosition="2"  size="600,35" valign="center"  halign="right" font="Regular;22" transparent="1" foregroundColor="blue" />
--            <widget name="curr_dir"    position="10,50"  zPosition="2"  size="600,35" valign="center"  halign="left"   font="Regular;18" transparent="1" foregroundColor="white" />
--            <widget name="list"        position="10,85"  zPosition="1"  size="580,335" transparent="1" scrollbarMode="showOnDemand" />
--        </screen>"""
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvdirbrowser.py	2015-12-10 10:58:15.203671999 +0100
++++ ./IPTVPlayer/components/iptvdirbrowser.py	2015-12-10 11:39:13.198060001 +0100
+@@ -61,6 +61,9 @@
+             <widget name="list"        position="10,85"  zPosition="1"  size="580,335" transparent="1" scrollbarMode="showOnDemand" enableWrapAround="1" />
+         </screen>"""
+         
 +    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
 +    skin=LoadSkin('IPTVDirectorySelectorWidget')
-         
++
      def __init__(self, session, currDir, title="Directory browser"):
          printDBG("IPTVDirectorySelectorWidget.__init__ -------------------------------")
+         Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py ./IPTVPlayer/components/iptvextmovieplayer.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2015-11-28 22:44:46.688748559 +0100
-+++ ./IPTVPlayer/components/iptvextmovieplayer.py	2015-11-28 23:32:28.540748559 +0100
-@@ -1362,7 +1362,7 @@
-                     cmd += ' -h "%s"' % headers
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2015-12-01 20:55:07.046977999 +0100
++++ ./IPTVPlayer/components/iptvextmovieplayer.py	2015-12-10 11:38:00.926213999 +0100
+@@ -1369,7 +1369,7 @@
+                 
              if config.plugins.iptvplayer.aac_software_decode.value:
                  cmd += ' -a -p 10'
 -            elif config.plugins.iptvplayer.plarform.value in ('mipsel', 'armv7'):
-+            elif config.plugins.iptvplayer.plarform.value in ('mipsel', 'arm'):
++            elif config.plugins.iptvplayer.plarform.value in ('mipsel', 'armv7', 'arm'):
                  cmd += ' -p 2'
              audioTrackIdx = self.metaHandler.getAudioTrackIdx()
              printDBG(">>>>>>>>>>>>>>>>>>>>>>>> audioTrackIdx[%d]" % audioTrackIdx)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvfavouriteswidgets.py ./IPTVPlayer/components/iptvfavouriteswidgets.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvfavouriteswidgets.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/iptvfavouriteswidgets.py	2015-11-28 23:32:28.540748559 +0100
-@@ -133,30 +133,8 @@
-         self.close(self.result)
- 
- class IPTVFavouritesMainWidget(Screen):
--    sz_w = getDesktop(0).size().width() - 190
--    sz_h = getDesktop(0).size().height() - 195
--    if sz_h < 500: sz_h += 4
--    skin = """
--        <screen name="IPTVFavouritesMainWidget" position="center,center" title="%s" size="%d,%d">
--         <ePixmap position="5,9"   zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--         <ePixmap position="180,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--         <ePixmap position="355,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--         
--         <widget name="label_red"     position="45,9"  size="175,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--         <widget name="label_yellow"  position="220,9" size="175,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--         <widget name="label_green"   position="395,9" size="175,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--         
--         <widget name="list"  position="5,80"  zPosition="2" size="%d,%d" scrollbarMode="showOnDemand" transparent="1"  backgroundColor="#00000000" />
--         <widget name="title" position="5,47"  zPosition="1" size="%d,23" font="Regular;20"            transparent="1"  backgroundColor="#00000000"/>
--        </screen>""" %(
--            _("Favourites manager"),
--            sz_w, sz_h, # size
--            GetIconDir("red.png"),
--            GetIconDir("yellow.png"),
--            GetIconDir("green.png"),
--            sz_w - 10, sz_h - 105, # size list
--            sz_w - 135, # size title
--            )
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvfavouriteswidgets.py	2015-12-10 10:58:15.203671999 +0100
++++ ./IPTVPlayer/components/iptvfavouriteswidgets.py	2015-12-10 11:40:29.200040001 +0100
+@@ -158,6 +158,9 @@
+             sz_w - 135, # size title
+             )
+             
 +    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
 +    skin=LoadSkin('IPTVFavouritesMainWidget')
-             
++             
      def __init__(self, session):
          self.session = session
+         Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py ./IPTVPlayer/components/iptvpin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvpin.py	2015-11-05 22:26:57.905660252 +0100
-+++ ./IPTVPlayer/components/iptvpin.py	2015-11-28 23:32:28.540748559 +0100
++++ ./IPTVPlayer/components/iptvpin.py	2015-12-10 11:38:00.930212000 +0100
 @@ -22,15 +22,8 @@
  
  class IPTVPinWidget(Screen):
@@ -414,8 +361,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      def __init__(self, session, title = ""):
          self.session = session
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-11-28 22:44:46.688748559 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-11-28 23:32:28.540748559 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-12-10 10:58:15.207669999 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-12-10 11:41:43.203020006 +0100
 @@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
@@ -427,87 +374,18 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  #                   E2 components
  ####################################################
  from Screens.Screen import Screen
-@@ -69,59 +73,26 @@
- 
- class IPTVPlayerWidget(Screen):
-     IPTV_VERSION = GetIPTVPlayerVerstion()
--    screenwidth = getDesktop(0).size().width()
--    if screenwidth and screenwidth == 1920:
--        skin =  """
--                    <screen name="IPTVPlayerWidget" position="center,center" size="1590,825" title="IPTV Player HD wersja %s">
--                            <ePixmap position="5,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <ePixmap position="180,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <ePixmap position="385,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <ePixmap position="700,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <widget render="Label" source="key_red" position="45,9" size="140,32" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget render="Label" source="key_yellow" position="220,9" size="180,32" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget render="Label" source="key_green" position="425,9" size="300,32" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget render="Label" source="key_blue" position="740,9" size="140,32" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget name="headertext" position="15,55" zPosition="1" size="1080,30" font="Regular;30" transparent="1" backgroundColor="#00000000" />
--                            <widget name="statustext" position="15,148" zPosition="1" size="985,90" font="Regular;30" halign="center" valign="center" transparent="1" backgroundColor="#00000000" />
--                            <widget name="list" position="5,115" zPosition="2" size="860,690" scrollbarMode="showOnDemand" transparent="1" backgroundColor="#00000000" />
--                            <widget name="console" position="1020,310" zPosition="1" size="500,630" font="Regular;26" transparent="1" backgroundColor="#00000000" />
--                            <widget name="cover" zPosition="2" position="1020,80" size="244,280" alphatest="blend" />     
--                            <widget name="playerlogo" zPosition="4" position="1264,3" size="240,80" alphatest="blend" />
--                            <widget name="sequencer" position="0,0" zPosition="6" size="1090,625" font="Regular;160" halign="center" valign="center" transparent="1" backgroundColor="#00000000" />
--                            <widget name="spinner"   zPosition="2" position="463,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_1" zPosition="1" position="463,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_2" zPosition="1" position="479,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_3" zPosition="1" position="495,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_4" zPosition="1" position="511,200" size="16,16" transparent="1" alphatest="blend" />
--                    </screen>
--                """ %( IPTV_VERSION, GetIconDir('red.png'), GetIconDir('yellow.png'), GetIconDir('green.png'), GetIconDir('blue.png'))
--    else:
--        skin =  """
--                    <screen name="IPTVPlayerWidget" position="center,center" size="1090,525" title="IPTV Player wersja %s">
--                            <ePixmap position="30,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <ePixmap position="287,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <ePixmap position="554,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <ePixmap position="801,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--                            <widget render="Label" source="key_red"    position="65,9"  size="210,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget render="Label" source="key_green"  position="322,9" size="210,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget render="Label" source="key_yellow" position="589,9" size="210,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget render="Label" source="key_blue"   position="836,9" size="210,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--                            <widget name="headertext" position="5,47" zPosition="1" size="1080,23" font="Regular;20" transparent="1" backgroundColor="#00000000" />
--                            <widget name="statustext" position="5,140" zPosition="1" size="985,90" font="Regular;20" halign="center" valign="center" transparent="1" backgroundColor="#00000000" />
--                            <widget name="list" position="5,100" zPosition="2" size="1080,280" scrollbarMode="showOnDemand" transparent="1" backgroundColor="#00000000" />
--                            <widget name="console" position="165,430" zPosition="1" size="935,140" font="Regular;20" transparent="1" backgroundColor="#00000000" />
--                            <widget name="cover" zPosition="2" position="5,400" size="122,140" alphatest="blend" />     
--                            <widget name="playerlogo" zPosition="4" position="964,3" size="120,40" alphatest="blend" />
--                            <ePixmap zPosition="4" position="5,395" size="1080,5" pixmap="%s" transparent="1" />
--                            <widget name="sequencer" position="0,0" zPosition="6" size="1090,525" font="Regular;160" halign="center" valign="center" transparent="1" backgroundColor="#00000000" />
--                            
--                            <widget name="spinner"   zPosition="2" position="463,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_1" zPosition="1" position="463,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_2" zPosition="1" position="479,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_3" zPosition="1" position="495,200" size="16,16" transparent="1" alphatest="blend" />
--                            <widget name="spinner_4" zPosition="1" position="511,200" size="16,16" transparent="1" alphatest="blend" />
--                    </screen>
--                """ %( IPTV_VERSION, GetIconDir('red.png'), GetIconDir('green.png'), GetIconDir('yellow.png'), GetIconDir('blue.png'), GetIconDir('line.png'))      
+@@ -122,6 +126,10 @@
+                             <widget name="spinner_4" zPosition="1" position="511,200" size="16,16" transparent="1" alphatest="blend" />
+                     </screen>
+                 """ %( IPTV_VERSION, GetIconDir('red.png'), GetIconDir('green.png'), GetIconDir('yellow.png'), GetIconDir('blue.png'), GetIconDir('line.png'))      
++
 +    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
 +    skin=LoadSkin('IPTVPlayerWidget')
-+    currHostsCategory = ''
-+    def j00zekSelectHostCategory(self):
-+        def CB(ret):
-+            if ret:
-+                if ret[1] == 'ClosePlugin':
-+                    self.selectHostCallback2('noupdate')
-+                else:
-+                    self.currHostsCategory=ret[1]
-+            else:
-+                self.currHostsCategory=''
-+            self.selectHost()
-+        HostsCategories=[]
-+        from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import GetHostsCategories
-+        HostsCategories=GetHostsCategories()
-+        HostsCategories.append((_("all"),''))
-+        #HostsCategories.append((_("Exit"),'ClosePlugin'))
-+        self.session.openWithCallback(CB, ChoiceBox, title=_("Select Category"), list = HostsCategories)
-+    
++ 
      def __init__(self, session):
          printDBG("IPTVPlayerWidget.__init__ desktop IPTV_VERSION[%s]\n" % (IPTVPlayerWidget.IPTV_VERSION) )
          self.session = session
-@@ -318,7 +289,7 @@
+@@ -318,7 +326,7 @@
          try:
              asynccall.gMainFunctionsQueue.setProcFun(None)
              asynccall.gMainFunctionsQueue.clearQueue()
@@ -516,15 +394,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          except:
              printExc()
          self.activePlayer = None
-@@ -894,14 +865,21 @@
-         #self.onLayoutFinish.remove(self.onStart)
-         self.loadSpinner()
-         self.hideSpinner()
--        self.askUpdateAvailable(self.selectHost)
-+        if 'j00zekFork' in globals() and config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
-+            self.currHostsCategory = self.askUpdateAvailable(self.j00zekSelectHostCategory)
-+        else:
-+            self.askUpdateAvailable(self.selectHost)
+@@ -897,11 +905,15 @@
+         self.askUpdateAvailable(self.selectHost)
      
      def __requestCheckUpdate(self):
 -        lastVerUrl = 'http://iptvplayer.pl/download/update/lastversion.php'
@@ -541,7 +412,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  if None != self.checkUpdateConsole: self.checkUpdateConsole.terminate()
                  printDBG("__requestCheckUpdate cmd[%r]" % cmd)
                  self.checkUpdateConsole = iptv_system( cmd, self.__checkUpdateCmdFinished )
-@@ -914,7 +892,7 @@
+@@ -914,7 +926,7 @@
      def askUpdateAvailable(self, NoUpdateCallback):
          if  config.plugins.iptvplayer.autoCheckForUpdate.value \
              and  0 < GetVersionNum( self.lastPluginVersion ) \
@@ -550,18 +421,19 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              and self.lastPluginVersion != config.plugins.iptvplayer.updateLastCheckedVersion.value:
              
              message = _('There is a new version available do you want to update? \nYour version [%s], latest version on server [%s]') % (GetIPTVPlayerVerstion(), self.lastPluginVersion)
-@@ -940,8 +918,8 @@
-         self.currList = []
-         self.currItem = CDisplayListItem()
+@@ -988,7 +1000,10 @@
+         return
  
--        self.displayHostsList = [] 
--        sortedList = SortHostsList( GetHostsList() )
-+        self.displayHostsList = []
-+        sortedList = SortHostsList( GetHostsList(self.currHostsCategory) )
-         brokenHostList = []
-         for hostName in sortedList:
-             hostEnabled  = False
-@@ -1026,7 +1004,11 @@
+     def displayListOfHosts(self, arg = None):
+-        if config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
++        if 'j00zekFork' in globals() and config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
++            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekHostTreeSelector import j00zekHostTreeSelector
++            self.session.openWithCallback(self.selectHostCallback, j00zekHostTreeSelector, list = self.displayHostsList)
++        elif config.plugins.iptvplayer.ListaGraficzna.value == False or 0 == GetAvailableIconSize():
+             self.session.openWithCallback(self.selectHostCallback, ChoiceBox, title=_("Select service"), list = self.displayHostsList)
+         else:
+             from playerselector import PlayerSelectorWidget
+@@ -1026,7 +1041,11 @@
                  self.close()
                  return
              elif ret[1] == "update":
@@ -574,38 +446,9 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  return
              elif ret[1] == "IPTVDM":
                  self.runIPTVDM(self.selectHost)
-diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/playerselector.py ./IPTVPlayer/components/playerselector.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/playerselector.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/components/playerselector.py	2015-11-28 23:32:28.544748559 +0100
-@@ -210,6 +210,8 @@
-             "up":    self.keyUp,
-             "down":  self.keyDown,
-             "blue":  self.keyBlue,
-+            "green":  self.keyGreen,
-+
-         }, -1)
-         
- 
-@@ -369,6 +371,16 @@
-         
-     def keyBlue(self):
-         self.close((_("IPTV download manager"), "IPTVDM"))
-+
-+    def keyGreen(self):
-+        myHostName=self.currList[self.currLine * self.numOfCol +  self.dispX][1]
-+        def CB(ret):
-+            if ret:
-+                ManageHostsAndCategories(myHostName, ret[1])
-+                
-+        from Screens.ChoiceBox import ChoiceBox
-+        from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import ManageHostsAndCategories, GetHostsCategories
-+        self.session.openWithCallback(CB, ChoiceBox, title=_("Assign to/Remove from Category"), list = GetHostsCategories() )
-     
-     def hideWindow(self):
-         self.visible = False
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py ./IPTVPlayer/iptvdm/iptvdmui.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py	2015-11-11 07:16:27.435260000 +0100
-+++ ./IPTVPlayer/iptvdm/iptvdmui.py	2015-11-28 23:32:28.544748559 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvdm/iptvdmui.py	2015-12-10 10:58:15.211667999 +0100
++++ ./IPTVPlayer/iptvdm/iptvdmui.py	2015-12-10 11:42:55.770718035 +0100
 @@ -30,7 +30,7 @@
  from Components.Sources.StaticText import StaticText
  from Components.config import config
@@ -615,34 +458,11 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
  
  #########################################################
-@@ -40,30 +40,8 @@
- 
- class IPTVDMWidget(Screen):
- 
--    sz_w = getDesktop(0).size().width() - 190
--    sz_h = getDesktop(0).size().height() - 195
--    if sz_h < 500:
--        sz_h += 4
--    skin = """
--        <screen name="IPTVDMWidget" position="center,center" title="IPTV Player download manager" size="%d,%d">
--         <ePixmap position="5,9"   zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--         <ePixmap position="180,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--         <ePixmap position="385,9" zPosition="4" size="30,30" pixmap="%s" transparent="1" alphatest="on" />
--         <ePixmap position="590,9" zPosition="4" size="35,30" pixmap="%s" transparent="1" alphatest="on" />
--         <widget render="Label" source="key_red"    position="45,9"  size="140,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--         <widget render="Label" source="key_yellow" position="225,9" size="300,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />            
--         <widget render="Label" source="key_green"  position="425,9" size="300,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />            
--         <widget render="Label" source="key_blue"   position="635,9" size="300,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />            
--         <widget name="list" position="5,100" zPosition="2" size="%d,%d" scrollbarMode="showOnDemand" transparent="0"  backgroundColor="#00000000" />
--         <widget name="titel" position="5,47" zPosition="1" size="%d,23" font="Regular;20" transparent="1"  backgroundColor="#00000000"/>
--        </screen>""" %(
--            sz_w, sz_h, # size
--            GetIconDir('red.png'), GetIconDir('yellow.png'), GetIconDir('green.png'), GetIconDir('blue.png'),
--            sz_w - 10, sz_h - 20, # size list
--            sz_w - 135, # size titel
--            )
--        # <widget render="Label" source="key_yellow" position="220,9" size="180,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
--        # <widget render="Label" source="key_blue" position="630,9" size="140,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" /> 
+@@ -64,6 +64,9 @@
+             )
+         # <widget render="Label" source="key_yellow" position="220,9" size="180,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+         # <widget render="Label" source="key_blue" position="630,9" size="140,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" /> 
++
 +    skin = LoadSkin("IPTVDMWidget")
 +
      def __init__(self, session, downloadmanager):
@@ -650,7 +470,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          Screen.__init__(self, session)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-28 23:32:28.544748559 +0100
++++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-10 11:38:00.934209999 +0100
 @@ -19,7 +19,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -676,9 +496,34 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.setTitle( self.updateObjImpl.getTitle() )
          self["sub_title"].setText( self.updateObjImpl.getSubTitle() )
          self["list"].setSelectionState(enabled = False)
+diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml ./IPTVPlayer/keymap.xml
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml	2015-11-11 07:16:27.439257999 +0100
++++ ./IPTVPlayer/keymap.xml	2015-12-10 11:38:00.934209999 +0100
+@@ -25,4 +25,20 @@
+                 <key id="KEY_RED"   mapto="videooptions" flags="m" />
+                 <key id="KEY_MENU"  mapto="menu"         flags="m" />
+         </map> 
++  <map context="j00zekHostTreeSelector">
++    <key id="KEY_OK"    mapto="selectHost" flags="m" />
++    <key id="KEY_GREEN" mapto="selectHost" flags="m" />
++    <key id="KEY_EXIT" mapto="ExitHostSelector" flags="m" />
++    <key id="KEY_HOME" mapto="ExitHostSelector" flags="m" />
++    <key id="KEY_ESC"  mapto="ExitHostSelector" flags="m" />
++    <key id="KEY_RED"  mapto="ExitHostSelector" flags="m" />
++    <key id="KEY_YELLOW" mapto="deleteCategory" flags="m" />
++    <key id="KEY_BLUE" mapto="newCategory" flags="m" />
++    <key id="KEY_UP" mapto="lineUp" flags="m" />
++    <key id="KEY_DOWN" mapto="lineDown" flags="m" />
++    <key id="KEY_LEFT" mapto="pageUp" flags="m" />
++    <key id="KEY_RIGHT" mapto="pageDown" flags="m" />
++    <key id="KEY_PAGEUP" mapto="pageUp" flags="m" />
++    <key id="KEY_PAGEDOWN" mapto="pageDown" flags="m" />
++  </map>
+ </keymap>
+\ No newline at end of file
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py ./IPTVPlayer/plugin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-17 06:34:21.247824000 +0100
-+++ ./IPTVPlayer/plugin.py	2015-11-28 23:32:28.544748559 +0100
++++ ./IPTVPlayer/plugin.py	2015-12-10 11:38:00.938207999 +0100
 @@ -73,7 +73,9 @@
      #print config.plugins.iptvplayer.rtmpdumppath.value
      #print config.plugins.iptvplayer.f4mdumppath.value
@@ -691,8 +536,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      elif IPTVPlayerNeedInit():
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-11-28 23:03:12.104748559 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-11-28 23:32:28.544748559 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-12-10 10:58:15.219663999 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-12-10 11:45:45.517802002 +0100
 @@ -7,7 +7,7 @@
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -717,6 +562,15 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.platform = "unknown"
          
          # wget members
+@@ -49,7 +49,7 @@
+                                        (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
+                                        (_("Do not install (not recommended)"), "")]
+         # rtmpdump members
+-        self.rtmpdumpVersion = {'armv7':'K-S-V patch', 'default':"Compiled by samsamsam@o2.pl 2015-01-11"}
++        self.rtmpdumpVersion = {'arm':'K-S-V patch', 'default':"Compiled by samsamsam@o2.pl 2015-01-11"}
+         self.rtmpdumppaths = ["/usr/bin/rtmpdump", "rtmpdump"]
+         
+         # f4mdump member
 @@ -63,7 +63,7 @@
                                            (_("Do not install (not recommended)"), "")]
                                            
@@ -726,6 +580,15 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.uchardetpaths = ["/usr/bin/uchardet", GetBinDir("uchardet", "")]
          self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/uchardet (%s)" % _("recommended")), "/usr/bin/uchardet"),
                                            (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet", GetBinDir("uchardet", "")),
+@@ -78,7 +78,7 @@
+                                           (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
+                                           (_("Do not install (not recommended)"), "")]
+         # exteplayer3
+-        self.exteplayer3Version = {'sh4': 9, 'mipsel': 14, 'armv7': 11}
++        self.exteplayer3Version = {'sh4': 9, 'mipsel': 14}
+         self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
+         self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/exteplayer3 (%s)" % _("recommended")), "/usr/bin/exteplayer3"),
+                                           (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
 @@ -136,7 +136,19 @@
      ###################################################
      def platformDetect(self):
@@ -747,15 +610,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          cmdTabs = []
          for platform in self.supportedPlatforms:
              platformtesterPath = resolveFilename(SCOPE_PLUGINS, "Extensions/IPTVPlayer/bin/%s/platformtester" % platform)
-@@ -287,7 +299,7 @@
-     def rtmpdumpStep(self, ret=None):
-         printDBG("IPTVSetupImpl.rtmpdumpStep")
-         def _detectValidator(code, data):
--            if self.rtmpdumpVersion in data: return True,False
-+            if self.rtmpdumpVersion in data or 'K-S-V patch' in data: return True,False
-             else: return False,True
-         def _deprecatedHandler(paths, stsTab, dataTab):
-             sts, retPath = False, ""
 @@ -329,7 +341,9 @@
          def _detectValidator(code, data):
              if self.binaryInstalledSuccessfully: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList2 )
@@ -767,26 +621,9 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              else: return False,True
          def _deprecatedHandler(paths, stsTab, dataTab):
              sts, retPath = False, ""
-@@ -403,7 +417,7 @@
-         printDBG("IPTVSetupImpl.f4mdumpStepFinished sts[%r]" % sts)
-         if self.platform in ['sh4'] and self.ffmpegVersion in ['1.0', '1.1.1', '1.2', '1.2.1', '2.0.3', '2.0.2', '2.2.1', '2.5', '2.6.2', '2.7.1', '2.8.1', '2.8.2']: 
-             self.exteplayer3Step()
--        elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1']: # no exteplayer3 binaries for 'armv7' at now
-+        elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1']: # no exteplayer3 binaries for 'arm' at now
-             self.exteplayer3Step()
-         elif "" != self.gstreamerVersion: self.gstplayerStep()
-         else: self.finish()
-@@ -620,6 +634,7 @@
-         for server in self.resourceServers:
-             cmd = self.stepHelper.getDownloadCmdBuilder()(self.stepHelper.getName(), self.platform, self.openSSLVersion, server, self.tmpDir)
-             cmdTabs.append(cmd)
-+        print cmdTabs
-         self.workingObj = CCmdValidator(self.binaryDownloadFinished, self.stepHelper.getDownloadValidator(), cmdTabs)
-         self.workingObj.start()
-     
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupwidget.py ./IPTVPlayer/setup/iptvsetupwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupwidget.py	2015-11-05 22:26:57.957660252 +0100
-+++ ./IPTVPlayer/setup/iptvsetupwidget.py	2015-11-28 23:32:28.548748559 +0100
++++ ./IPTVPlayer/setup/iptvsetupwidget.py	2015-12-10 11:38:00.942205999 +0100
 @@ -12,7 +12,7 @@
  from Plugins.Extensions.IPTVPlayer.components.cover          import Cover3
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetupimpl       import IPTVSetupImpl
@@ -817,13 +654,13 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          printDBG("IPTVUpdateMainWindow.__init__ -------------------------------")
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py ./IPTVPlayer/tools/iptvtools.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py	2015-11-28 22:44:46.696748559 +0100
-+++ ./IPTVPlayer/tools/iptvtools.py	2015-11-28 23:32:28.548748559 +0100
++++ ./IPTVPlayer/tools/iptvtools.py	2015-12-10 11:38:00.942205999 +0100
 @@ -47,7 +47,7 @@
      return nice
      
  def E2PrioFix(cmd):
 -    if config.plugins.iptvplayer.plarform.value in ('mipsel', 'armv7'):
-+    if config.plugins.iptvplayer.plarform.value in ('mipsel', 'arm'):
++    if config.plugins.iptvplayer.plarform.value in ('mipsel', 'armv7', 'arm'):
          return 'nice -n %d %s' % (GetNice()+2, cmd)
      else:
          return cmd

@@ -144,7 +144,8 @@ class urlparser:
                        'streamo.tv':           self.pp.parserIITV          ,
                        'divxstage.eu':         self.pp.parserDIVXSTAGE     ,
                        'divxstage.to':         self.pp.parserDIVXSTAGE     ,
-                       'movshare.net':         self.pp.parserNOVAMOV       ,
+                       'movshare.net':         self.pp.parserWHOLECLOUD     ,
+                       'wholecloud.net':       self.pp.parserWHOLECLOUD    ,
                        'tubecloud.net':        self.pp.parserTUBECLOUD     ,
                        'bestreams.net':        self.pp.parserBESTREAMS     ,
                        'freedisc.pl':          self.pp.parserFREEDISC      ,
@@ -157,7 +158,7 @@ class urlparser:
                        'donevideo.com':        self.pp.parserLIMEVIDEO     ,
                        'scs.pl':               self.pp.parserSCS           ,
                        'youwatch.org':         self.pp.parserYOUWATCH      ,
-                       'played.to':            self.pp.parserYOUWATCH      ,
+                       'played.to':            self.pp.parserPLAYEDTO      ,
                        'videomega.tv':         self.pp.parserVIDEOMEGA     ,
                        'vidto.me':             self.pp.parserVIDTO         ,
                        'vidstream.in':         self.pp.parserVIDSTREAM     ,
@@ -285,6 +286,7 @@ class urlparser:
                        'liveonlinetv247.net':  self.pp.parserLIVEONLINE247 ,
                        'filepup.net':          self.pp.parserFILEPUPNET    ,
                        'superfilm.pl':         self.pp.parserSUPERFILMPL   ,
+                       'sendvid.com':          self.pp.parserSENDVIDCOM    ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -615,9 +617,27 @@ class pageParser:
         
     def _parserUNIVERSAL_B(self, url):
         printDBG("_parserUNIVERSAL_B url[%s]" % url)
+        
+        post_data = None
+        
+        if '/embed' not in url: 
+            sts, data = self.cm.getPage( url, {'header':{'User-Agent': 'Mozilla/5.0'}} )
+            if not sts: return False
+            try:
+                tmp = self.cm.ph.getDataBeetwenMarkers(data, '<form method="post" action="">', '</form>', False, False)[1]
+                post_data = dict(re.findall(r'<input[^>]*name="([^"]*)"[^>]*value="([^"]*)"[^>]*>', tmp))
+            except:
+                printExc()
+            try:
+                tmp = dict(re.findall(r'<button[^>]*name="([^"]*)"[^>]*value="([^"]*)"[^>]*>', tmp))
+                post_data.update(tmp)
+            except:
+                printExc()
         videoUrl = False
+        params = {'header':{ 'User-Agent': 'Mozilla/5.0', 'Content-Type':'application/x-www-form-urlencoded','Referer':url} }
         try:
-            sts, data = self.cm.getPage(url)
+            sts, data = self.cm.getPage(url, params, post_data)
+            printDBG(data)
             filekey = re.search('flashvars.filekey="([^"]+?)";', data)
             if None == filekey: 
                 filekey = re.search("flashvars.filekey=([^;]+?);", data)
@@ -816,13 +836,18 @@ class pageParser:
         for urlItem in tmpUrls:
             if urlItem['url'].startswith('/'): inUrl = 'http://www.cda.pl/' + urlItem['url']
             else: inUrl = urlItem['url']
-            sts, data = self.cm.getPage(inUrl)
+            sts, pageData = self.cm.getPage(inUrl)
             if sts:
-                data = CParsingHelper.getDataBeetwenMarkers(data, "modes:", ']', False)[1]
+                data = CParsingHelper.getDataBeetwenMarkers(pageData, "modes:", ']', False)[1]
                 data = re.compile("""file: ['"]([^'^"]+?)['"]""").findall(data)
                 if 0 < len(data) and data[0].startswith('http'): videoUrls.append( {'name': urlItem['name'] + ' flv', 'url':_decorateUrl(data[0], 'cda.pl', urlItem['url']) } )
                 if 1 < len(data) and data[1].startswith('http'): videoUrls.append( {'name': urlItem['name'] + ' mp4', 'url':_decorateUrl(data[1], 'cda.pl', urlItem['url']) } )
-                
+                if 0 == len(data):
+                    data = CParsingHelper.getDataBeetwenMarkers(pageData, 'video: {', '}', False)[1]
+                    data = self.cm.ph.getSearchGroups(data, "'(http[^']+?\.mp4[^']*?)'")[0] 
+                    if '' != data:
+                        videoUrls.append( {'name': urlItem['name'] + ' mp4', 'url':_decorateUrl(data, 'cda.pl', urlItem['url']) } )
+        
         #if len(videoUrls):
         #    videoUrls = [videoUrls[0]]
         return videoUrls
@@ -1135,32 +1160,41 @@ class pageParser:
         printDBG("parserBESTREAMS baseUrl[%s]" % baseUrl)
         USER_AGENT = 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10'
         video_id = self.cm.ph.getSearchGroups(baseUrl+'/', '[/-]([A-Za-z0-9]{12})[/-]')[0]
+        
         url = 'http://bestreams.net/{0}'.format(video_id)
         
         HTTP_HEADER = dict(self.HTTP_HEADER)
         HTTP_HEADER['User-Agent'] = USER_AGENT
         HTTP_HEADER['Referer'] = baseUrl
         sts, data = self.cm.getPage(baseUrl, {'header' : HTTP_HEADER})
+        
+        tries = 0
+        while tries < 3:
+            tries += 1
 
-        try:
-            sleep_time = self.cm.ph.getSearchGroups(data, '>([0-9])</span> seconds<')[0]
-            if '' != sleep_time: time.sleep(int(sleep_time))
-        except:
-            printExc()
-        try:
+            try:
+                sleep_time = self.cm.ph.getSearchGroups(data, '>([0-9])</span> seconds<')[0]
+                sleep_time = int(sleep_time)
+                if sleep_time < 12: time.sleep(sleep_time)
+            except:
+                printExc()
+            
             sts, data = self.cm.ph.getDataBeetwenMarkers(data, 'method="POST"', '</Form>', False, False)
-            if not sts: return False
+            if not sts: continue
             post_data = dict(re.findall(r'<input[^>]*name="([^"]*)"[^>]*value="([^"]*)"[^>]*>', data))
             HTTP_HEADER['Referer'] = url
             sts, data = self.cm.getPage(url, {'header' : HTTP_HEADER}, post_data)
-            if not sts: return False
-            printDBG(data)
-            data = self.cm.ph.getDataBeetwenMarkers(data, 'id="file_title"', '</a>', False)[1]
-            videoUrl = self.cm.ph.getSearchGroups(data, 'href="(http[^"]+?)"')[0]
-            if '' == videoUrl: return False
-            return urlparser.decorateUrl(videoUrl, {'User-Agent':USER_AGENT})
-        except:
-            printExc()
+            if not sts: continue
+            #printDBG(data)
+            
+            try:
+                tmp = self.cm.ph.getDataBeetwenMarkers(data, 'id="file_title"', '</a>', False)[1]
+                videoUrl = self.cm.ph.getSearchGroups(tmp, 'href="(http[^"]+?)"')[0]
+                if '' == videoUrl: continue
+                return urlparser.decorateUrl(videoUrl, {'User-Agent':USER_AGENT})
+            except:
+                printExc()
+            
         return False
 
     def parserTUBECLOUD(self, url):
@@ -1317,8 +1351,30 @@ class pageParser:
                 return False
         else:
             return False
-
+        
     def parserYOUWATCH(self, baseUrl):
+        if 'embed' in baseUrl:
+            url = baseUrl
+        else:
+            url = baseUrl.replace('org/', 'org/embed-').replace('to/', 'to/embed-') + '.html'
+        COOKIE_FILE = GetCookieDir('youwatchorg.cookie')
+        HTTP_HEADER= { 'User-Agent':'Mozilla/5.0'}
+        params = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'save_cookie':True, 'load_cookie':True}
+        
+        tries = 0
+        while tries < 3:
+            tries += 1
+            sts, data = self.cm.getPage(url, params)
+            if not sts: return False
+            if 'sources:' in data:
+                break
+            else:
+                params['header']['Referer'] = url
+                url = self.cm.ph.getSearchGroups(data, '<iframe[^>]*?src="(http[^"]+?)"', 1, True)[0].replace('\n', '')
+        #printDBG(data)
+        return self._findLinks(data)
+
+    def parserPLAYEDTO(self, baseUrl):
         if 'embed' in baseUrl:
             url = baseUrl
         else:
@@ -1327,10 +1383,11 @@ class pageParser:
         sts, data = self.cm.getPage(url)
         if not sts: return False
         
-        url = self.cm.ph.getSearchGroups(data, '<iframe[^>]*?src="(http[^"]+?)"', 1, True)[0]
-        if url != '':
-            sts, data = self.cm.getPage(url, {'header':{'Referer':url, 'User-Agent':'Mozilla/5.0'}})
-            if not sts: return False
+        if iframe:
+            url = self.cm.ph.getSearchGroups(data, '<iframe[^>]*?src="(http[^"]+?)"', 1, True)[0]
+            if url != '':
+                sts, data = self.cm.getPage(url, {'header':{'Referer':url, 'User-Agent':'Mozilla/5.0'}})
+                if not sts: return False
         
         # get JS player script code from confirmation page
         sts, tmpData = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>', False)
@@ -1344,10 +1401,9 @@ class pageParser:
         data = re.search('file:[ ]*?"([^"]+?)"', data)
         if data:
             linkVideo = data.group(1)
-            printDBG('YOUWATCH direct link: ' + linkVideo)
+            printDBG('parserPLAYEDTO direct link: ' + linkVideo)
             return linkVideo
-        else:
-            return False
+        return False
     '''
     def parserALLMYVIDEOS(self,url):
         query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
@@ -1559,7 +1615,7 @@ class pageParser:
         return redirectUrl
 
     def parserRUTUBE(self, url):
-        if url.startswith('http://rutube.ru/video/embed'):
+        if '//rutube.ru/video/embed' in url or '//rutube.ru/play/embed/' in url:
             sts, data = self.cm.getPage(url)
             if not sts: return False
             data = re.search('href="([^"]+?)"', data)
@@ -1623,12 +1679,14 @@ class pageParser:
             try:
                 formats = config.plugins.iptvplayer.ytformat.value
                 bitrate = config.plugins.iptvplayer.ytDefaultformat.value
+                dash    = config.plugins.iptvplayer.ytShowDash.value
             except:
                 printDBG("parserYOUTUBE default ytformat or ytDefaultformat not available here")
                 formats = "mp4"
                 bitrate = "360"
+                dash    = False
             
-            tmpTab = self.getYTParser().getDirectLinks(url, formats)
+            tmpTab, dashTab = self.getYTParser().getDirectLinks(url, formats, dash, dashSepareteList = True)
             # move default URL to the TOP of list
             if 1 < len(tmpTab):
                 def __getLinkQuality( itemLink ):
@@ -1642,10 +1700,12 @@ class pageParser:
                 # add default item at top
                 tmpTab.insert(0, defItem)
                     
-            movieUrls = []
+            videoUrls = []
             for item in tmpTab:
-                movieUrls.append({ 'name': 'YouTube: ' + item['format'] + '\t' + item['ext'] , 'url':item['url'].encode('UTF-8') })
-            return movieUrls
+                videoUrls.append({ 'name': 'YouTube: ' + item['format'] + '\t' + item['ext'] , 'url':item['url'].encode('UTF-8') })
+            for item in dashTab:
+                videoUrls.append({'name': _("[For download only] ") + item['format'] + ' | dash', 'url':item['url']})
+            return videoUrls
 
         return False
         
@@ -2348,7 +2408,14 @@ class pageParser:
         
     def parserVIDFILENET(self, baseUrl):
         printDBG("parserVIDFILENET baseUrl[%s]" % baseUrl)
-        return self.parserVIDEOWOODTV(baseUrl)
+        HTTP_HEADER= { 'User-Agent':"Mozilla/5.0", 'Referer':baseUrl }
+        params = {'header' : HTTP_HEADER}
+        sts, data = self.cm.getPage(baseUrl, params)
+        if sts:
+            data = self.cm.ph.getSearchGroups(data, """["']*file["']*:[ ]*["'](http[^"']+?)["']""")[0]
+            if '' != data:
+                return data
+        return False
         
     def parserMP4UPLOAD(self, baseUrl):
         printDBG("parserMP4UPLOAD baseUrl[%s]" % baseUrl)
@@ -3040,13 +3107,25 @@ class pageParser:
         sts, data = self.cm.getPage(baseUrl)
         if not sts: return []
         
-        data = urllib.unquote( self.cm.ph.getSearchGroups(data, '"params","([^"]+?)"')[0].decode('unicode-escape').encode('UTF-8') )
-        data = byteify( json.loads(data) )
-        urlsTab = []
-        data = data['video_data'][0]
-        if 'sd_src' in data: urlsTab.append({'name':'facebook SD', 'url':data['sd_src'].replace('\\/', '/')})
-        if 'hd_src' in data: urlsTab.append({'name':'facebook HD', 'url':data['hd_src'].replace('\\/', '/')})
         
+        # FROM: https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/facebook.py
+        
+        BEFORE = '{swf.addParam(param[0], param[1]);});\n'
+        AFTER = '.forEach(function(variable) {swf.addVariable(variable[0], variable[1]);});'
+        m = self.cm.ph.getDataBeetwenMarkers(data, BEFORE, AFTER, False)[1]
+        data = dict(json.loads(m))
+        params_raw = urllib.unquote(data['params'])
+        params = byteify( json.loads(params_raw) )
+
+        urlsTab = []
+        for format_id, f in params['video_data'].items():
+            if not f or not isinstance(f, list):
+                continue
+            for quality in ('sd', 'hd'):
+                for src_type in ('src', 'src_no_ratelimit'):
+                    src = f[0].get('%s_%s' % (quality, src_type))
+                    if src:
+                        urlsTab.append({'name':'facebook %s_%s_%s' % (format_id, quality, src_type), 'url':src})
         return urlsTab
         
     def parserCLOUDYVIDEOS(self, baseUrl):
@@ -3479,8 +3558,16 @@ class pageParser:
             return urlparser().getVideoLinkExt(redirectUrl)
         return False
     
-    #def parserMOVSHARE(self, baseUrl):
-    #    printDBG("parserMOVSHARE baseUrl[%s]" % baseUrl)
+    def parserWHOLECLOUD(self, baseUrl):
+        printDBG("parserWHOLECLOUD baseUrl[%s]" % baseUrl)
+        url = baseUrl.replace('movshare.net', 'wholecloud.net')
+        try:
+            mobj = re.search(r'/(?:file|video)/(?P<id>[a-z\d]{13})', url)
+            video_id = mobj.group('id')
+            url = 'http://www.wholecloud.net/embed/?v=' + video_id
+        except:
+            printExc()
+        return self._parserUNIVERSAL_B(url)
         
     def parserSTREAM4KTO(self, baseUrl):
         printDBG("parserSTREAM4KTO baseUrl[%s]" % baseUrl)
@@ -3724,7 +3811,12 @@ class pageParser:
             return encoded.decode('utf8')
         # end https://github.com/whitecream01/WhiteCream-V0.0.1/blob/master/plugin.video.uwc/plugin.video.uwc-1.0.51.zip?raw=true
 
-        videoUrl = decodeOpenLoad(data)
+        try:
+            videoUrl = decodeOpenLoad(data)
+        except:
+            printExc()
+            SetIPTVPlayerLastHostError( self.cm.ph.getDataBeetwenMarkers(data, '<p class="lead">', '</p>', False)[1] )
+            return False
         if videoUrl.startswith('http'): return videoUrl.replace('https://', 'http://').replace('\\/', '/')
         return False
         
@@ -3898,9 +3990,9 @@ class pageParser:
                 src     = self.cm.ph.getSearchGroups(item, 'src:[ ]*?"([^"]+?)"')[0]
                 if not src.startswith('http'): continue
                 sub_tracks.append({'title':label, 'url':src, 'lang':srclang, 'format':'srt'})
-                
+        
         printDBG(">>>>>>>>>>>>>>>>> sub_tracks[%s]\n[%s]" % (sub_tracks, subData))
-            
+        
         linksTab = []
         data = self.cm.ph.getDataBeetwenMarkers(data, 'sources:', ']', False)[1]
         defaultUrl = self.cm.ph.getSearchGroups(data, '"(http[^"]+?)"')[0]
@@ -3919,6 +4011,14 @@ class pageParser:
         linkUrl = self.cm.ph.getSearchGroups(data, '<source[^>]+?src="(http[^"]+?)"')[0]
         return linkUrl
         
+    def parserSENDVIDCOM(self, baseUrl):
+        printDBG("parserSENDVIDCOM baseUrl[%r]" % baseUrl)
+        sts, data = self.cm.getPage(baseUrl)
+        if not sts: return False
+        data = self.cm.ph.getDataBeetwenMarkers(data, '<video ', '</video>', False)[1]
+        linkUrl = self.cm.ph.getSearchGroups(data, '<source[^>]+?src="([^"]+?)"')[0]
+        if linkUrl.startswith('//'): linkUrl = 'http:' + linkUrl
+        return linkUrl
         
     def parserCLOUDYEC(self, baseUrl):
         printDBG("parserCLOUDYEC baseUrl[%r]" % baseUrl)

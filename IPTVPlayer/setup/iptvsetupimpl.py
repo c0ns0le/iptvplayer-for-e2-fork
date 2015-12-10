@@ -49,7 +49,7 @@ class IPTVSetupImpl:
                                        (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
                                        (_("Do not install (not recommended)"), "")]
         # rtmpdump members
-        self.rtmpdumpVersion = "Compiled by samsamsam@o2.pl 2015-01-11"
+        self.rtmpdumpVersion = {'arm':'K-S-V patch', 'default':"Compiled by samsamsam@o2.pl 2015-01-11"}
         self.rtmpdumppaths = ["/usr/bin/rtmpdump", "rtmpdump"]
         
         # f4mdump member
@@ -78,7 +78,7 @@ class IPTVSetupImpl:
                                           (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
                                           (_("Do not install (not recommended)"), "")]
         # exteplayer3
-        self.exteplayer3Version = {'sh4': 9, 'mipsel': 13}
+        self.exteplayer3Version = {'sh4': 9, 'mipsel': 14}
         self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
         self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/exteplayer3 (%s)" % _("recommended")), "/usr/bin/exteplayer3"),
                                           (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
@@ -299,7 +299,7 @@ class IPTVSetupImpl:
     def rtmpdumpStep(self, ret=None):
         printDBG("IPTVSetupImpl.rtmpdumpStep")
         def _detectValidator(code, data):
-            if self.rtmpdumpVersion in data or 'K-S-V patch' in data: return True,False
+            if self.rtmpdumpVersion.get(self.platform, self.rtmpdumpVersion['default']) in data: return True,False
             else: return False,True
         def _deprecatedHandler(paths, stsTab, dataTab):
             sts, retPath = False, ""
@@ -417,7 +417,7 @@ class IPTVSetupImpl:
         printDBG("IPTVSetupImpl.f4mdumpStepFinished sts[%r]" % sts)
         if self.platform in ['sh4'] and self.ffmpegVersion in ['1.0', '1.1.1', '1.2', '1.2.1', '2.0.3', '2.0.2', '2.2.1', '2.5', '2.6.2', '2.7.1', '2.8.1', '2.8.2']: 
             self.exteplayer3Step()
-        elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1']: # no exteplayer3 binaries for 'arm' at now
+        elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1', '2.8.3']: # no exteplayer3 binaries for 'armv7' at now
             self.exteplayer3Step()
         elif "" != self.gstreamerVersion: self.gstplayerStep()
         else: self.finish()
@@ -634,7 +634,6 @@ class IPTVSetupImpl:
         for server in self.resourceServers:
             cmd = self.stepHelper.getDownloadCmdBuilder()(self.stepHelper.getName(), self.platform, self.openSSLVersion, server, self.tmpDir)
             cmdTabs.append(cmd)
-        print cmdTabs
         self.workingObj = CCmdValidator(self.binaryDownloadFinished, self.stepHelper.getDownloadValidator(), cmdTabs)
         self.workingObj.start()
     

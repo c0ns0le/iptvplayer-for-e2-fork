@@ -61,6 +61,21 @@ class j00zekHostTreeSelector(Screen):
         pass
       
     def newCategory(self):
+        selection = self["filelist"].getSelection()
+        if selection[1] == True: # isDir
+            pass
+        else: #host
+            myHostName=selection[0]
+            hostPath=self.filelist.getCurrentDirectory()
+        
+            def CB(ret):
+                if ret:
+                    ManageHostsAndCategories(myHostName, ret[1])
+                
+            from Screens.ChoiceBox import ChoiceBox
+            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import ManageHostsAndCategories, GetHostsCategories
+            self.session.openWithCallback(CB, ChoiceBox, title=_("Assign to/Remove from Category"), list = GetHostsCategories() )
+
         self["filelist"].refresh()
       
     def deleteCategory(self):

@@ -57,10 +57,7 @@ class cda(CBaseHostClass):
                       {'url' : '/kat31', 'title' : 'Sport'}, 
                       {'url' : '/kat32', 'title' : 'Śmieszne filmy'}, 
                       {'url' : '/kat33', 'title' : 'Różności'}, 
-                      {'url' : '/kat34', 'title' : 'Życie studenckie'},
-                      {'url' : '//video?o=popular', 'title' : 'Najpopularniejsze na FB'}, 
-                      {'url' : '//video?o=popular&k=tydzien', 'title' : 'Najpopularniejsze na FB w tym tygodniu'}, 
-                      {'url' : '//video?o=popular&k=miesiac', 'title' : 'Najpopularniejsze na FB w tym miesiącu'}, ]
+                      {'url' : '/kat34', 'title' : 'Życie studenckie'} ] 
     
     def __init__(self):
         printDBG("cda.__init__")
