@@ -25,4 +25,20 @@
                 <key id="KEY_RED"   mapto="videooptions" flags="m" />
                 <key id="KEY_MENU"  mapto="menu"         flags="m" />
         </map> 
+  <map context="j00zekHostTreeSelector">
+    <key id="KEY_OK"    mapto="selectHost" flags="m" />
+    <key id="KEY_GREEN" mapto="selectHost" flags="m" />
+    <key id="KEY_EXIT" mapto="ExitHostSelector" flags="m" />
+    <key id="KEY_HOME" mapto="ExitHostSelector" flags="m" />
+    <key id="KEY_ESC"  mapto="ExitHostSelector" flags="m" />
+    <key id="KEY_RED"  mapto="ExitHostSelector" flags="m" />
+    <key id="KEY_YELLOW" mapto="deleteCategory" flags="m" />
+    <key id="KEY_BLUE" mapto="newCategory" flags="m" />
+    <key id="KEY_UP" mapto="lineUp" flags="m" />
+    <key id="KEY_DOWN" mapto="lineDown" flags="m" />
+    <key id="KEY_LEFT" mapto="pageUp" flags="m" />
+    <key id="KEY_RIGHT" mapto="pageDown" flags="m" />
+    <key id="KEY_PAGEUP" mapto="pageUp" flags="m" />
+    <key id="KEY_PAGEDOWN" mapto="pageDown" flags="m" />
+  </map>
 </keymap>
