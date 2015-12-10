@@ -59,7 +59,7 @@ class j00zekHostTreeSelector(Screen):
         self.setTitle(PluginName + ' mod j00zek v.' + IPTV_VERSION)
 
     def showConfig(self):
-        pass
+        self.close( (("config", "config")) )
       
     def addHostToCategory(self):
         selection = self["filelist"].getSelection()
@@ -324,8 +324,8 @@ class FileList(MenuList):
                     for host in self.Hostslist:
                         if name == host[1]:
                             name = host[0]
+                            self.list.append(FileEntryComponent(name = name, absolute = x , isDir = False))
                             break
-                    self.list.append(FileEntryComponent(name = name, absolute = x , isDir = False))
 
         self.l.setList(self.list)
 

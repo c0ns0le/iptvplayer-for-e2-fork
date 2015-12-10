@@ -34,11 +34,12 @@
     <key id="KEY_GREEN" mapto="addHostToCategory" flags="m" />
     <key id="KEY_YELLOW" mapto="deleteCategory" flags="m" />
     <key id="KEY_BLUE" mapto="newCategory" flags="m" />
-    <key id="KEY_UP" mapto="lineUp" flags="m" />
-    <key id="KEY_DOWN" mapto="lineDown" flags="m" />
+    <key id="KEY_UP" mapto="lineUp" flags="mr" />
+    <key id="KEY_DOWN" mapto="lineDown" flags="mr" />
     <key id="KEY_LEFT" mapto="pageUp" flags="m" />
     <key id="KEY_RIGHT" mapto="pageDown" flags="m" />
     <key id="KEY_PAGEUP" mapto="pageUp" flags="m" />
     <key id="KEY_PAGEDOWN" mapto="pageDown" flags="m" />
+    <key id="KEY_MENU" mapto="showConfig" flags="m" />
   </map>
 </keymap>
