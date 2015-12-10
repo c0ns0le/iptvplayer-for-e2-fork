@@ -37,11 +37,14 @@ def AlternateOptionsList(list):
         list.append( getConfigListEntry(_("Show IPTVPlayer in main menu"), config.plugins.iptvplayer.showinMainMenu))
         list.append( getConfigListEntry(_("Show update icon in service selection menu"), config.plugins.iptvplayer.AktualizacjaWmenu))
         list.append( getConfigListEntry(_("Enable hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelector))
-        list.append( getConfigListEntry(_("Graphic services selector"), config.plugins.iptvplayer.ListaGraficzna))
-        if config.plugins.iptvplayer.ListaGraficzna.value == True:
-            list.append( getConfigListEntry(_("    Service icon size"), config.plugins.iptvplayer.IconsSize))
-            list.append( getConfigListEntry(_("    Number of rows"), config.plugins.iptvplayer.numOfRow))
-            list.append( getConfigListEntry(_("    Number of columns"), config.plugins.iptvplayer.numOfCol))
+        if config.plugins.iptvplayer.j00zekTreeHostsSelector.value == True:
+            list.append( getConfigListEntry(_("Use only hosts tree selector"), config.plugins.iptvplayer.j00zekTreeHostsSelectorOnly))
+        else:
+            list.append( getConfigListEntry(_("Graphic services selector"), config.plugins.iptvplayer.ListaGraficzna))
+            if config.plugins.iptvplayer.ListaGraficzna.value == True:
+                list.append( getConfigListEntry(_("    Service icon size"), config.plugins.iptvplayer.IconsSize))
+                list.append( getConfigListEntry(_("    Number of rows"), config.plugins.iptvplayer.numOfRow))
+                list.append( getConfigListEntry(_("    Number of columns"), config.plugins.iptvplayer.numOfCol))
         #
         list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
         list.append( getConfigListEntry(_("--- Paths to utilities ---"), config.plugins.iptvplayer.j00zekSeparator))
@@ -88,6 +91,7 @@ def RemoveDuplicatesFromList(list):
 def ExtendConfigsList():
     config.plugins.iptvplayer.j00zekSeparator = NoSave(ConfigNothing())
     config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = True)
+    config.plugins.iptvplayer.j00zekTreeHostsSelectorOnly = ConfigYesNo(default = False)
     
     #setting default values, we do not need from original plugin
     config.plugins.iptvplayer.downgradePossible.value = False
