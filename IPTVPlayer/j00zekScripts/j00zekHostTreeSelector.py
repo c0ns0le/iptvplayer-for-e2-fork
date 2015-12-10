@@ -36,7 +36,7 @@ class j00zekHostTreeSelector(Screen):
         self["key_red"] = StaticText(_("Exit"))
         self["Cover"] = Pixmap()
         
-        self["key_green"] = StaticText(_("Select"))
+        self["key_green"] = StaticText("")
             
         self["key_yellow"] = StaticText(_("Delete Category"))
         self["key_blue"] = StaticText(_("New Category"))
@@ -52,6 +52,7 @@ class j00zekHostTreeSelector(Screen):
                 "pageUp": self.pageUp,
                 "pageDown": self.pageDown,
                 "newCategory": self.newCategory,
+                "addHostToCategory": self.addHostToCategory,
                 "deleteCategory": self.deleteCategory,
                 "showConfig": self.showConfig,
             },-2)
@@ -60,14 +61,11 @@ class j00zekHostTreeSelector(Screen):
     def showConfig(self):
         pass
       
-    def newCategory(self):
+    def addHostToCategory(self):
         selection = self["filelist"].getSelection()
-        if selection[1] == True: # isDir
-            pass
-        else: #host
+        if selection[1] == False: # host selected
             myHostName=selection[0]
             hostPath=self.filelist.getCurrentDirectory()
-        
             def CB(ret):
                 if ret:
                     ManageHostsAndCategories(myHostName, ret[1])
@@ -76,6 +74,19 @@ class j00zekHostTreeSelector(Screen):
             from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import ManageHostsAndCategories, GetHostsCategories
             self.session.openWithCallback(CB, ChoiceBox, title=_("Assign to/Remove from Category"), list = GetHostsCategories() )
 
+        self["filelist"].refresh()
+      
+    def newCategory(self):
+        selection = self["filelist"].getSelection()
+        def catCB(callback = None):
+            if callback is not None:
+                printDEBUG('mkdir -p %s/%s' %(self.filelist.getCurrentDirectory(),callback) )
+                os_system('mkdir -p %s/%s' %(self.filelist.getCurrentDirectory(),callback) )
+                self["filelist"].refresh()
+                return
+        from Screens.VirtualKeyBoard import VirtualKeyBoard
+        self.session.openWithCallback(catCB, VirtualKeyBoard, title=_("Enter Category name"), text = _('new Category') )
+            
         self["filelist"].refresh()
       
     def deleteCategory(self):
@@ -107,11 +118,21 @@ class j00zekHostTreeSelector(Screen):
     def setInfo(self):
         selection = self["filelist"].getSelection()
         if selection[1] == True: # isDir
+            self["key_green"].setText("")
             self["key_yellow"].setText(_("Delete Category"))
-            self["key_blue"].setText(_("New Category"))
+            self["Cover"].hide()
         else:
             self["key_yellow"].setText(_("Delete Host"))
-            self["key_blue"].setText(_("Add host to Category"))
+            self["key_green"].setText(_("Assign to category"))
+            HostPreview = '%s/icons/previews/%s.jpg' % (PluginPath,self.filelist.getFilename()[:-4])
+            print HostPreview
+            if os_path.exists(HostPreview):
+                self["Cover"].instance.setScale(1)
+                self["Cover"].instance.setPixmap(LoadPixmap(HostPreview))
+                self["Cover"].show()
+            else:
+                self["Cover"].hide()
+        return
   
     def selectHost(self):
         selection = self["filelist"].getSelection()

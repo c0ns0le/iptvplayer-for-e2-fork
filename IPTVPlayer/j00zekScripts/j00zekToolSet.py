@@ -248,34 +248,24 @@ class j00zekIPTVPlayerConsole(Screen):
         return txt
 
 ##################################################### List all categories #####################################################
-def GetHostsCategories():
+def GetHostsCategories(myDir = PluginPath + '/hosts'):
     HostsCategories = []
-    myDir=PluginPath + '/hosts'
     for CH in os_listdir(myDir):
-        if os_path.isdir(os_path.join(myDir, CH)) and CH != 'favourite':
-            HostsCategories.append((_(CH),CH))
-    if not os_path.exists(myDir + '/favourite'):
-        os_mkdir( myDir + '/favourite' )
+        if os_path.isdir(os_path.join(myDir, CH)):
+            HostsCategories.append((CH,CH))
     HostsCategories.sort()
-    HostsCategories.insert(0,(_("Favourite hosts"),'Favourite'))
     return HostsCategories
 ##################################################### assign/remove host from/to category #####################################################
-def ManageHostsAndCategories(HostName, CategoryName):
-    print HostName, CategoryName
+def ManageHostsAndCategories(HostName, CategoryName = ''):
+    print "!!!!!!!!!!! ManageHostsAndCategories >>>>>>>>",HostName, CategoryName
     ClearMemory()
-    hostsDir='%s/hosts/host' % PluginPath
-    categoryDir='%s/hosts/%s/host' % (PluginPath,CategoryName)
-    if os_path.exists(categoryDir + HostName + '.py') or os_path.exists(categoryDir + HostName + '.pyo') or os_path.exists(categoryDir + HostName + '.pyc'):
+    hostsDir='%s/hosts' % PluginPath
+    categoryDir='%s/hosts/%s' % (PluginPath,CategoryName)
+    if os_path.exists('%s/%s' %(categoryDir,HostName) ):
         print "Removing %s from category %s" % (HostName,CategoryName)
-        os_system('rm -rf %s%s.py*' % (categoryDir,HostName) )
-    elif os_path.exists('%s%s.py' %(hostsDir,HostName)):
+        os_system('rm -rf %s/%s' % (categoryDir,HostName) )
+    elif os_path.exists('%s/%s' %(hostsDir,HostName)):
         print "Assigning %s to category %s" % (HostName,CategoryName)
-        os_system('ln -sf %s.py %s' % ( (hostsDir + HostName), (categoryDir + HostName + '.py') ) )
-    elif os_path.exists('%s%s.pyo' %(hostsDir,HostName)):
-        print "Assigning %s to category %s" % (HostName,CategoryName)
-        os_system('ln -sf %s %s' % ( (hostsDir + HostName + '.pyo'), (categoryDir + HostName + '.pyo') ) )
-    elif os_path.exists('%s%s.pyc' %(hostsDir,HostName)):
-        print "Assigning %s to category %s" % (HostName,CategoryName)
-        os_system('ln -sf %s %s' % ( (hostsDir + HostName + '.pyc'), (categoryDir + HostName + '.pyc') ) )
+        os_system('ln -sf %s/%s %s/%s' % ( hostsDir, HostName, categoryDir, HostName) )
     else:
         print "unknown " + hostsDir + HostName
