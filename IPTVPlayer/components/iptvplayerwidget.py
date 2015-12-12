@@ -909,11 +909,11 @@ class IPTVPlayerWidget(Screen):
             self.checkUpdateTimer.start(self.checkUpdateTimer_interval, True)
             if IsExecutable( DMHelper.GET_WGET_PATH() ):
                 if 'j00zekFork' in globals():
-                    lastVerUrl = 'https://raw.githubusercontent.com/j00zek/iptvplayer-for-e2-fork/master/IPTVPlayer/version.py'
-                    cmd = '%s -q "%s" -O -|grep IPTV_VERSION|grep -o "[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]" 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
+                    lastVerUrl = 'https://raw.githubusercontent.com/j00zek/iptvplayer-for-e2-fork/master/jVersion.txt'
+                    #cmd = '%s -q "%s" -O -|grep IPTV_VERSION|grep -o "[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]" 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
                 else:
                     lastVerUrl = 'http://iptvplayer.pl/download/update/lastversion.php'
-                    cmd = '%s "%s" -O - 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
+                cmd = '%s "%s" -O - 2> /dev/null ' % (DMHelper.GET_WGET_PATH(), lastVerUrl)
                 if None != self.checkUpdateConsole: self.checkUpdateConsole.terminate()
                 printDBG("__requestCheckUpdate cmd[%r]" % cmd)
                 self.checkUpdateConsole = iptv_system( cmd, self.__checkUpdateCmdFinished )

@@ -141,7 +141,6 @@ class IPTVSetupImpl:
             from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import getPlatform
             platform = getPlatform()
             if platform != 'unknown':
-                print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + platform
                 self.platform = platform
                 config.plugins.iptvplayer.plarform.value = self.platform
                 printDBG("IPTVSetupImpl.j00zekFork platform[%s]" % self.platform)

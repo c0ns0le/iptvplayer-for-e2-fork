@@ -261,7 +261,7 @@ def GetHostsCategories(myDir = PluginPath + '/hosts'):
     return HostsCategories
 ##################################################### assign/remove host from/to category #####################################################
 def ManageHostsAndCategories(HostName, CategoryName = ''):
-    print "!!!!!!!!!!! ManageHostsAndCategories >>>>>>>>",HostName, CategoryName
+    printDEBUG("j00zekToolSet:ManageHostsAndCategories > HostName=%s,CategoryName=%s" %(HostName, CategoryName))
     ClearMemory()
     hostsDir='%s/hosts' % PluginPath
     categoryDir='%s/hosts/%s' % (PluginPath,CategoryName)
