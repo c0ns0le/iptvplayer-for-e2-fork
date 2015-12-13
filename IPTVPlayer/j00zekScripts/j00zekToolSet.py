@@ -100,6 +100,9 @@ def ExtendConfigsList():
     config.plugins.iptvplayer.downgradePossible.value = False
     config.plugins.iptvplayer.possibleUpdateType.value = 'sourcecode'
     config.plugins.iptvplayer.deleteIcons.value = "0"
+    
+    config.plugins.iptvplayer.j00zekLastSelectedHost = NoSave(ConfigText(default = "", fixed_size = False))
+
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
     from enigma import getDesktop

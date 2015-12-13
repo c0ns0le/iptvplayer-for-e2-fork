@@ -57,7 +57,15 @@ class j00zekHostTreeSelector(Screen):
                 "showConfig": self.showConfig,
             },-2)
         self.setTitle(PluginName + ' mod j00zek v.' + IPTV_VERSION)
+        self.onShown.append(self.__LayoutFinish)
 
+    def __LayoutFinish(self):
+        if os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value) != '':
+            self["filelist"].changeDir(os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value)+'/', os_path.basename(config.plugins.iptvplayer.j00zekLastSelectedHost.value))
+            self.LastFolderSelected = self.__getCurrentDir()
+            if not self.LastFolderSelected.endswith('/'): self.LastFolderSelected += '/'
+            self["myPath"].setText(self.LastFolderSelected.replace(self.rootPath,''))
+        
     def showConfig(self):
         self.close( (("config", "config")) )
       
@@ -135,6 +143,14 @@ class j00zekHostTreeSelector(Screen):
                 self["Cover"].hide()
         return
   
+    def __getCurrentDir(self):
+        d = self.filelist.getCurrentDirectory()
+        if d is None:
+            d=""
+        elif not d.endswith('/'):
+            d +='/'
+        return d
+      
     def selectHost(self):
         selection = self["filelist"].getSelection()
         if selection[1] == True: # isDir
@@ -145,20 +161,10 @@ class j00zekHostTreeSelector(Screen):
             else:
                 print "Folder Down"
                 self["filelist"].changeDir(selection[0], self.LastFolderSelected)
-            
-            d = self.filelist.getCurrentDirectory()
-            if d is None:
-                d=""
-            elif not d.endswith('/'):
-                d +='/'
-            #self.title = d
-            self["myPath"].setText(d.replace(self.rootPath,''))
+                
+            self["myPath"].setText(self.__getCurrentDir().replace(self.rootPath,''))
         else:
-            d = self.filelist.getCurrentDirectory()
-            if d is None:
-                d=""
-            elif not d.endswith('/'):
-                d +='/'
+            d = self.__getCurrentDir()
             f = self.filelist.getFilename()
             #printDEBUG("self.selectedFile>> " + d + f)
             self.openHost = f[4:].replace('.pyo','').replace('.pyc','')
@@ -166,6 +172,7 @@ class j00zekHostTreeSelector(Screen):
             #self.SetDescriptionAndCover(self.openHost)
             for host in self.Hostslist:
                 if self.openHost == host[1]:
+                    config.plugins.iptvplayer.j00zekLastSelectedHost.value = d + f
                     self.close(host)
       
     def SetDescriptionAndCover(self, HostName):
@@ -211,20 +218,22 @@ def FileEntryComponent(name, absolute = None, isDir = False):
     return res
 
 class FileList(MenuList):
-    def __init__(self, directory, showDirectories = True, showFiles = True, enableWrapAround = False, HostsList = []):
+    def __init__(self, directory, enableWrapAround = False, HostsList = []):
         MenuList.__init__(self, list, enableWrapAround, eListboxPythonMultiContent)
         self.Hostslist = HostsList
         self.mountpoints = []
         self.current_directory = None
         self.current_mountpoint = None
-        self.showDirectories = showDirectories
+        self.showDirectories = True
         self.rootDirectory = directory
-        self.showFiles = showFiles
+        self.showFiles = True
         # example: matching .nfi and .ts files: "^.*\.(nfi|ts)"
         self.inhibitDirs = []
         self.inhibitMounts = []
 
         self.refreshMountpoints()
+        #if config.plugins.iptvplayer.j00zekLastSelectedHost.value != '':
+        #    self.changeDir( os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value), os_path.basename(config.plugins.iptvplayer.j00zekLastSelectedHost.value) )
         self.changeDir(directory)
         self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
         self.l.setItemHeight(42)
@@ -264,8 +273,8 @@ class FileList(MenuList):
         l = self.l.getCurrentSelection()
         if not l or l[0][1] == True:
             return None
-        else:
-            return self.serviceHandler.info(l[0][0]).getEvent(l[0][0])
+        #else:
+        #    return self.serviceHandler.info(l[0][0]).getEvent(l[0][0])
 
     def getFileList(self):
         return self.list
@@ -334,8 +343,8 @@ class FileList(MenuList):
             self.moveToIndex(0)
             for x in self.list:
                 p = x[0][0]
-                if isinstance(p, eServiceReference):
-                    p = p.getPath()
+                #if isinstance(p, eServiceReference):
+                #    p = p.getPath()
                 if p == select:
                     self.moveToIndex(i)
                 i += 1
@@ -357,16 +366,16 @@ class FileList(MenuList):
         if self.getSelection() is None:
             return None
         x = self.getSelection()[0]
-        if isinstance(x, eServiceReference):
-            x = x.getPath()
+        #if isinstance(x, eServiceReference):
+        #    x = x.getPath()
         return x
 
     def getServiceRef(self):
         if self.getSelection() is None:
             return None
         x = self.getSelection()[0]
-        if isinstance(x, eServiceReference):
-            return x
+        #if isinstance(x, eServiceReference):
+        #    return x
         return None
 
     def execBegin(self):
