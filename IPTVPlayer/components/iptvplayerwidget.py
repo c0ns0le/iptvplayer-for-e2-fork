@@ -126,10 +126,6 @@ class IPTVPlayerWidget(Screen):
                             <widget name="spinner_4" zPosition="1" position="511,200" size="16,16" transparent="1" alphatest="blend" />
                     </screen>
                 """ %( IPTV_VERSION, GetIconDir('red.png'), GetIconDir('green.png'), GetIconDir('yellow.png'), GetIconDir('blue.png'), GetIconDir('line.png'))      
-
-    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
-    skin=LoadSkin('IPTVPlayerWidget')
- 
     def __init__(self, session):
         printDBG("IPTVPlayerWidget.__init__ desktop IPTV_VERSION[%s]\n" % (IPTVPlayerWidget.IPTV_VERSION) )
         self.session = session

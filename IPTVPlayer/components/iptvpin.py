@@ -22,8 +22,15 @@ from cover import Cover3
 
 class IPTVPinWidget(Screen):
     PIN_LEN = 4
-    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
-    skin = LoadSkin("IPTVPinWidget")
+    skin = """
+        <screen name="IPTVPinWidget" position="center,center" title="IPTV Player" size="300,260">
+         <widget name="titel" position="5,5" zPosition="1" size="290,40" font="Regular;24" transparent="1" halign="center" valign="center" backgroundColor="black"/>
+         <widget name="cover_0" zPosition="4" position="5,80" size="60,60" transparent="1" alphatest="on" />
+         <widget name="cover_1" zPosition="4" position="75,80" size="60,60" transparent="1" alphatest="on" />
+         <widget name="cover_2" zPosition="4" position="145,80" size="60,60" transparent="1" alphatest="on" />
+         <widget name="cover_3" zPosition="4" position="215,80" size="60,60" transparent="1" alphatest="on" />
+         <ePixmap position="100,150" zPosition="4" size="100,100" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/icons/Pin/lock.png" transparent="1" alphatest="on" />
+        </screen>"""
    
     def __init__(self, session, title = ""):
         self.session = session

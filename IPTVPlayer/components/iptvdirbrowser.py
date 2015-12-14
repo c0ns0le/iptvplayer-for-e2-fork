@@ -61,9 +61,6 @@ class IPTVDirectorySelectorWidget(Screen):
             <widget name="list"        position="10,85"  zPosition="1"  size="580,335" transparent="1" scrollbarMode="showOnDemand" enableWrapAround="1" />
         </screen>"""
         
-    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
-    skin=LoadSkin('IPTVDirectorySelectorWidget')
-
     def __init__(self, session, currDir, title="Directory browser"):
         printDBG("IPTVDirectorySelectorWidget.__init__ -------------------------------")
         Screen.__init__(self, session)

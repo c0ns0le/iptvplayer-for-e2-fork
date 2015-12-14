@@ -12,7 +12,7 @@ from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT
 from Plugins.Extensions.IPTVPlayer.components.cover          import Cover3
 from Plugins.Extensions.IPTVPlayer.setup.iptvsetupimpl       import IPTVSetupImpl
 ###################################################
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+
 ###################################################
 # FOREIGN import
 ###################################################
@@ -28,7 +28,17 @@ from Tools.LoadPixmap import LoadPixmap
 
 class IPTVSetupMainWidget(Screen):
     IPTV_VERSION = GetIPTVPlayerVerstion()
-    skin = LoadSkin('IPTVSetupMainWidget')
+    skin = """
+    <screen name="IPTVPlayerWidget" position="center,center" size="600,300" title="IPTVPlayer setup version %s">
+            <widget name="sub_title"    position="10,10" zPosition="2" size="580,90"   valign="center" halign="center" font="Regular;24" transparent="1" foregroundColor="white" />
+            <widget name="info_field"   position="10,100" zPosition="2" size="580,200" valign="top" halign="center"   font="Regular;22" transparent="1" foregroundColor="white" />
+            
+            <widget name="spinner"   zPosition="2" position="463,200" size="16,16" transparent="1" alphatest="blend" />
+            <widget name="spinner_1" zPosition="1" position="463,200" size="16,16" transparent="1" alphatest="blend" />
+            <widget name="spinner_2" zPosition="1" position="479,200" size="16,16" transparent="1" alphatest="blend" />
+            <widget name="spinner_3" zPosition="1" position="495,200" size="16,16" transparent="1" alphatest="blend" />
+            <widget name="spinner_4" zPosition="1" position="511,200" size="16,16" transparent="1" alphatest="blend" />
+    </screen>""" %( IPTV_VERSION)
 
     def __init__(self, session, autoStart=False):
         printDBG("IPTVUpdateMainWindow.__init__ -------------------------------")

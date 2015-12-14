@@ -30,7 +30,7 @@ from Components.Label import Label
 from Components.Sources.StaticText import StaticText
 from Components.config import config
 
-from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
+from os import chmod as os_chmod, path as os_path, remove as os_remove
 ###################################################
 
 #########################################################
@@ -64,9 +64,6 @@ class IPTVDMWidget(Screen):
             )
         # <widget render="Label" source="key_yellow" position="220,9" size="180,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         # <widget render="Label" source="key_blue" position="630,9" size="140,27" zPosition="5" valign="center" halign="left" backgroundColor="black" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" /> 
-
-    skin = LoadSkin("IPTVDMWidget")
-
     def __init__(self, session, downloadmanager):
         self.session = session
         Screen.__init__(self, session)

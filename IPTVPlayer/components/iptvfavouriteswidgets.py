@@ -158,9 +158,6 @@ class IPTVFavouritesMainWidget(Screen):
             sz_w - 135, # size title
             )
             
-    from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import LoadSkin
-    skin=LoadSkin('IPTVFavouritesMainWidget')
-             
     def __init__(self, session):
         self.session = session
         Screen.__init__(self, session)
