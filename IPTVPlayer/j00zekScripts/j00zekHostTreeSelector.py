@@ -55,6 +55,7 @@ class j00zekHostTreeSelector(Screen):
                 "addHostToCategory": self.addHostToCategory,
                 "deleteCategory": self.deleteCategory,
                 "showConfig": self.showConfig,
+                "showLocalMedia":  self.showLocalMedia,
             },-2)
         self.setTitle(PluginName + ' mod j00zek v.' + IPTV_VERSION)
         self.onShown.append(self.__LayoutFinish)
@@ -68,6 +69,9 @@ class j00zekHostTreeSelector(Screen):
         
     def showConfig(self):
         self.close( (("config", "config")) )
+      
+    def showLocalMedia(self):
+        self.close( (("localmedia", "localmedia")) )
       
     def addHostToCategory(self):
         selection = self["filelist"].getSelection()
@@ -108,20 +112,31 @@ class j00zekHostTreeSelector(Screen):
         self.setInfo()
       
     def pageUp(self):
-        self["filelist"].pageUp()
+        if self["filelist"].getSelectedIndex() == 0:
+            self["filelist"].moveToIndex(len(self["filelist"].getFileList())-1)
+        else:
+            self["filelist"].pageUp()
         self.setInfo()
 
     def pageDown(self):
-        self["filelist"].pageDown()
+        if self["filelist"].getSelectedIndex() == (len(self["filelist"].getFileList())-1):
+            self["filelist"].moveToIndex(0)
+        else:
+            self["filelist"].pageDown()
         self.setInfo()
 
     def lineUp(self):
-      
-        self["filelist"].up()
+        if self["filelist"].getSelectedIndex() == 0:
+            self["filelist"].moveToIndex(len(self["filelist"].getFileList())-1)
+        else:
+            self["filelist"].up()
         self.setInfo()
 
     def lineDown(self):
-        self["filelist"].down()
+        if self["filelist"].getSelectedIndex() == (len(self["filelist"].getFileList())-1):
+            self["filelist"].moveToIndex(0)
+        else:
+            self["filelist"].down()
         self.setInfo()
 
     def setInfo(self):

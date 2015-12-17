@@ -41,5 +41,6 @@
     <key id="KEY_PAGEUP" mapto="pageUp" flags="m" />
     <key id="KEY_PAGEDOWN" mapto="pageDown" flags="m" />
     <key id="KEY_MENU" mapto="showConfig" flags="m" />
+    <key id="KEY_PLAY" mapto="showLocalMedia" flags="m" />
   </map>
 </keymap>
