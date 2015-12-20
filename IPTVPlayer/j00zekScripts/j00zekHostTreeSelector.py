@@ -321,7 +321,8 @@ class FileList(MenuList):
                     files = listdir(directory)
                 except:
                     files = []
-                files.sort()
+                files.sort(key=lambda s: s.lower())
+                #files.sort()
                 tmpfiles = files[:]
                 for x in tmpfiles:
                     if os_path.isdir(directory + x):
