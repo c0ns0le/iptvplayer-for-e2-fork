@@ -1,5 +1,7 @@
-# @j00zek 18.11.2015
+# @j00zek 20.12.2015
 #
+[ -e /tmp/.rebootGUI ] && rm -rf /tmp/.rebootGUI
+
 if `grep -q 'config.plugins.iptvplayer.debugprint=' 2>/dev/null </etc/enigma2/settings`;then
   UpdateType='dev'
 elif `grep -q 'config.plugins.iptvplayer.debugprint=' 2>/dev/null </usr/local/e2/etc/enigma2/settings`;then
@@ -107,4 +109,5 @@ else
   echo "_(Success: Restart GUI manually to use new plugin version)"
 fi
 
+touch /tmp/.rebootGUI
 exit 0

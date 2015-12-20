@@ -225,10 +225,23 @@ class j00zekIPTVPlayerConsole(Screen):
                 self.cancel()
 
     def cancel(self):
+        def rebootQuestionAnswered(ret):
+            if ret:
+                from enigma import quitMainloop
+                quitMainloop(3)
+                try:
+                    self.close()
+                except:
+                    pass
+            return
         if self.run == len(self.cmdlist):
-            self.close()
             self.container.appClosed.remove(self.runFinished)
             self.container.dataAvail.remove(self.dataAvail)
+            if os_path.exists("/tmp/.rebootGUI"):
+                from Screens.MessageBox import MessageBox
+                self.session.openWithCallback(rebootQuestionAnswered, MessageBox,"Restart GUI now?",  type = MessageBox.TYPE_YESNO, timeout = 10, default = False)
+            else:
+                self.close()
 
     def dataAvail(self, str):
         #lastpage = self["text"].isAtLastPage()

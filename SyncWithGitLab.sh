@@ -27,7 +27,7 @@ cd $myDir
 
 #change numbering
 sed -i 's/\(IPTV_VERSION="\)/\1j/' ./IPTVPlayer/version.py
-cat ./IPTVPlayer/version.py|grep IPTV_VERSION|grep -o "[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]" > ../jVersion.txt
+cat ./IPTVPlayer/version.py|grep IPTV_VERSION|grep -o "[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]" > ./IPTVPlayer/jVersion.txt
 
 mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTVPlayer/hosts/hostipla.py
 cp -af ~/iptvplayerXXX-GitLab-master-version/IPTVPlayer/* $myDir/IPTVPlayer/

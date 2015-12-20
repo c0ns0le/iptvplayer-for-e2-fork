@@ -1,6 +1,10 @@
+/IPTVPlayer/bin/gstplayer
 /IPTVPlayer/bin/arm/platformtester.i386
 /IPTVPlayer/bin/arm/lsdir.arm
 /IPTVPlayer/bin/wget
+*15
+*16
+*.kate-swp
 *.orig
 *.last
 # Byte-compiled / optimized / DLL files
