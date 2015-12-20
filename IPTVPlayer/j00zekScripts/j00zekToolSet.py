@@ -229,10 +229,8 @@ class j00zekIPTVPlayerConsole(Screen):
             if ret:
                 from enigma import quitMainloop
                 quitMainloop(3)
-                try:
-                    self.close()
-                except:
-                    pass
+            try: self.close()
+            except: pass
             return
         if self.run == len(self.cmdlist):
             self.container.appClosed.remove(self.runFinished)
