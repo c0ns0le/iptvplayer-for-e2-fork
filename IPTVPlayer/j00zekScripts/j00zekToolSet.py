@@ -157,10 +157,10 @@ def getPlatform():
     else:
        return 'unknown'
 ##################################################### translated Console #####################################################
-class j00zekIPTVPlayerConsole(Screen):
+class translatedConsole(Screen):
 #TODO move this to skin.xml
     skin = """
-        <screen name="j00zekIPTVPlayerConsole" position="center,center" size="550,400" title="Updating ..." >
+        <screen position="center,center" size="550,400" title="Updating ..." >
             <widget name="text" position="0,0" size="550,400" font="Console;14" />
         </screen>"""
         
@@ -267,7 +267,7 @@ class j00zekIPTVPlayerConsole(Screen):
                 if index == 10:
                     break
         return txt
-
+j00zekIPTVPlayerConsole = translatedConsole
 ##################################################### List all categories #####################################################
 def GetHostsCategories(myDir = PluginPath + '/hosts'):
     HostsCategories = []
