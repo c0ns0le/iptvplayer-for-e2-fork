@@ -19,13 +19,13 @@ fi
 rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
 sudo rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
 
-curl --help 1>/dev/null 2>%1
+curl --help 1>/dev/null 2>&1
 if [ $? -gt 0 ]; then
   echo "_(Required program 'curl' is not installed. Trying to install it via OPKG.)"
   echo
   opkg install curl 
 
-  curl --help 1>/dev/null 2>%1
+  curl --help 1>/dev/null 2>&1
   if [ $? -gt 0 ]; then
     echo
     echo "_(Required program 'curl' is not available. Please install it first manually.)"
@@ -42,7 +42,7 @@ fi
 echo "_(Update type:) $UpdateType"
 
 echo "_(Checking internet connection...)"
-ping -c 1 github.com 1>/dev/null 2>%1
+ping -c 1 github.com 1>/dev/null 2>&1
 if [ $? -gt 0 ]; then
   echo "_(github server unavailable, update impossible!!!)"
   exit 0
