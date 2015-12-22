@@ -103,11 +103,25 @@ class j00zekHostTreeSelector(Screen):
       
     def deleteCategory(self):
         selection = self["filelist"].getSelection()
-        printDEBUG("Deleting %s" % selection[0])
         if selection[1] == True: # isDir
+            printDEBUG("Deleting %s" % selection[0])
             os_system('rm -rf %s' % selection[0])
-        else:
-            os_system('rm -rf %s/%s' % (self.filelist.getCurrentDirectory(),selection[0]))
+        else: #we need disable host
+            #os_system('rm -rf %s/%s' % (self.filelist.getCurrentDirectory(),selection[0]))
+            currhost=None
+            for host in self.Hostslist:
+                if selection[0][4:-4] == host[1]:
+                    currhost = host
+                    break
+            if currhost is not None:
+                try:
+                    exec('config.plugins.iptvplayer.host%s.value=False' % currhost[1])
+                    exec('config.plugins.iptvplayer.host%s.save()' % currhost[1])
+                    self.Hostslist.remove(currhost)
+                    printDEBUG("Disabled %s (%s)" % (currhost[1],selection[0]))
+                except:
+                    printDEBUG("Exception disabling host '%s'" % currhost[1])
+
         self["filelist"].refresh()
         self.setInfo()
       
@@ -146,7 +160,7 @@ class j00zekHostTreeSelector(Screen):
             self["key_yellow"].setText(_("Delete Category"))
             self["Cover"].hide()
         else:
-            self["key_yellow"].setText(_("Delete Host"))
+            self["key_yellow"].setText(_("Disable Host"))
             self["key_green"].setText(_("Assign to category"))
             HostPreview = '%s/icons/previews/%s.jpg' % (PluginPath,self.filelist.getFilename()[:-4])
             print HostPreview
