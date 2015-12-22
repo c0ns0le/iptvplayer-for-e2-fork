@@ -42,5 +42,6 @@
     <key id="KEY_PAGEDOWN" mapto="pageDown" flags="m" />
     <key id="KEY_MENU" mapto="showConfig" flags="m" />
     <key id="KEY_PLAY" mapto="showLocalMedia" flags="m" />
+    <key id="KEY_RECORD" mapto="showDownloadManager" flags="m" />
   </map>
 </keymap>

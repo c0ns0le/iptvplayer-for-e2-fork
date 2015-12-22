@@ -56,6 +56,7 @@ class j00zekHostTreeSelector(Screen):
                 "deleteCategory": self.deleteCategory,
                 "showConfig": self.showConfig,
                 "showLocalMedia":  self.showLocalMedia,
+                "showDownloadManager": self.showDownloadManager,
             },-2)
         self.setTitle(PluginName + ' mod j00zek v.' + IPTV_VERSION)
         self.onShown.append(self.__LayoutFinish)
@@ -73,6 +74,9 @@ class j00zekHostTreeSelector(Screen):
     def showLocalMedia(self):
         self.close( (("localmedia", "localmedia")) )
       
+    def showDownloadManager(self):
+        self.close( (("IPTVDM", "IPTVDM")) )
+        
     def addHostToCategory(self):
         selection = self["filelist"].getSelection()
         if selection[1] == False: # host selected
