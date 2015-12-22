@@ -220,6 +220,8 @@ class IPTVSetupImpl:
         def _verValidator(code, data):
             if 'libgstbase-' in data: 
                 return True,False
+            elif 'libgstreamer-' in data: 
+                return True,False
             elif 'GStreamer Core Library version ' in data: 
                 return True,False
             else: 
@@ -238,6 +240,10 @@ class IPTVSetupImpl:
             if 'libgstbase-1.0.so' in dataTab[-1]:
                 self.gstreamerVersion = "1.0"
             elif 'libgstbase-0.10.so' in dataTab[-1]:
+                self.gstreamerVersion = "0.10"
+            elif 'libgstreamer-1.0' in dataTab[-1]:
+                self.gstreamerVersion = "1.0"
+            elif 'libgstreamer-0.10' in dataTab[-1]:
                 self.gstreamerVersion = "0.10"
             elif ' version 1.' in dataTab[-1]:
                 self.gstreamerVersion = "1.0"
