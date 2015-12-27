@@ -15,8 +15,7 @@ from Components.Harddisk import harddiskmanager #do wywalenia!!!!
 
 from Tools.Directories import SCOPE_CURRENT_SKIN, resolveFilename, fileExists
 
-from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, \
-    eServiceReference, eServiceCenter, gFont
+from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, eServiceReference, eServiceCenter, gFont, getDesktop
 
 ##################################################### main widget #####################################################
 class j00zekHostTreeSelector(Screen):
@@ -268,7 +267,10 @@ class FileList(MenuList):
         #if config.plugins.iptvplayer.j00zekLastSelectedHost.value != '':
         #    self.changeDir( os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value), os_path.basename(config.plugins.iptvplayer.j00zekLastSelectedHost.value) )
         self.changeDir(directory)
-        self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
+        if getDesktop(0).size().width() == 1920:
+            self.l.setFont(0, gFont("Regular", 36)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
+        else:
+            self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
         self.l.setItemHeight(42)
         self.serviceHandler = eServiceCenter.getInstance()
 
