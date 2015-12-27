@@ -1,6 +1,6 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-11-16 06:19:04.566308000 +0100
-+++ ./IPTVPlayer/components/configbase.py	2015-12-22 07:55:08.662961999 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-12-27 07:42:31.328793000 +0100
++++ ./IPTVPlayer/components/configbase.py	2015-12-27 07:43:39.862508999 +0100
 @@ -8,10 +8,9 @@
  ###################################################
  # LOCAL import
@@ -14,24 +14,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
  # FOREIGN import
  ###################################################
-@@ -33,7 +32,7 @@
-     screenwidth = getDesktop(0).size().width()
-     if screenwidth and screenwidth == 1920:
-         skin = """
--            <screen name="IPTVConfigBaseWidget" position="center,center" size="920,860" title="" >
-+            <screen position="center,center" size="920,860" title="" >
-                 <widget name="config"    position="10,70" size="900,780" zPosition="1" transparent="1" scrollbarMode="showOnDemand" />
-                 <widget name="key_red"   position="10,10" zPosition="2" size="600,35" valign="center" halign="left"   font="Regular;28" transparent="1" foregroundColor="red" />
-                 <widget name="key_ok"    position="10,10" zPosition="2" size="600,35" valign="center" halign="center" font="Regular;28" transparent="1" foregroundColor="white" />
-@@ -43,7 +42,7 @@
-             </screen>"""
-     else:
-         skin = """
--            <screen name="IPTVConfigBaseWidget" position="center,center" size="620,440" title="" >
-+            <screen position="center,center" size="620,440" title="" >
-                 <widget name="config"    position="10,50" size="600,370" zPosition="1" transparent="1" scrollbarMode="showOnDemand" />
-                 <widget name="key_red"   position="10,10" zPosition="2" size="600,35" valign="center" halign="left"   font="Regular;22" transparent="1" foregroundColor="red" />
-                 <widget name="key_ok"    position="10,10" zPosition="2" size="600,35" valign="center" halign="center" font="Regular;22" transparent="1" foregroundColor="white" />
 @@ -220,6 +219,12 @@
          if isinstance(currItem, ConfigDirectory):
              def SetDirPathCallBack(curIndex, newPath):
@@ -47,7 +29,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif isinstance(currItem, ConfigText):
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-12-16 10:43:24.788841774 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-12-22 07:55:08.662961999 +0100
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2015-12-27 07:43:39.862508999 +0100
 @@ -7,12 +7,11 @@
  ###################################################
  # LOCAL import
@@ -257,7 +239,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          alternativePlayer = config.plugins.iptvplayer.NaszPlayer
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py ./IPTVPlayer/components/iptvextmovieplayer.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2015-12-01 20:55:07.046977999 +0100
-+++ ./IPTVPlayer/components/iptvextmovieplayer.py	2015-12-22 07:55:08.666960000 +0100
++++ ./IPTVPlayer/components/iptvextmovieplayer.py	2015-12-27 07:43:39.866506999 +0100
 @@ -1369,7 +1369,7 @@
                  
              if config.plugins.iptvplayer.aac_software_decode.value:
@@ -269,7 +251,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              printDBG(">>>>>>>>>>>>>>>>>>>>>>>> audioTrackIdx[%d]" % audioTrackIdx)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-12-16 10:43:24.788841774 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-12-22 07:55:08.666960000 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2015-12-27 07:43:39.866506999 +0100
 @@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
@@ -341,8 +323,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              elif ret[1] == "IPTVDM":
                  self.runIPTVDM(self.selectHost)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-11-11 07:16:45.118414000 +0100
-+++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-22 07:55:08.666960000 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:42:31.332790999 +0100
++++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:43:39.866506999 +0100
 @@ -19,7 +19,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -370,7 +352,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self["list"].setSelectionState(enabled = False)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml ./IPTVPlayer/keymap.xml
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml	2015-11-11 07:16:27.439257999 +0100
-+++ ./IPTVPlayer/keymap.xml	2015-12-22 11:06:50.535691204 +0100
++++ ./IPTVPlayer/keymap.xml	2015-12-27 07:43:39.866506999 +0100
 @@ -25,4 +25,23 @@
                  <key id="KEY_RED"   mapto="videooptions" flags="m" />
                  <key id="KEY_MENU"  mapto="menu"         flags="m" />
@@ -398,7 +380,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 \ No newline at end of file
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py ./IPTVPlayer/plugin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-17 06:34:21.247824000 +0100
-+++ ./IPTVPlayer/plugin.py	2015-12-22 07:55:08.670958001 +0100
++++ ./IPTVPlayer/plugin.py	2015-12-27 07:43:39.870505000 +0100
 @@ -73,7 +73,9 @@
      #print config.plugins.iptvplayer.rtmpdumppath.value
      #print config.plugins.iptvplayer.f4mdumppath.value
@@ -411,8 +393,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      elif IPTVPlayerNeedInit():
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-12-22 07:55:04.928830000 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-12-22 23:47:33.489830895 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2015-12-27 07:42:31.336788999 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2015-12-27 07:51:51.880376995 +0100
 @@ -7,7 +7,7 @@
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -523,7 +505,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          cmdTabs = []
          for platform in self.supportedPlatforms:
              platformtesterPath = resolveFilename(SCOPE_PLUGINS, "Extensions/IPTVPlayer/bin/%s/platformtester" % platform)
-@@ -209,6 +220,8 @@
+@@ -209,14 +220,15 @@
          def _verValidator(code, data):
              if 'libgstbase-' in data: 
                  return True,False
@@ -532,7 +514,16 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              elif 'GStreamer Core Library version ' in data: 
                  return True,False
              else: 
-@@ -228,6 +241,10 @@
+                 return False,True
+         verCmdTab = []
+         verCmdTab.append('cat /proc/%s/maps | grep libgst' % os_getpid())
+-        if 'sh4' != self.platform:
+-            verCmdTab.append('gst-launch-1.0 --gst-version')
++        verCmdTab.append('gst-launch-1.0 --gst-version')
+         verCmdTab.append('gst-launch --gst-version')
+         self.workingObj = CCmdValidator(self.getGstreamerVerFinished, _verValidator, verCmdTab)
+         self.workingObj.start()
+@@ -228,6 +240,10 @@
                  self.gstreamerVersion = "1.0"
              elif 'libgstbase-0.10.so' in dataTab[-1]:
                  self.gstreamerVersion = "0.10"
@@ -543,7 +534,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              elif ' version 1.' in dataTab[-1]:
                  self.gstreamerVersion = "1.0"
              elif ' version 0.' in dataTab[-1]:
-@@ -338,7 +355,9 @@
+@@ -338,7 +354,9 @@
          def _detectValidator(code, data):
              if self.binaryInstalledSuccessfully: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList2 )
              else: self.stepHelper.setInstallChoiseList( self._uchardetInstallChoiseList )
@@ -554,9 +545,21 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              else: return False,True
          def _deprecatedHandler(paths, stsTab, dataTab):
              sts, retPath = False, ""
+@@ -492,10 +510,8 @@
+         printDBG("IPTVSetupImpl.gstplayerStepFinished sts[%r]" % sts)
+         if sts and '0.10' == self.gstreamerVersion:
+             self.flumpegdemuxStep()
+-        elif 'sh4' != self.platform: 
+-            self.gstifdsrcStep()
+         else:
+-            self.finish()
++            self.gstifdsrcStep()
+         
+     ###################################################
+     # STEP: FLUENDO MPEGDEMUX
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py ./IPTVPlayer/tools/iptvtools.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py	2015-12-20 06:49:33.986133998 +0100
-+++ ./IPTVPlayer/tools/iptvtools.py	2015-12-22 07:55:08.670958001 +0100
++++ ./IPTVPlayer/tools/iptvtools.py	2015-12-27 07:43:39.870505000 +0100
 @@ -47,7 +47,7 @@
      return nice
      
