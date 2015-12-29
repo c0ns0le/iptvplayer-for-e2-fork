@@ -16,6 +16,7 @@ from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG as printDEBUG
 from Screens.Screen import Screen
 from Tools.Directories import *
 
+from Plugins.Extensions.IPTVPlayer.__init__ import _
 # Plugin Paths
 PluginFolder = PluginName
 PluginPath = resolveFilename(SCOPE_PLUGINS, '%s/%s' %(PluginGroup,PluginFolder))
@@ -51,12 +52,12 @@ def AlternateOptionsList(list):
     #
     list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
     list.append( getConfigListEntry(_("--- Paths to utilities ---"), config.plugins.iptvplayer.j00zekSeparator))
-    list.append( getConfigListEntry("wgetpath", config.plugins.iptvplayer.wgetpath))
-    list.append( getConfigListEntry("rtmpdumppath", config.plugins.iptvplayer.rtmpdumppath))
-    list.append( getConfigListEntry("f4mdumppath", config.plugins.iptvplayer.f4mdumppath))
-    list.append( getConfigListEntry("uchardetpath", config.plugins.iptvplayer.uchardetpath))
-    list.append( getConfigListEntry("exteplayer3path", config.plugins.iptvplayer.exteplayer3path))
-    list.append( getConfigListEntry("gstplayerpath", config.plugins.iptvplayer.gstplayerpath))
+    list.append( getConfigListEntry(_("wgetpath"), config.plugins.iptvplayer.wgetpath))
+    list.append( getConfigListEntry(_("rtmpdumppath"), config.plugins.iptvplayer.rtmpdumppath))
+    list.append( getConfigListEntry(_("f4mdumppath"), config.plugins.iptvplayer.f4mdumppath))
+    list.append( getConfigListEntry(_("uchardetpath"), config.plugins.iptvplayer.uchardetpath))
+    list.append( getConfigListEntry(_("exteplayer3path"), config.plugins.iptvplayer.exteplayer3path))
+    list.append( getConfigListEntry(_("gstplayerpath"), config.plugins.iptvplayer.gstplayerpath))
     #
     list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
     list.append( getConfigListEntry(_("--- Debug ---"), config.plugins.iptvplayer.j00zekSeparator))

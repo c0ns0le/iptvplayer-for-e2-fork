@@ -14,6 +14,57 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Poedit-SearchPath-0: ../plugin\n"
 
+msgid "IPTV Player"
+msgstr "Odtwarzacz IPTV"
+
+msgid "Delete Category"
+msgstr "Usuń kategorię"
+
+msgid "New Category"
+msgstr "Nowa kategoria"
+
+msgid "Disable Host"
+msgstr "Wyłącz serwis"
+
+msgid "Assign to category"
+msgstr "Dodaj do kategorii"
+
+msgid "--- General options ---"
+msgstr "--- Opcje podstawowe ---"
+
+msgid "Detected platform"
+msgstr "Wykryta platforma"
+
+msgid "Enable hosts tree selector"
+msgstr "Aktywuj drzewo wyboru serwisów"
+
+msgid "Use only hosts tree selector"
+msgstr "Korzystaj tylko z drzewa wyboru"
+
+msgid "--- Paths to utilities ---"
+msgstr "--- Ścieżki do narzędzi ---"
+
+msgid "wgetpath"
+msgstr "wget"
+
+msgid "rtmpdumppath"
+msgstr "rtmpdump"
+
+msgid "f4mdumppath"
+msgstr "f4mdump"
+
+msgid "uchardetpath"
+msgstr "uchardet"
+
+msgid "exteplayer3path"
+msgstr "odtwarzacz ffmpeg"
+
+msgid "gstplayerpath"
+msgstr "odtwarzacz gst"
+
+msgid "--- Debug ---"
+msgstr "--- Raportowanie błędów ---"
+
 msgid "Watch video materials from IPTV services"
 msgstr "Oglądanie materiałów z serwisów IPTV"
 
@@ -57,7 +108,7 @@ msgid "Loading..."
 msgstr "Pobieranie listy..."
 
 msgid "Configure host"
-msgstr "Konfiguracja hosta"
+msgstr "Konfiguracja serwisu"
 
 msgid "Info"
 msgstr "Informacje"
@@ -269,7 +320,7 @@ msgid "Platform"
 msgstr "Platforma"
 
 msgid "Services configuration"
-msgstr "Konfiguracja hostów"
+msgstr "Konfiguracja serwisów"
 
 msgid "Pin protection for plugin"
 msgstr "Chronić wtyczkę kodem pin"
