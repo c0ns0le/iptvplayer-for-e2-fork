@@ -543,7 +543,7 @@ class IPTVPlayerWidget(Screen):
         TextMSG = ''
         if ret:
             if ret[1] == "info": #information about plugin
-                TextMSG  = _("Main developer, architect, coordinator: ") + "\n\t- samsamsam\n"
+                TextMSG  = _("Main developer, architect, coordinator: ") + "\n\t- samsamsam [specjalnie dla Asi]\n"
                 TextMSG += _("Developers: ") 
                 developersTab = [{'nick':'zdzislaw22', 'mail':''},
                                  {'nick':'mamrot',     'mail':''},
