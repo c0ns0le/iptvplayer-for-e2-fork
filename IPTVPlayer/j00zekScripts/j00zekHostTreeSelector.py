@@ -1,21 +1,22 @@
 from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 from Plugins.Extensions.IPTVPlayer.__init__ import _
 from Plugins.Extensions.IPTVPlayer.version import IPTV_VERSION
-from Components.Label import Label
+
 from Components.ActionMap import ActionMap
+from Components.config import config
+from Components.Label import Label
+from Components.MenuList import MenuList
 from Components.Pixmap import Pixmap
 from Components.Sources.StaticText import StaticText
 from Tools.LoadPixmap import LoadPixmap
 
 from re import compile as re_compile
 from os import path as os_path, listdir, system as os_system
-from Components.config import config
-from Components.MenuList import MenuList
 from Components.Harddisk import harddiskmanager #do wywalenia!!!!
 
 from Tools.Directories import SCOPE_CURRENT_SKIN, resolveFilename, fileExists
 
-from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, eServiceReference, eServiceCenter, gFont, getDesktop
+from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, gFont, getDesktop
 
 ##################################################### main widget #####################################################
 class j00zekHostTreeSelector(Screen):
@@ -66,7 +67,8 @@ class j00zekHostTreeSelector(Screen):
             self.LastFolderSelected = self.__getCurrentDir()
             if not self.LastFolderSelected.endswith('/'): self.LastFolderSelected += '/'
             self["myPath"].setText(self.LastFolderSelected.replace(self.rootPath,''))
-        
+        self["filelist"].refresh()
+      
     def showConfig(self):
         self.close( (("config", "config")) )
       
@@ -158,7 +160,9 @@ class j00zekHostTreeSelector(Screen):
 
     def setInfo(self):
         selection = self["filelist"].getSelection()
-        if selection[1] == True: # isDir
+        if selection is None:
+            return
+        elif selection[1] == True: # isDir
             self["key_green"].setText("")
             self["key_yellow"].setText(_("Delete Category"))
             self["Cover"].hide()
@@ -185,7 +189,9 @@ class j00zekHostTreeSelector(Screen):
       
     def selectHost(self):
         selection = self["filelist"].getSelection()
-        if selection[1] == True: # isDir
+        if selection is None:
+            return
+        elif selection[1] == True: # isDir
             if selection[0] is not None and self.filelist.getCurrentDirectory() is not None and \
                     len(selection[0]) > len(self.filelist.getCurrentDirectory()) or self.LastFolderSelected == None:
                 self.LastFolderSelected = selection[0]
@@ -254,7 +260,7 @@ class FileList(MenuList):
         MenuList.__init__(self, list, enableWrapAround, eListboxPythonMultiContent)
         self.Hostslist = HostsList
         self.mountpoints = []
-        self.current_directory = None
+        self.current_directory = directory
         self.current_mountpoint = None
         self.showDirectories = True
         self.rootDirectory = directory
@@ -263,20 +269,20 @@ class FileList(MenuList):
         self.inhibitDirs = []
         self.inhibitMounts = []
 
-        self.refreshMountpoints()
+        #self.refreshMountpoints()
         #if config.plugins.iptvplayer.j00zekLastSelectedHost.value != '':
         #    self.changeDir( os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value), os_path.basename(config.plugins.iptvplayer.j00zekLastSelectedHost.value) )
-        self.changeDir(directory)
+        #self.changeDir(directory) #don't change dir during init, requires refresh onshown event, but speedsup GUI 
         if getDesktop(0).size().width() == 1920:
             self.l.setFont(0, gFont("Regular", 36)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
         else:
             self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
         self.l.setItemHeight(42)
-        self.serviceHandler = eServiceCenter.getInstance()
+        #self.serviceHandler = eServiceCenter.getInstance()
 
-    def refreshMountpoints(self):
-        self.mountpoints = [os_path.join(p.mountpoint, "") for p in harddiskmanager.getMountedPartitions()]
-        self.mountpoints.sort(reverse = True)
+    #def refreshMountpoints(self):
+    #    self.mountpoints = [os_path.join(p.mountpoint, "") for p in harddiskmanager.getMountedPartitions()]
+    #    self.mountpoints.sort(reverse = True)
 
     def getMountpoint(self, file):
         file = os_path.join(os_path.realpath(file), "")
@@ -379,8 +385,6 @@ class FileList(MenuList):
             self.moveToIndex(0)
             for x in self.list:
                 p = x[0][0]
-                #if isinstance(p, eServiceReference):
-                #    p = p.getPath()
                 if p == select:
                     self.moveToIndex(i)
                 i += 1
@@ -414,16 +418,16 @@ class FileList(MenuList):
         #    return x
         return None
 
-    def execBegin(self):
-        harddiskmanager.on_partition_list_change.append(self.partitionListChanged)
+    #def execBegin(self):
+    #    harddiskmanager.on_partition_list_change.append(self.partitionListChanged)
 
-    def execEnd(self):
-        harddiskmanager.on_partition_list_change.remove(self.partitionListChanged)
+    #def execEnd(self):
+    #    harddiskmanager.on_partition_list_change.remove(self.partitionListChanged)
 
     def refresh(self):
         self.changeDir(self.current_directory, self.getFilename())
 
-    def partitionListChanged(self, action, device):
-        self.refreshMountpoints()
-        if self.current_directory is None:
-            self.refresh()
+    #def partitionListChanged(self, action, device):
+    #    self.refreshMountpoints()
+    #    if self.current_directory is None:
+    #        self.refresh()
