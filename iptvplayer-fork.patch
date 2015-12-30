@@ -322,15 +322,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  return
              elif ret[1] == "IPTVDM":
                  self.runIPTVDM(self.selectHost)
-@@ -1078,6 +1093,8 @@
- 
-     def loadHost(self):
-         self.hostFavTypes = []
-+        if os_path.exists(GetPluginDir('scripts/start-' + self.hostName)):
-+            iptv_system(GetPluginDir('scripts/start-' + self.hostName))
-         if not config.plugins.iptvplayer.devHelper.value:
-             try:
-                 _temp = __import__('Plugins.Extensions.IPTVPlayer.hosts.host' + self.hostName, globals(), locals(), ['IPTVHost'], -1)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:42:31.332790999 +0100
 +++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-29 07:20:46.722805999 +0100
@@ -593,7 +584,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          cmdTabs = []
          for platform in self.supportedPlatforms:
              platformtesterPath = resolveFilename(SCOPE_PLUGINS, "Extensions/IPTVPlayer/bin/%s/platformtester" % platform)
-@@ -209,14 +220,15 @@
+@@ -209,6 +220,8 @@
          def _verValidator(code, data):
              if 'libgstbase-' in data: 
                  return True,False
@@ -602,15 +593,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              elif 'GStreamer Core Library version ' in data: 
                  return True,False
              else: 
-                 return False,True
-         verCmdTab = []
-         verCmdTab.append('cat /proc/%s/maps | grep libgst' % os_getpid())
--        if 'sh4' != self.platform:
--            verCmdTab.append('gst-launch-1.0 --gst-version')
-+        verCmdTab.append('gst-launch-1.0 --gst-version')
-         verCmdTab.append('gst-launch --gst-version')
-         self.workingObj = CCmdValidator(self.getGstreamerVerFinished, _verValidator, verCmdTab)
-         self.workingObj.start()
 @@ -228,6 +240,10 @@
                  self.gstreamerVersion = "1.0"
              elif 'libgstbase-0.10.so' in dataTab[-1]:
@@ -633,18 +615,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              else: return False,True
          def _deprecatedHandler(paths, stsTab, dataTab):
              sts, retPath = False, ""
-@@ -492,10 +510,8 @@
-         printDBG("IPTVSetupImpl.gstplayerStepFinished sts[%r]" % sts)
-         if sts and '0.10' == self.gstreamerVersion:
-             self.flumpegdemuxStep()
--        elif 'sh4' != self.platform: 
--            self.gstifdsrcStep()
-         else:
--            self.finish()
-+            self.gstifdsrcStep()
-         
-     ###################################################
-     # STEP: FLUENDO MPEGDEMUX
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py ./IPTVPlayer/tools/iptvtools.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py	2015-12-20 06:49:33.986133998 +0100
 +++ ./IPTVPlayer/tools/iptvtools.py	2015-12-29 07:20:46.726805999 +0100

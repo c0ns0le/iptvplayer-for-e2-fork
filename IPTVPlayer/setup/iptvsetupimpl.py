@@ -510,7 +510,7 @@ class IPTVSetupImpl:
         printDBG("IPTVSetupImpl.gstplayerStepFinished sts[%r]" % sts)
         if sts and '0.10' == self.gstreamerVersion:
             self.flumpegdemuxStep()
-        else:
+        else: 
             self.gstifdsrcStep()
         
     ###################################################
