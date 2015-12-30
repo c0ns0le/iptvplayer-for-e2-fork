@@ -38,6 +38,8 @@ cp -af ~/iptvplayerXXX-GitLab-master-version/IPTVPlayer/* $myDir/IPTVPlayer/
 patch -p1 < ./iptvplayer-fork.patch
 msgfmt $myDir/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po -o $myDir/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.mo
 mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTVPlayer/hosts/hostipla.py
+#dodatkowe hosty
+cp -R $myDir/Hosts2Include/* $myDir/IPTVPlayer/
 #kategorie
 mkdir -p $myDir/IPTVPlayer/hosts/Polskie
 lista='hostiplex.py hostonetvod.py hosttvn24.py hosttvnvod.py hostwptv.py '
