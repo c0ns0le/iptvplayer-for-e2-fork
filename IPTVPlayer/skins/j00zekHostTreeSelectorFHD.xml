@@ -1,0 +1,24 @@
+<screen name="j00zekHostTreeSelector" position="0,0" size="1920,1080" title=" " flags="wfNoBorder" backgroundColor="transparent">
+  <!-- Title -->
+  <eLabel position="0,0"    size="1920,1080" zPosition="-15" backgroundColor="#20000000" />
+  <widget name="info" position="60,38" size="1200,45" font="Regular; 40" backgroundColor="#20606060" transparent="1" />
+  <!-- path and filelist -->
+  <eLabel position=" 66, 122" size="780,819" zPosition="-10" backgroundColor="#20606060" />
+  <widget name="myPath" position="75,144" size="1072,38" font="Regular;26" foregroundColor="#00ffffff" backgroundColor="#004e4e4e" transparent="1" />
+  <widget name="filelist" position="60,174" size="735,750" zPosition="1" font="Regular;26" transparent="1" scrollbarMode="showOnDemand" />
+  <!-- cover /-->
+  <eLabel position="855, 122" size="975,819" zPosition="-10" backgroundColor="#20606060" />
+  <widget name="Cover" position="870,137" size="945,789" alphatest="blend" />
+  <!-- buttons-->
+  <eLabel position=" 65,950" size="290, 55" zPosition="-10" backgroundColor="#20b81c46" />
+  <eLabel position="360,950" size="290, 55" zPosition="-10" backgroundColor="#20009f3c" />
+  <eLabel position="655,950" size="290, 55" zPosition="-10" backgroundColor="#209ca81b" />
+  <eLabel position="950,950" size="290, 55" zPosition="-10" backgroundColor="#202673ec" />
+  <widget source="key_red" render="Label" position="65,950" size="290,55" zPosition="1" font="Regular;30" halign="center" valign="center" transparent="1" />
+  <widget source="key_green" render="Label" position="360,950" size="290,55" zPosition="1" font="Regular;30" halign="center" valign="center" transparent="1" />
+  <widget source="key_yellow" render="Label" position="655,950" size="290,55" zPosition="1" font="Regular;30" halign="center" valign="center" transparent="1" />
+  <widget source="key_blue" render="Label" position="950,950" size="290,55" zPosition="1" font="Regular;30" halign="center" valign="center" transparent="1" />
+  
+  <eLabel text="MENU" position="1245,950"  font="Regular;24" size="80,55" zPosition="-10" backgroundColor="#00595959" halign="center" valign="center"/>
+  <eLabel text="REC"  position="1330,950"  font="Regular;24" size="80,55" zPosition="-10" backgroundColor="#00db0000" halign="center" valign="center"/>
+</screen>

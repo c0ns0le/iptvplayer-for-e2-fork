@@ -10,12 +10,15 @@
   <eLabel position="570, 81" size="650,546" zPosition="-10" backgroundColor="#20606060" />
   <widget name="Cover" position="580,91" size="630,526" alphatest="blend" />
   <!-- buttons-->
-  <eLabel position=" 45,633" size="290, 55" zPosition="-10" backgroundColor="#20b81c46" />
-  <eLabel position="340,633" size="290, 55" zPosition="-10" backgroundColor="#20009f3c" />
-  <eLabel position="635,633" size="290, 55" zPosition="-10" backgroundColor="#209ca81b" />
-  <eLabel position="930,633" size="290, 55" zPosition="-10" backgroundColor="#202673ec" />
-  <widget source="key_red" render="Label" position="60,647" size="260,25" zPosition="1" font="Regular;20" halign="left" transparent="1" />
-  <widget source="key_green" render="Label" position="365,647" size="260,25" zPosition="1" font="Regular;20" halign="left" transparent="1" />
-  <widget source="key_yellow" render="Label" position="660,647" size="260,25" zPosition="1" font="Regular;20" halign="left" transparent="1" />
-  <widget source="key_blue" render="Label" position="955,647" size="260,25" zPosition="1" font="Regular;20" halign="left" transparent="1" />
+  <eLabel position=" 45,633" size="257, 55" zPosition="-10" backgroundColor="#20b81c46" />
+  <eLabel position="307,633" size="257, 55" zPosition="-10" backgroundColor="#20009f3c" />
+  <eLabel position="570,633" size="257, 55" zPosition="-10" backgroundColor="#209ca81b" />
+  <eLabel position="832,633" size="257, 55" zPosition="-10" backgroundColor="#202673ec" />
+  <widget source="key_red" render="Label" position="45,633" size="257,55" zPosition="1" font="Regular;20" halign="center" valign="center" transparent="1" />
+  <widget source="key_green" render="Label" position="310,633" size="257,55" zPosition="1" font="Regular;20" halign="center" valign="center" transparent="1" />
+  <widget source="key_yellow" render="Label" position="570,633" size="257,55" zPosition="1" font="Regular;20" halign="center" valign="center" transparent="1" />
+  <widget source="key_blue" render="Label" position="835,633" size="257,55" zPosition="1" font="Regular;20" halign="center" valign="center" transparent="1" />
+
+  <eLabel text="MENU" position="1094,633"  font="Regular;18" size="60,55" zPosition="-10" backgroundColor="#00595959" halign="center" valign="center"/>
+  <eLabel text="REC"  position="1160,633"  font="Regular;18" size="60,55" zPosition="-10" backgroundColor="#00db0000" halign="center" valign="center"/>
 </screen>
