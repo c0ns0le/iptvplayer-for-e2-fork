@@ -103,7 +103,8 @@ if [ -e /DuckboxDisk ]; then
 else
   rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
   touch /tmp/$version/IPTVPlayer/$version 2>/dev/null
-  cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/
+  for unwanted in ls -d /tmp/$version/IPTVPlayer/hosts/*/;do;rm -rf $unwanted;done
+  cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null
   rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
   echo
   echo "_(Success: Restart GUI manually to use new plugin version)"
