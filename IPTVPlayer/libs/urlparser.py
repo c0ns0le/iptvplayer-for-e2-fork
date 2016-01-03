@@ -306,6 +306,7 @@ class urlparser:
                        'easyvid.org':          self.pp.parserEASYVIDORG    ,
                        'playvid.org':          self.pp.parserEASYVIDORG    ,
                        'mystream.la':          self.pp.parserMYSTREAMLA    ,
+                       'ok.ru':                self.pp.parserOKRU          ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -4006,6 +4007,18 @@ class pageParser:
             if not data['sts'] or 0 != data['code']: return False
             data = data['data']
         
+        subTracksData = self.cm.ph.getAllItemsBeetwenMarkers(data, '<track ', '>', False, False)
+        subTracks = []
+        for track in subTracksData:
+            if 'kind="captions"' not in track: continue
+            subUrl = self.cm.ph.getSearchGroups(track, 'src="([^"]+?)"')[0]
+            if subUrl.startswith('/'):
+                subUrl = 'http://openload.co' + subUrl
+            if subUrl.startswith('http'):
+                subLang = self.cm.ph.getSearchGroups(track, 'srclang="([^"]+?)"')[0]
+                subLabel = self.cm.ph.getSearchGroups(track, 'label="([^"]+?)"')[0]
+                subTracks.append({'title':subLabel + '_' + subLang, 'url':subUrl, 'lang':subLang, 'format':'srt'})
+                
         # start https://github.com/whitecream01/WhiteCream-V0.0.1/blob/master/plugin.video.uwc/plugin.video.uwc-1.0.51.zip?raw=true
         def decodeOpenLoad(html):
 
@@ -4055,7 +4068,9 @@ class pageParser:
             printExc()
             SetIPTVPlayerLastHostError( self.cm.ph.getDataBeetwenMarkers(data, '<p class="lead">', '</p>', False)[1] )
             return False
-        if videoUrl.startswith('http'): return videoUrl.replace('https://', 'http://').replace('\\/', '/')
+        if videoUrl.startswith('http'): 
+            videoUrl = videoUrl.replace('https://', 'http://').replace('\\/', '/')
+            return urlparser.decorateUrl(videoUrl, {'external_sub_tracks':subTracks})
         return False
         
     def parserGAMETRAILERS(self, baseUrl):
@@ -4406,7 +4421,27 @@ class pageParser:
         def _findLinks(data):
             return self._findLinks(data, 'mystream.la')
         return self._parserUNIVERSAL_A(baseUrl, 'http://mystream.la/external/{0}', _findLinks)
-    
+        
+    def parserOKRU(self, baseUrl):
+        printDBG("parserOKRU baseUrl[%r]" % baseUrl)
+        video_id = self.cm.ph.getSearchGroups(baseUrl+'/', '/([0-9]+)/')[0]
+        if video_id == '': return False
+        HTTP_HEADER= { 'User-Agent':'Mozilla/5.0',
+                       'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                       'Referer':baseUrl,
+                       'Cookie':'_flashVersion=18',
+                       'X-Requested-With':'XMLHttpRequest'}
+        url = 'http://ok.ru/dk?cmd=videoPlayerMetadata&mid=%s' % video_id
+        sts, data = self.cm.getPage(url, {'header':HTTP_HEADER})
+        if not sts: return False
+        data = byteify(json.loads(data))
+        urlsTab = []
+        for item in data['videos']:
+            url = item['url'].replace('&ct=4&', '&ct=0&') + '&bytes'#=0-7078'
+            url = strwithmeta(url, {'Referer':baseUrl, 'User-Agent':HTTP_HEADER['User-Agent']})
+            urlsTab.append({'name':item['name'], 'url':url})
+        return urlsTab[::-1]
+        
     def parserCLOUDYEC(self, baseUrl):
         printDBG("parserCLOUDYEC baseUrl[%r]" % baseUrl)
         #based on https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/cloudy.py

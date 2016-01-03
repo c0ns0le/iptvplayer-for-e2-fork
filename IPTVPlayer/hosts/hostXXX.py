@@ -23,8 +23,10 @@ from Components.config import config, ConfigSelection, ConfigYesNo, ConfigText, 
 ###################################################
 # Config options for HOST
 ###################################################
+config.plugins.iptvplayer.xxxwymagajpin = ConfigYesNo(default = True)
 def GetConfigList():
     optionList = []
+    optionList.append( getConfigListEntry( "Wymagaj pin:", config.plugins.iptvplayer.xxxwymagajpin ) )
     return optionList
 ###################################################
 
@@ -47,7 +49,7 @@ class IPTVHost(IHost):
         printDBG( "init end" )
         
     def isProtectedByPinCode(self):
-        return True
+        return config.plugins.iptvplayer.xxxwymagajpin.value
     
     def getLogoPath(self):  
         return RetHost(RetHost.OK, value = [self.PATH_TO_LOGO])
@@ -119,7 +121,7 @@ class IPTVHost(IHost):
     ###################################################
 
 class Host:
-    XXXversion = "19.0.0.5"
+    XXXversion = "19.0.0.7"
     XXXremote  = "0.0.0.0"
     currList = []
     MAIN_URL = ''
@@ -395,14 +397,15 @@ class Host:
               printDBG( 'Host listsItems query error url:'+url )
               return valTab
            #printDBG( 'Host listsItems data: '+data )
-           parse = re.search('id="categories"(.*?)</div>', data, re.S)
-           phCats = re.findall('<a href="(.*?)">(.*?)<', parse.group(1), re.S)
-           if phCats:
-              for (phUrl, phTitle) in phCats:
-                  printDBG( 'Host listsItems phUrl: '  +phUrl )
-                  printDBG( 'Host listsItems phTitle: '+phTitle )
-                  valTab.append(CDisplayListItem(phTitle,phTitle,CDisplayListItem.TYPE_CATEGORY, [self.MAIN_URL+phUrl],'xvideos-clips', '', None)) 
-           valTab.sort(key=lambda poz: poz.name)
+           parse = re.search('class="main-categories"(.*?)</div>', data, re.S)
+           if parse:
+              phCats = re.findall('<a href="(.*?)".*?>(.*?)<', parse.group(1), re.S)
+              if phCats:
+                 for (phUrl, phTitle) in phCats:
+                     printDBG( 'Host listsItems phUrl: '  +phUrl )
+                     printDBG( 'Host listsItems phTitle: '+phTitle )
+                     valTab.append(CDisplayListItem(phTitle,phTitle,CDisplayListItem.TYPE_CATEGORY, [self.MAIN_URL+phUrl],'xvideos-clips', '', None)) 
+              valTab.sort(key=lambda poz: poz.name) 
            #valTab.insert(0,CDisplayListItem('--- Pornstars ---',   'Pornstars',   CDisplayListItem.TYPE_CATEGORY, [self.MAIN_URL+'/pornstars'], 'xvideos-pornstars', '', None)) 
            valTab.insert(0,CDisplayListItem('--- Best Videos ---', 'Best Videos', CDisplayListItem.TYPE_CATEGORY, [self.MAIN_URL+'/best/'],     'xvideos-clips', '', None)) 
            valTab.insert(0,CDisplayListItem('--- New Videos ---',  'New Videos',  CDisplayListItem.TYPE_CATEGORY, [self.MAIN_URL],              'xvideos-clips', '', None)) 

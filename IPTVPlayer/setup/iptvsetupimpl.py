@@ -78,7 +78,7 @@ class IPTVSetupImpl:
                                             (_('Install into the "%s".') % "/usr/bin/gstplayer", "/usr/bin/gstplayer"),
                                             (_("Do not install (not recommended)"), "")]
         # exteplayer3
-        self.exteplayer3Version = {'sh4': 9, 'mipsel': 14}
+        self.exteplayer3Version = {'sh4': 9, 'mipsel': 16}
         self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
         self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/exteplayer3 (%s)" % _("recommended")), GetBinDir("exteplayer3", "")),
                                               (_('Install into the "%s".') % "/usr/bin/exteplayer3", "/usr/bin/exteplayer3"),
