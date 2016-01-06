@@ -43,13 +43,14 @@ else
   opkg install $1 1>/dev/null 2>&1
   if [ $? -eq 0 ]; then
     echo "$1 $installedCorrectly"
-    echo "$1 installed correctly">/tmp/IPTV-opkg.log
+    echo "$1 installed correctly">>/tmp/IPTV-opkg.log
   else
-    echo "$1 NOT available in opkg and NOT installed properly">/tmp/IPTV-opkg.log
+    echo "$1 NOT available in opkg and NOT installed properly">>/tmp/IPTV-opkg.log
   fi
 fi
 }
 echo "$installingPackages"
+echo "$installingPackages">/tmp/IPTV-opkg.log
 install_package curl
 install_package libidn11
 install_package python-compression
@@ -64,6 +65,7 @@ install_package python-robotparser
 install_package python-shell
 install_package gst-plugins-bad-rtmp
 install_package librtmp1
+install_package librtmp-bin 
 install_package gst-plugins-good
 install_package gst-plugins-bad-cdxaparse
 install_package gst-plugins-bad-vcdsrc 
