@@ -74,7 +74,7 @@ install_package gst-plugins-bad-gos
 install_package gst-plugins-good-gos
 install_package enigma2-multiframework
 
-curl --help 1>/dev/null 2>%1
+curl --help 1>/dev/null 2>&1
 if [ $? -gt 0 ]; then
   echo
   echo "$curlError"
@@ -82,7 +82,7 @@ if [ $? -gt 0 ]; then
 fi
 
 echo "$inetCheck"
-ping -c 1 github.com 1>/dev/null 2>%1
+ping -c 1 github.com 1>/dev/null 2>&1
 if [ $? -gt 0 ]; then
   echo "$githubError"
   exit 0
