@@ -322,28 +322,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  return
              elif ret[1] == "IPTVDM":
                  self.runIPTVDM(self.selectHost)
-diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/custom/xxx.sh ./IPTVPlayer/iptvupdate/custom/xxx.sh
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/custom/xxx.sh	1970-01-01 01:00:00.000000000 +0100
-+++ ./IPTVPlayer/iptvupdate/custom/xxx.sh	2016-01-03 07:53:14.919829001 +0100
-@@ -0,0 +1,17 @@
-+#!/bin/sh
-+cp $1/iptvupdate/custom/xxx.sh $2/iptvupdate/custom/xxx.sh
-+status=$?
-+if [ $status -ne 0 ]; then
-+	echo "B³¹d krytyczny. Plik $0 nie mo¿e zostaæ skopiowany, error[$status]."
-+	exit 1	
-+fi
-+cp $1/hosts/hostXXX.py $2/hosts/
-+cp $1/icons/logos/XXXlogo.png $2/icons/logos/
-+cp $1/icons/PlayerSelector/XXX*.png $2/icons/PlayerSelector/
-+status=$?
-+if [ $status -ne 0 ]; then
-+	echo "Uwaga nie uda-o sià skopiowaŠ XXX, error[$status]."
-+	exit 0
-+fi
-+echo "Wykonywanie $0 zako½czone sukcesem."
-+exit 0
-\ No newline at end of file
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:42:31.332790999 +0100
 +++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2016-01-12 13:00:13.310686000 +0100
