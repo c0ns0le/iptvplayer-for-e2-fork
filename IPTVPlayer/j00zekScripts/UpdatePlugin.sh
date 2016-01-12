@@ -104,6 +104,13 @@ else
   rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
   touch /tmp/$version/IPTVPlayer/$version 2>/dev/null
   for unwanted in `ls -d /tmp/$version/IPTVPlayer/hosts/*/`;do rm -rf $unwanted;done
+#custom user scripts
+for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`
+do
+echo "_(Starting custom script) $scriptname..."
+$scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/$version/IPTVPlayer
+done
+#final copying
   cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null
   rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
   echo
