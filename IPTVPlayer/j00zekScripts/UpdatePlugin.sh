@@ -34,9 +34,36 @@ if [ $? -gt 0 ]; then
 fi
 
 echo "_(Checking installation mode...)"
-if `opkg list-installed 2>/dev/null | tr '[:upper:]' '[:lower:]'| grep -q 'iptvplayer'`;then
-  echo "_(IPTVPlayer controlled by OPKG. Please use it for updates.)"
-  exit 0
+if `opkg list-installed 2>/dev/null | grep -q 'iptvplayer'`;then
+    opkg update &>>/dev/null
+    myPKG=`opkg list-installed 2>/dev/null | grep 'iptvplayer'|cut -d ' ' -f1`
+    if `opkg list-upgradable|grep -q $myPKG`;then
+    #first copy all custom data running custom user scripts
+    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/MyScriptUniqueName.sh #first deleting, it's part of opkg package
+    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh #first deleting, it's part of opkg package
+    mkdir -p /tmp/IPTVPlayerOPKG/iptvupdate/custom/
+    mkdir -p /tmp/IPTVPlayerOPKG/icons/logos
+    mkdir -p /tmp/IPTVPlayerOPKG/icons/PlayerSelector
+    mkdir -p /tmp/IPTVPlayerOPKG/hosts
+    mkdir /tmp/IPTVPlayerOPKG
+for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`;do
+    echo "_(Starting custom script) $scriptname..."
+    $scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/IPTVPlayerOPKG
+done
+      opkg upgrade $myPKG
+      if [ $? -gt 0 ]; then
+        echo "_(IPTVPlayer controlled by OPKG. Please use it for updates.)"
+        exit 0
+      else
+        cp -a /tmp/IPTVPlayerOPKG/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null #moving back
+        rm -rf /tmp/IPTVPlayerOPKG #cleaning
+        echo "_(IPTVPlayer has been updated. Please restart GUI)"
+        exit 0
+      fi
+    else
+        echo "_(Latest version already installed)"
+        exit 0
+    fi
 fi
 
 echo "_(Update type:) $UpdateType"
@@ -104,11 +131,12 @@ else
   rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
   touch /tmp/$version/IPTVPlayer/$version 2>/dev/null
   for unwanted in `ls -d /tmp/$version/IPTVPlayer/hosts/*/`;do rm -rf $unwanted;done
-#custom user scripts
-for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`
-do
-echo "_(Starting custom script) $scriptname..."
-$scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/$version/IPTVPlayer
+  #custom user scripts
+  rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/MyScriptUniqueName.sh #first deleting, it's part of package
+  rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh #first deleting, it's part of package
+for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`;do
+  echo "_(Starting custom script) $scriptname..."
+  $scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/$version/IPTVPlayer
 done
 #final copying
   cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null
