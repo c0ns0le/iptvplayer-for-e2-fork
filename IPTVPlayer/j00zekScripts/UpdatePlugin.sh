@@ -38,17 +38,17 @@ if `opkg list-installed 2>/dev/null | grep -q 'iptvplayer'`;then
     opkg update &>>/dev/null
     myPKG=`opkg list-installed 2>/dev/null | grep 'iptvplayer'|cut -d ' ' -f1`
     if `opkg list-upgradable|grep -q $myPKG`;then
-    #first copy all custom data running custom user scripts
-    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/MyScriptUniqueName.sh #first deleting, it's part of opkg package
-    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh #first deleting, it's part of opkg package
-    mkdir -p /tmp/IPTVPlayerOPKG/iptvupdate/custom/
-    mkdir -p /tmp/IPTVPlayerOPKG/icons/logos
-    mkdir -p /tmp/IPTVPlayerOPKG/icons/PlayerSelector
-    mkdir -p /tmp/IPTVPlayerOPKG/hosts
-    mkdir /tmp/IPTVPlayerOPKG
+      #first copy all custom data running custom user scripts
+      rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/MyScriptUniqueName.sh #first deleting, it's part of opkg package
+      rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh #first deleting, it's part of opkg package
+      mkdir -p /tmp/IPTVPlayerOPKG/iptvupdate/custom/
+      mkdir -p /tmp/IPTVPlayerOPKG/icons/logos
+      mkdir -p /tmp/IPTVPlayerOPKG/icons/PlayerSelector
+      mkdir -p /tmp/IPTVPlayerOPKG/hosts
+      mkdir /tmp/IPTVPlayerOPKG
 for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`;do
-    echo "_(Starting custom script) $scriptname..."
-    $scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/IPTVPlayerOPKG
+  echo "_(Starting custom script) $scriptname..."
+  $scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/IPTVPlayerOPKG
 done
       opkg upgrade $myPKG
       if [ $? -gt 0 ]; then
@@ -141,9 +141,9 @@ done
 #final copying
   cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null
   rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null
+  /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/j00zekScripts/install_required_packages.sh silent
   echo
   echo "_(Success: Restart GUI manually to use new plugin version)"
 fi
-
 touch /tmp/.rebootGUI
 exit 0
