@@ -5,7 +5,7 @@
 ###################################################
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
 from Plugins.Extensions.IPTVPlayer.components.ihost import CHostBase, CBaseHostClass, CDisplayListItem, ArticleContent, RetHost, CUrlItem
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir, iptv_system
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir
 from Plugins.Extensions.IPTVPlayer.tools.iptvfilehost import IPTVFileHost
 from Plugins.Extensions.IPTVPlayer.libs.youtube_dl.utils import clean_html
 from Plugins.Extensions.IPTVPlayer.libs.urlparserhelper import getDirectM3U8Playlist, getF4MLinksWithMeta
@@ -18,6 +18,8 @@ from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdh import DMHelper
 ###################################################
 from Components.config import config, ConfigSelection, ConfigYesNo, ConfigDirectory, getConfigListEntry
 import re
+import codecs
+import time
 ###################################################
 
 
@@ -33,10 +35,12 @@ import re
 config.plugins.iptvplayer.Sciezkaurllist = ConfigDirectory(default = "/tmp/")
 config.plugins.iptvplayer.grupujurllist  = ConfigYesNo(default = True)
 config.plugins.iptvplayer.sortuj         = ConfigYesNo(default = True)
+config.plugins.iptvplayer.urllist_showrafalcool1 = ConfigYesNo(default = True)
 
 def GetConfigList():
-    optionList = []    
-    optionList.append(getConfigListEntry('Pobierz listę do:', config.plugins.iptvplayer.Sciezkaurllist))
+    optionList = [] 
+    optionList.append(getConfigListEntry('Pobierz listę do:', config.plugins.iptvplayer.Sciezkaurllist))    
+    #optionList.append(getConfigListEntry(_('Show recommended by Rafalcool1:'), config.plugins.iptvplayer.urllist_showrafalcool1))
     #optionList.append(getConfigListEntry(_('Sort the list:'), config.plugins.iptvplayer.sortuj))
     #optionList.append(getConfigListEntry(_('Group links into categories: '), config.plugins.iptvplayer.grupujurllist))
     return optionList
@@ -45,25 +49,18 @@ def GetConfigList():
 def gettytul():
     return ('Rafalcool1 proponuje')
 
-class Rafalcool1list(CBaseHostClass):
-    URLLIST_FILE    = 'urllist.rafalcool1'
-    URRLIST_STREAMS = 'urllist.stream'
-    URRLIST_USER    = 'urllist.user'
-    MAIN_GROUPED_TAB = [#{'category': 'all',           'title': (_("All in one")),        'desc': (_("Links are videos and messages, without division into categories"))}, \
-                        #{'category': URLLIST_FILE,    'title': (_("Videos")),            'desc': (_("Links to the video files from the file urllist.txt"))}, \
-                        #{'category': URRLIST_STREAMS, 'title': (_("live transfers")),    'desc': (_("Live broadcasts from the file urllist.stream"))}, \
-                        {'category': URLLIST_FILE,    'title': ("Propozycje Rafalcool1"),        'desc': ("Lista filmów wybranych przez kolegę Rafalcool1")}]
+class Urllist(CBaseHostClass):
+    RAFALCOOL1_FILE  = 'urllist.rafalcool1'
+    URLLIST_FILE     = 'urllist.txt'
+    URRLIST_STREAMS  = 'urllist.stream'
+    URRLIST_USER     = 'urllist.user'
     
     def __init__(self):
-        printDBG("Rafalcool1.__init__")
+        printDBG("Urllist.__init__")
+        
+        self.MAIN_GROUPED_TAB = [{'category': self.RAFALCOOL1_FILE,    'title': ("Propozycje Rafalcool1"),        'desc': ("Lista filmów wybranych przez kolegę Rafalcool1")}]
         CBaseHostClass.__init__(self)               
-        self.currFileHost = None
-        self.updated = None
-        iptv_system("wget -q http://hybrid.xunil.pl/IPTVPlayer_resources/UsersFiles/urllist.txt -O /%s/urllist.rafalcool1" % config.plugins.iptvplayer.Sciezkaurllist.value, self._cmdRET )
-
-    def _cmdRET(self, status, costam=''):
-        if status == 0:
-            self.updated = True
+        self.currFileHost = None 
     
     def _cleanHtmlStr(self, str):
             str = self.cm.ph.replaceHtmlTags(str, ' ').replace('\n', ' ')
@@ -82,16 +79,65 @@ class Rafalcool1list(CBaseHostClass):
             return True
         return False
         
+    def updateRafalcoolFile(self, filePath, encoding):
+        printDBG("Urllist.updateRafalcoolFile filePath[%s]" % filePath)
+        remoteVersion = -1
+        localVersion = -1
+        # get version from file
+        try:
+            with codecs.open(filePath, 'r', encoding, 'replace') as fp:
+                # version should be in first line
+                line = fp.readline()
+                localVersion = int(self.cm.ph.getSearchGroups(line + '|', '#file_version=([0-9]+?)[^0-9]')[0])
+        except:
+            printExc()
+        
+        # generate timestamp to add to url to skip possible cacheing
+        timestamp = str(time.time())
+        
+        # if we have loacal version get remote version for comparison
+        if localVersion != '':
+            sts, data = self.cm.getPage("http://hybrid.xunil.pl/IPTVPlayer_resources/UsersFiles/urllist.txt.version")
+            if sts:
+                try:
+                    remoteVersion = int(data.strip())
+                except:
+                    printExc()
+        # uaktualnij versje
+        printDBG('Urllist.updateRafalcoolFile localVersion[%d] remoteVersion[%d]' % (localVersion, remoteVersion))
+        if remoteVersion > -1 and localVersion < remoteVersion:
+            sts, data = self.cm.getPage("http://hybrid.xunil.pl/IPTVPlayer_resources/UsersFiles/urllist.txt?t=" + timestamp)
+            if sts:
+                # confirm version
+                line = data[0:data.find('\n')]
+                try:
+                    newVersion = int(self.cm.ph.getSearchGroups(line + '|', '#file_version=([0-9]+?)[^0-9]')[0])
+                    if newVersion != remoteVersion:
+                        printDBG("Version mismatches localVersion[%d], remoteVersion[%d], newVersion[%d]" % (localVersion, remoteVersion, newVersion) )
+                    file = open(filePath, 'wb')
+                    file.write(data)
+                    file.close()
+                except:
+                    printExc()
+        
     def listCategory(self, cItem, searchMode=False):
-        printDBG("Rafalcool1list.listCategory cItem[%s]" % cItem)
+        printDBG("Urllist.listCategory cItem[%s]" % cItem)
         
         sortList = config.plugins.iptvplayer.sortuj.value
         filespath = config.plugins.iptvplayer.Sciezkaurllist.value
         groupList = config.plugins.iptvplayer.grupujurllist.value
-        if cItem['category'] in ['all', Rafalcool1list.URLLIST_FILE]:
+        if cItem['category'] in ['all', Urllist.URLLIST_FILE, Urllist.URRLIST_STREAMS, Urllist.URRLIST_USER, Urllist.RAFALCOOL1_FILE]:
             self.currFileHost = IPTVFileHost()
-            if cItem['category'] in ['all', Rafalcool1list.URLLIST_FILE]: 
-                self.currFileHost.addFile(filespath + Rafalcool1list.URLLIST_FILE, encoding='utf-8')
+            if cItem['category'] in ['all', Urllist.RAFALCOOL1_FILE] and config.plugins.iptvplayer.urllist_showrafalcool1.value:
+                self.updateRafalcoolFile(filespath + Urllist.RAFALCOOL1_FILE, encoding='utf-8')
+                self.currFileHost.addFile(filespath + Urllist.RAFALCOOL1_FILE, encoding='utf-8')
+            
+            if cItem['category'] in ['all', Urllist.URLLIST_FILE]: 
+                self.currFileHost.addFile(filespath + Urllist.URLLIST_FILE, encoding='utf-8')
+            if cItem['category'] in ['all', Urllist.URRLIST_STREAMS]: 
+                self.currFileHost.addFile(filespath + Urllist.URRLIST_STREAMS, encoding='utf-8')
+            if cItem['category'] in ['all', Urllist.URRLIST_USER]:
+                self.currFileHost.addFile(filespath + Urllist.URRLIST_USER, encoding='utf-8')
             
             if 'all' != cItem['category'] and groupList:
                 tmpList = self.currFileHost.getGroups(sortList)
@@ -103,7 +149,10 @@ class Rafalcool1list(CBaseHostClass):
             else:
                 tmpList = self.currFileHost.getAllItems(sortList)
                 for item in tmpList:
-                    params = {'title':item['full_title'], 'url':item['url'], 'desc': (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])}
+                    desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
+                    if item['desc'] != '':
+                        desc = item['desc']
+                    params = {'title':item['full_title'], 'url':item['url'], 'desc':desc, 'icon':item['icon']}
                     self.addVideo(params)
         elif 'group' in cItem:
             tmpList = self.currFileHost.getItemsInGroup(cItem['group'], sortList)
@@ -112,11 +161,14 @@ class Rafalcool1list(CBaseHostClass):
                     title = item['full_title']
                 else:
                     title = item['title_in_group']
-                params = {'title':title, 'url':item['url'], 'desc': (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])}
+                desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
+                if item.get('desc', '') != '':
+                    desc = item['desc']
+                params = {'title':title, 'url':item['url'], 'desc': desc, 'icon':item.get('icon', '')}
                 self.addVideo(params)
                 
     def getLinksForVideo(self, cItem):
-        printDBG("Rafalcool1list.getLinksForVideo url[%s]" % cItem['url'])
+        printDBG("Urllist.getLinksForVideo url[%s]" % cItem['url'])
         videoUrls = []
         uri, params   = DMHelper.getDownloaderParamFromUrl(cItem['url'])
         printDBG(params)
@@ -138,15 +190,15 @@ class Rafalcool1list(CBaseHostClass):
         return videoUrls
     
     def handleService(self, index, refresh=0, searchPattern='', searchType=''):
-        printDBG('Rafalcool1list.handleService start')
+        printDBG('Urllist.handleService start')
         CBaseHostClass.handleService(self, index, refresh, searchPattern, searchType)
         name     = self.currItem.get("name", None)
         category = self.currItem.get("category", '')
-        printDBG( "Rafalcool1list.handleService: ---------> name[%s], category[%s] " % (name, category) )
+        printDBG( "Urllist.handleService: ---------> name[%s], category[%s] " % (name, category) )
         self.currList = []
         
         if None == name:
-            self.listsTab(Rafalcool1list.MAIN_GROUPED_TAB, self.currItem)
+            self.listsTab(self.MAIN_GROUPED_TAB, self.currItem)
         else:
             self.listCategory(self.currItem)
         
@@ -155,7 +207,7 @@ class Rafalcool1list(CBaseHostClass):
 class IPTVHost(CHostBase):
 
     def __init__(self):
-        CHostBase.__init__(self, Rafalcool1list(), True)
+        CHostBase.__init__(self, Urllist(), True)
         
     def _isPicture(self, url):
         def _checkExtension(url): 
@@ -166,7 +218,7 @@ class IPTVHost(CHostBase):
         return False
 
     def getLogoPath(self):
-        return RetHost(RetHost.OK, value = [GetLogoDir('rafalcool1logo.png')])
+        return RetHost(RetHost.OK, value = [GetLogoDir('urllistlogo.png')])
 
     def getLinksForVideo(self, Index = 0, selItem = None):
         listLen = len(self.host.currList)
@@ -181,8 +233,8 @@ class IPTVHost(CHostBase):
         retlist = []
         uri = self.host.currList[Index].get('url', '')
         if not self._isPicture(uri):
-            Rafalcool1list = self.host.getLinksForVideo(self.host.currList[Index])
-            for item in Rafalcool1list:
+            urlList = self.host.getLinksForVideo(self.host.currList[Index])
+            for item in urlList:
                 retlist.append(CUrlItem(item["name"], item["url"], 0))
         else: retlist.append(CUrlItem('picture link', urlparser.decorateParamsFromUrl(uri, True), 0))
 
