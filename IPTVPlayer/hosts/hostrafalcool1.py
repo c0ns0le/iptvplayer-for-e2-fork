@@ -5,7 +5,7 @@
 ###################################################
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
 from Plugins.Extensions.IPTVPlayer.components.ihost import CHostBase, CBaseHostClass, CDisplayListItem, ArticleContent, RetHost, CUrlItem
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir, iptv_system
 from Plugins.Extensions.IPTVPlayer.tools.iptvfilehost import IPTVFileHost
 from Plugins.Extensions.IPTVPlayer.libs.youtube_dl.utils import clean_html
 from Plugins.Extensions.IPTVPlayer.libs.urlparserhelper import getDirectM3U8Playlist, getF4MLinksWithMeta
@@ -36,10 +36,13 @@ config.plugins.iptvplayer.Sciezkaurllist = ConfigDirectory(default = "/tmp/")
 config.plugins.iptvplayer.grupujurllist  = ConfigYesNo(default = True)
 config.plugins.iptvplayer.sortuj         = ConfigYesNo(default = True)
 config.plugins.iptvplayer.urllist_showrafalcool1 = ConfigYesNo(default = True)
+config.plugins.iptvplayer.useTMDB = ConfigYesNo(default = True)
+config.plugins.iptvplayer.updateListFile = ConfigYesNo(default = False)
 
 def GetConfigList():
     optionList = [] 
     optionList.append(getConfigListEntry('Pobierz listę do:', config.plugins.iptvplayer.Sciezkaurllist))    
+    optionList.append(getConfigListEntry('Pobierz brakującą okłądkę i opis z web:', config.plugins.iptvplayer.useTMDB))    
     #optionList.append(getConfigListEntry(_('Show recommended by Rafalcool1:'), config.plugins.iptvplayer.urllist_showrafalcool1))
     #optionList.append(getConfigListEntry(_('Sort the list:'), config.plugins.iptvplayer.sortuj))
     #optionList.append(getConfigListEntry(_('Group links into categories: '), config.plugins.iptvplayer.grupujurllist))
@@ -153,6 +156,7 @@ class Urllist(CBaseHostClass):
                     if item['desc'] != '':
                         desc = item['desc']
                     params = {'title':item['full_title'], 'url':item['url'], 'desc':desc, 'icon':item['icon']}
+                        
                     self.addVideo(params)
         elif 'group' in cItem:
             tmpList = self.currFileHost.getItemsInGroup(cItem['group'], sortList)
@@ -161,10 +165,20 @@ class Urllist(CBaseHostClass):
                     title = item['full_title']
                 else:
                     title = item['title_in_group']
-                desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
-                if item.get('desc', '') != '':
-                    desc = item['desc']
-                params = {'title':title, 'url':item['url'], 'desc': desc, 'icon':item.get('icon', '')}
+                    
+                #desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
+                #if item.get('desc', '') != '':
+                #    desc = item['desc']
+                if item.get('desc', '') == '' and item.get('icon', '') == '' and config.plugins.iptvplayer.useTMDB.value == True:
+                    desc, cover = downloadData(title)
+                    if config.plugins.iptvplayer.updateListFile.value == True: #zmieniamy sobie plik
+                        iptv_system('sed -i "s/\(^.*%s\)/\1;;%s;;;%s' %(item['url'],cover,desc))
+                        
+                else:
+                    desc = item.get('desc', '')
+                    cover = item.get('icon', '')
+                params = {'title':title, 'url':item['url'], 'desc': desc, 'icon': cover}
+                    
                 self.addVideo(params)
                 
     def getLinksForVideo(self, cItem):
@@ -218,7 +232,7 @@ class IPTVHost(CHostBase):
         return False
 
     def getLogoPath(self):
-        return RetHost(RetHost.OK, value = [GetLogoDir('urllistlogo.png')])
+        return RetHost(RetHost.OK, value = [GetLogoDir('rafalcool1logo.png')])
 
     def getLinksForVideo(self, Index = 0, selItem = None):
         listLen = len(self.host.currList)
@@ -309,3 +323,84 @@ class IPTVHost(CHostBase):
             self.searchPattern = ''
             self.searchType = ''
         return
+        
+        
+#####################################################################################################
+def ClearMemory(): #avoid GS running os.* (e.g. os.system) on tuners with small RAM
+    with open("/proc/sys/vm/drop_caches", "w") as f: f.write("1\n")
+
+# -*- coding: utf-8 -*-
+import re
+from os import path, system
+
+def cleanFile(text):
+    #text=getNameWithoutExtension(text)
+    cutlist = ['x264','h264','720p','1080p','1080i','PAL','GERMAN','ENGLiSH','ENG', 'RUS', 'WS','DVDRiP','UNRATED','RETAIL','Web-DL','DL','LD','MiC','MD','DVDR','BDRiP','BLURAY','DTS','UNCUT',
+                'ANiME','AC3MD','AC3','AC3D','TS','DVDSCR','COMPLETE','INTERNAL','DTSD','XViD','DIVX','DUBBED','LINE.DUBBED','DD51','DVDR9','DVDR5','AVC','WEBHDTVRiP','WEBHDRiP','WEBRiP',
+                'WEBHDTV','WebHD','HDTVRiP','HDRiP','HDTV','ITUNESHD','REPACK','SYNC','REAL',]
+    
+    for word in cutlist:
+        #text = re.sub('(\_|\-|\.|\+)'+word+'(\_|\-|\.|\+)','+', text, flags=re.I)
+        text = re.sub('(\_|\-|\.|\+)'+word+'.*','.', text, flags=re.I) #assumtion is everything after garbage is garbadge too. ;)
+    #text = re.sub('(\_|\-|\.|\+)[12][0-9][0-9][0-9]\+.*','', text, flags=re.I) #if there is plus sign after date, date is most probably the garbage, so removing it ;)
+    
+    #let's take a year, if exists
+    try:
+        movieYear=re.sub('(\_|\-|\.|\+|\()','', re.search('(\_|\-|\.|\+|\()[12][09][0-9][0-9]', text, flags=re.I).group() ) #for future use
+    except:
+        movieYear=''
+    
+    #removing exact character combinations
+    ExactCutList = ['(\_|\-|\.|\+|\()[12][09][0-9][0-9](\_|\-|\.|\+|\))','^psig-','^[12][09][0-9]* [0-9][0-9]* - .* - ']
+    for word in ExactCutList:
+        text = re.sub(word,'', text, flags=re.I) #assumtion is everything after garbage is garbadge too. ;)
+        
+    text = re.sub('(\_|\-|\.|\+)',' ', text, flags=re.I) #cleaning
+    text = re.sub('(  [ ]*)',' ', text, flags=re.I) #merge multiple (2+) spaces into one
+
+    return text, movieYear
+    
+def DecodeNationalLetters(text):
+    #polskie litery
+    text = text.replace('ą','a').replace('ę','e').replace('ś','s').replace('ć','c').replace('ż','z').replace('ź','z').replace('ł','l').replace('ń','n')
+    text = text.replace('Ą','A').replace('Ę','E').replace('Ś','S').replace('Ć','C').replace('Ż','Z').replace('Ź','Z').replace('Ł','L').replace('Ń','N')
+    return text.strip()
+
+def ConvertChars(text):
+    CharsTable={ '\xC2\xB1': '\xC4\x85','\xC2\xB6': '\xC5\x9b','\xC4\xBD': '\xC5\xba'}
+    for i, j in CharsTable.iteritems():
+        text = text.replace(i, j)
+    return text
+
+def downloadData(movieTitle):
+    descr = ''
+    coverUrl = ''
+    ClearMemory()
+    Webmovie, movieYear =cleanFile(movieTitle)
+    Webmovie=DecodeNationalLetters(Webmovie)
+    Webmovie=ConvertChars(Webmovie)
+    url = "http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=pl" % Webmovie
+    system('rm -f /tmp/rafalcool1.tmdb; wget "%s" -O /tmp/rafalcool1.tmdb' % url)
+    if path.exists('/tmp/rafalcool1.tmdb'):
+        with open('/tmp/rafalcool1.tmdb','r') as tmdbDATA: myData = tmdbDATA.read()
+        list = re.findall('"poster_path":"(.*?)".*?"overview":"(.*?)".*?"release_date":"(.*?)".*?"id":(.*?),.*?"original_title":"(.*?)".*?"original_language":"(.*?)".*?"title":"(.*?)".*?"popularity":([\.0-9]*).*?"vote_average":([\.0-9]*).*?', myData, re.S)
+
+        myData=None # some cleanup, just in case
+        if list is not None and len(list)>0:
+            if movieYear != '':
+                printDBG("filtering movies list by release year %s" % movieYear)
+                for coverPath,overview,release_date,id,otitle,original_language,title,popularity,vote_average in list:
+                    if movieYear in release_date:
+                        coverUrl = "http://image.tmdb.org/t/p/w185%s" % coverPath
+                        coverUrl = coverUrl.replace('\/','/')
+                        #print "[CoverFind] " + title, coverUrl
+                        descr=overview + '<br/>' + 'Premiera: ' + release_date + '<br/>' + 'Popularność: ' + popularity + '<br/>' + 'Ocena: ' + vote_average
+                        return descr, coverUrl
+                            
+            coverPath,overview,release_date,id,otitle,original_language,title,popularity,vote_average = list[0]
+            coverUrl = "http://image.tmdb.org/t/p/w185%s" % coverPath
+            coverUrl = coverUrl.replace('\/','/')
+            #print "[CoverFind] " + title, coverUrl
+            descr=overview + '<br/>' + 'Premiera: ' + release_date + '<br/>' + 'Popularność: ' + popularity + '<br/>' + 'Ocena: ' + vote_average
+
+    return descr, coverUrl
