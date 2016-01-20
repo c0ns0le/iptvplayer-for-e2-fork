@@ -5,12 +5,13 @@
 ###################################################
 from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
 from Plugins.Extensions.IPTVPlayer.components.ihost import CHostBase, CBaseHostClass, CDisplayListItem, ArticleContent, RetHost, CUrlItem
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir, iptv_system
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, CSearchHistoryHelper, GetLogoDir, FreeSpace as iptvtools_FreeSpace, GetIconDirBaseName, GetNewIconsDirName, mkdirs
 from Plugins.Extensions.IPTVPlayer.tools.iptvfilehost import IPTVFileHost
 from Plugins.Extensions.IPTVPlayer.libs.youtube_dl.utils import clean_html
 from Plugins.Extensions.IPTVPlayer.libs.urlparserhelper import getDirectM3U8Playlist, getF4MLinksWithMeta
 from Plugins.Extensions.IPTVPlayer.libs.urlparser import urlparser
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdh import DMHelper
+from Plugins.Extensions.IPTVPlayer.libs.crypto.hash.md5Hash import MD5
 ###################################################
 
 ###################################################
@@ -20,6 +21,8 @@ from Components.config import config, ConfigSelection, ConfigYesNo, ConfigDirect
 import re
 import codecs
 import time
+from binascii import hexlify
+from os import path, system, remove
 ###################################################
 
 
@@ -37,12 +40,13 @@ config.plugins.iptvplayer.grupujurllist  = ConfigYesNo(default = True)
 config.plugins.iptvplayer.sortuj         = ConfigYesNo(default = True)
 config.plugins.iptvplayer.urllist_showrafalcool1 = ConfigYesNo(default = True)
 config.plugins.iptvplayer.useTMDB = ConfigYesNo(default = True)
-config.plugins.iptvplayer.updateListFile = ConfigYesNo(default = False)
+config.plugins.iptvplayer.showXXXlinks = ConfigYesNo(default = True)
 
 def GetConfigList():
     optionList = [] 
     optionList.append(getConfigListEntry('Pobierz listę do:', config.plugins.iptvplayer.Sciezkaurllist))    
     optionList.append(getConfigListEntry('Pobierz brakującą okłądkę i opis z web:', config.plugins.iptvplayer.useTMDB))    
+    optionList.append(getConfigListEntry('Pobierz również listę filmów dla dorosłych:', config.plugins.iptvplayer.showXXXlinks))    
     #optionList.append(getConfigListEntry(_('Show recommended by Rafalcool1:'), config.plugins.iptvplayer.urllist_showrafalcool1))
     #optionList.append(getConfigListEntry(_('Sort the list:'), config.plugins.iptvplayer.sortuj))
     #optionList.append(getConfigListEntry(_('Group links into categories: '), config.plugins.iptvplayer.grupujurllist))
@@ -56,12 +60,14 @@ class Urllist(CBaseHostClass):
     RAFALCOOL1_FILE  = 'urllist.rafalcool1'
     URLLIST_FILE     = 'urllist.txt'
     URRLIST_STREAMS  = 'urllist.stream'
-    URRLIST_USER     = 'urllist.user'
+    URRLIST_USER     = 'urllist.rafalcool1XXX'
     
     def __init__(self):
         printDBG("Urllist.__init__")
         
         self.MAIN_GROUPED_TAB = [{'category': self.RAFALCOOL1_FILE,    'title': ("Propozycje Rafalcool1"),        'desc': ("Lista filmów wybranych przez kolegę Rafalcool1")}]
+        if config.plugins.iptvplayer.showXXXlinks.value == True:
+            self.MAIN_GROUPED_TAB.append( {'category': self.URRLIST_USER,    'title': ("Propozycje dla..."),        'desc': ("")})
         CBaseHostClass.__init__(self)               
         self.currFileHost = None 
     
@@ -160,6 +166,12 @@ class Urllist(CBaseHostClass):
                     self.addVideo(params)
         elif 'group' in cItem:
             tmpList = self.currFileHost.getItemsInGroup(cItem['group'], sortList)
+            if iptvtools_FreeSpace(config.plugins.iptvplayer.SciezkaCache.value, 10):
+                downloadPath = config.plugins.iptvplayer.SciezkaCache.value
+                cacheTMDB = True
+            else:
+                downloadPath = config.plugins.iptvplayer.NaszaTMP.value
+                cacheTMDB = False
             for item in tmpList:
                 if '' == item['title_in_group']:
                     title = item['full_title']
@@ -170,10 +182,7 @@ class Urllist(CBaseHostClass):
                 #if item.get('desc', '') != '':
                 #    desc = item['desc']
                 if item.get('desc', '') == '' and item.get('icon', '') == '' and config.plugins.iptvplayer.useTMDB.value == True:
-                    desc, cover = downloadData(title)
-                    if config.plugins.iptvplayer.updateListFile.value == True: #zmieniamy sobie plik
-                        iptv_system('sed -i "s/\(^.*%s\)/\1;;%s;;;%s' %(item['url'],cover,desc))
-                        
+                    desc, cover = downloadData(item['url'], title, config.plugins.iptvplayer.wgetpath.value, downloadPath, cacheTMDB )
                 else:
                     desc = item.get('desc', '')
                     cover = item.get('icon', '')
@@ -329,10 +338,6 @@ class IPTVHost(CHostBase):
 def ClearMemory(): #avoid GS running os.* (e.g. os.system) on tuners with small RAM
     with open("/proc/sys/vm/drop_caches", "w") as f: f.write("1\n")
 
-# -*- coding: utf-8 -*-
-import re
-from os import path, system
-
 def cleanFile(text):
     #text=getNameWithoutExtension(text)
     cutlist = ['x264','h264','720p','1080p','1080i','PAL','GERMAN','ENGLiSH','ENG', 'RUS', 'WS','DVDRiP','UNRATED','RETAIL','Web-DL','DL','LD','MiC','MD','DVDR','BDRiP','BLURAY','DTS','UNCUT',
@@ -372,7 +377,16 @@ def ConvertChars(text):
         text = text.replace(i, j)
     return text
 
-def downloadData(movieTitle):
+def downloadData(movieUrl, movieTitle, wgetpath, downloadPath, cacheTMDB = False ):
+    if cacheTMDB == False:
+        cachedDataFileName = '%s/rafalcool1.tmdb' % downloadPath
+    else:
+        hashAlg = MD5()
+        fullPath= '%s/%s1444444441.144441/'.replace('//','/') % (downloadPath, GetIconDirBaseName() )
+        cachedDataFileName = fullPath + hexlify(hashAlg(movieUrl[7:])) + '.jpg'
+        if not path.exists(fullPath):
+            mkdirs(fullPath)
+        
     descr = ''
     coverUrl = ''
     ClearMemory()
@@ -380,13 +394,19 @@ def downloadData(movieTitle):
     Webmovie=DecodeNationalLetters(Webmovie)
     Webmovie=ConvertChars(Webmovie)
     url = "http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=pl" % Webmovie
-    system('rm -f /tmp/rafalcool1.tmdb; wget "%s" -O /tmp/rafalcool1.tmdb' % url)
-    if path.exists('/tmp/rafalcool1.tmdb'):
-        with open('/tmp/rafalcool1.tmdb','r') as tmdbDATA: myData = tmdbDATA.read()
+    if cacheTMDB == False:
+        system('rm -f %s;%s "%s" -O %s' % (cachedDataFileName, wgetpath, url, cachedDataFileName))
+    else:
+        if not path.exists(cachedDataFileName):
+            system('%s "%s" -O %s' % (wgetpath, url, cachedDataFileName))
+    if path.exists(cachedDataFileName):
+        with open(cachedDataFileName,'r') as tmdbDATA: myData = tmdbDATA.read()
         list = re.findall('"poster_path":"(.*?)".*?"overview":"(.*?)".*?"release_date":"(.*?)".*?"id":(.*?),.*?"original_title":"(.*?)".*?"original_language":"(.*?)".*?"title":"(.*?)".*?"popularity":([\.0-9]*).*?"vote_average":([\.0-9]*).*?', myData, re.S)
 
         myData=None # some cleanup, just in case
-        if list is not None and len(list)>0:
+        if list is None or len(list) == 0:
+            remove(cachedDataFileName) # kasujemy z cache pliki nie zawierajace danych
+        else:
             if movieYear != '':
                 printDBG("filtering movies list by release year %s" % movieYear)
                 for coverPath,overview,release_date,id,otitle,original_language,title,popularity,vote_average in list:
