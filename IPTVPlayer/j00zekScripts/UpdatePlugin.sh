@@ -35,7 +35,7 @@ fi
 
 echo "_(Checking installation mode...)"
 if `opkg list-installed 2>/dev/null | grep -q 'iptvplayer'`;then
-    opkg update &>>/dev/null
+    opkg update &>/dev/null
     myPKG=`opkg list-installed 2>/dev/null | grep 'iptvplayer'|cut -d ' ' -f1`
     if `opkg list-upgradable|grep -q $myPKG`;then
       #first copy all custom data running custom user scripts
