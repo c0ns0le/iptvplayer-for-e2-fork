@@ -240,7 +240,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py ./IPTVPlayer/components/iptvextmovieplayer.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2016-01-03 07:53:12.145217001 +0100
 +++ ./IPTVPlayer/components/iptvextmovieplayer.py	2016-01-12 13:00:13.294693999 +0100
-@@ -1372,7 +1372,7 @@
+@@ -1378,7 +1378,7 @@
              
              if config.plugins.iptvplayer.aac_software_decode.value:
                  cmd += ' -a -p 10'
@@ -546,7 +546,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +                                            (_('Install into the "%s".') % "/usr/bin/uchardet static libstdc++", "/usr/bin/uchardet"),
 +                                            (_("Do not install (not recommended)"), "")]
          # gstplayer
-         self.gstplayerVersion = {'0.10':19, '1.0':10019}
+         self.gstplayerVersion = {'0.10':20, '1.0':10020}
          self.gstplayerpaths = ["/usr/bin/gstplayer", GetBinDir("gstplayer", "")]
 -        self._gstplayerInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/gstplayer (%s)" % _("recommended")), "/usr/bin/gstplayer"),
 -                                          (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
