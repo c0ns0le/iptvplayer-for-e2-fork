@@ -50,6 +50,7 @@ def GetConfigList():
     optionList.append(getConfigListEntry('Pobierz listę do:', config.plugins.iptvplayer.Sciezkaurllist))    
     optionList.append(getConfigListEntry('Pobierz brakującą okładkę i opis z web:', config.plugins.iptvplayer.useTMDB))    
     optionList.append(getConfigListEntry('Nie wyświetlaj:', config.plugins.iptvplayer.excludeFromList))    
+    optionList.append(getConfigListEntry('Wyświetl listę dla dorosłych:', config.plugins.iptvplayer.showXXXlinks))
     optionList.append(getConfigListEntry('Wymagaj pin przy wejściu do:', config.plugins.iptvplayer.protectHostWithPin))    
     optionList.append(getConfigListEntry('Podaj pin wtyczki:', config.plugins.iptvplayer.XXXlinksPinEntered))    
     #optionList.append(getConfigListEntry(_('Show recommended by Rafalcool1:'), config.plugins.iptvplayer.urllist_showrafalcool1))
