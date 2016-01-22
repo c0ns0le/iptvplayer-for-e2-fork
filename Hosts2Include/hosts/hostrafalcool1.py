@@ -17,7 +17,7 @@ from Plugins.Extensions.IPTVPlayer.libs.crypto.hash.md5Hash import MD5
 ###################################################
 # FOREIGN import
 ###################################################
-from Components.config import config, ConfigSelection, ConfigYesNo, ConfigDirectory, getConfigListEntry
+from Components.config import config, ConfigSelection, ConfigYesNo, ConfigPassword, ConfigDirectory, getConfigListEntry, NoSave
 import re
 import codecs
 import time
@@ -41,12 +41,17 @@ config.plugins.iptvplayer.sortuj         = ConfigYesNo(default = True)
 config.plugins.iptvplayer.urllist_showrafalcool1 = ConfigYesNo(default = True)
 config.plugins.iptvplayer.useTMDB = ConfigYesNo(default = True)
 config.plugins.iptvplayer.showXXXlinks = ConfigYesNo(default = False)
+config.plugins.iptvplayer.protectHostWithPin = ConfigSelection(default = 'host', choices = [("host", "hosta"),("xxx", "kategorii dla dorosłych"),("none", "nie wymagaj")])
+config.plugins.iptvplayer.XXXlinksPinEntered = NoSave(ConfigPassword(default = ' :P ', fixed_size = True))
+config.plugins.iptvplayer.excludeFromList = ConfigSelection(default = '', choices = [("", "wyświetlaj wszystko"),("zwiastun", "zwiastunów")])
 
 def GetConfigList():
     optionList = [] 
     optionList.append(getConfigListEntry('Pobierz listę do:', config.plugins.iptvplayer.Sciezkaurllist))    
-    optionList.append(getConfigListEntry('Pobierz brakującą okłądkę i opis z web:', config.plugins.iptvplayer.useTMDB))    
-    optionList.append(getConfigListEntry('Pobierz również listę filmów dla dorosłych:', config.plugins.iptvplayer.showXXXlinks))    
+    optionList.append(getConfigListEntry('Pobierz brakującą okładkę i opis z web:', config.plugins.iptvplayer.useTMDB))    
+    optionList.append(getConfigListEntry('Nie wyświetlaj:', config.plugins.iptvplayer.excludeFromList))    
+    optionList.append(getConfigListEntry('Wymagaj pin przy wejściu do:', config.plugins.iptvplayer.protectHostWithPin))    
+    optionList.append(getConfigListEntry('Podaj pin wtyczki:', config.plugins.iptvplayer.XXXlinksPinEntered))    
     #optionList.append(getConfigListEntry(_('Show recommended by Rafalcool1:'), config.plugins.iptvplayer.urllist_showrafalcool1))
     #optionList.append(getConfigListEntry(_('Sort the list:'), config.plugins.iptvplayer.sortuj))
     #optionList.append(getConfigListEntry(_('Group links into categories: '), config.plugins.iptvplayer.grupujurllist))
@@ -58,7 +63,7 @@ def gettytul():
 
 class Urllist(CBaseHostClass):
     RAFALCOOL1_FILE  = 'urllist_hostrafalcool1.txt'
-    URLLIST_FILE     = 'urllist.txt.fake'
+    URLLIST_FILE     = 'urllist_hostrafalcool1.pin'
     URRLIST_STREAMS  = 'urllist_hostrafalcool1.stream'
     URRLIST_ADULT     = 'urllist_hostrafalcool1.XXX'
     
@@ -67,7 +72,7 @@ class Urllist(CBaseHostClass):
         
         self.MAIN_GROUPED_TAB = [{'category': self.RAFALCOOL1_FILE,    'title': ("Propozycje Rafalcool1"),        'desc': ("Lista filmów wybranych przez kolegę Rafalcool1")}]
         if config.plugins.iptvplayer.showXXXlinks.value == True:
-            self.MAIN_GROUPED_TAB.append( {'category': self.URRLIST_ADULT,    'title': ("Propozycje dla..."),        'desc': ("")})
+            self.MAIN_GROUPED_TAB.append( {'category': self.URRLIST_ADULT,    'title': ("Propozycje dla dorosłych..."),        'desc': ("Musisz podać prawidłowy PIN w konfiguracji hosta")})
         CBaseHostClass.__init__(self)               
         self.currFileHost = None 
     
@@ -142,13 +147,15 @@ class Urllist(CBaseHostClass):
                 self.updateRafalcoolFile(self.RAFALCOOL1_FILE, filespath + Urllist.RAFALCOOL1_FILE, encoding='utf-8')
                 self.currFileHost.addFile(filespath + Urllist.RAFALCOOL1_FILE, encoding='utf-8')
             
-            if cItem['category'] in ['all', Urllist.URLLIST_FILE]: 
-                self.currFileHost.addFile(filespath + Urllist.URLLIST_FILE, encoding='utf-8')
-            if cItem['category'] in ['all', Urllist.URRLIST_STREAMS]: 
-                self.currFileHost.addFile(filespath + Urllist.URRLIST_STREAMS, encoding='utf-8')
+            #if cItem['category'] in ['all', Urllist.URLLIST_FILE]: 
+            #    self.currFileHost.addFile(filespath + Urllist.URLLIST_FILE, encoding='utf-8')
+            #if cItem['category'] in ['all', Urllist.URRLIST_STREAMS]: 
+            #    self.currFileHost.addFile(filespath + Urllist.URRLIST_STREAMS, encoding='utf-8')
+                
             if cItem['category'] in ['all', Urllist.URRLIST_ADULT]:
-                self.updateRafalcoolFile(self.URRLIST_ADULT, filespath + Urllist.URRLIST_ADULT, encoding='utf-8')
-                self.currFileHost.addFile(filespath + Urllist.URRLIST_ADULT, encoding='utf-8')
+                if config.plugins.iptvplayer.protectHostWithPin.value != 'xxx' or config.plugins.iptvplayer.XXXlinksPinEntered.value == config.plugins.iptvplayer.pin.value:
+                    self.updateRafalcoolFile(self.URRLIST_ADULT, filespath + Urllist.URRLIST_ADULT, encoding='utf-8')
+                    self.currFileHost.addFile(filespath + Urllist.URRLIST_ADULT, encoding='utf-8')
             
             if 'all' != cItem['category'] and groupList:
                 tmpList = self.currFileHost.getGroups(sortList)
@@ -183,14 +190,15 @@ class Urllist(CBaseHostClass):
                 #desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
                 #if item.get('desc', '') != '':
                 #    desc = item['desc']
-                if item.get('desc', '') == '' and item.get('icon', '') == '' and config.plugins.iptvplayer.useTMDB.value == True:
-                    desc, cover = downloadData(item['url'], title, config.plugins.iptvplayer.wgetpath.value, downloadPath, cacheTMDB )
-                else:
-                    desc = item.get('desc', '')
-                    cover = item.get('icon', '')
-                params = {'title':title, 'url':item['url'], 'desc': desc, 'icon': cover}
+                if config.plugins.iptvplayer.excludeFromList.value == '' or not re.search(config.plugins.iptvplayer.excludeFromList.value, title, flags=re.I):
+                    if item.get('desc', '') == '' and item.get('icon', '') == '' and config.plugins.iptvplayer.useTMDB.value == True:
+                        desc, cover = downloadData(item['url'], title, config.plugins.iptvplayer.wgetpath.value, downloadPath, cacheTMDB )
+                    else:
+                        desc = item.get('desc', '')
+                        cover = item.get('icon', '')
+                    params = {'title':title, 'url':item['url'], 'desc': desc, 'icon': cover}
                     
-                self.addVideo(params)
+                    self.addVideo(params)
                 
     def getLinksForVideo(self, cItem):
         printDBG("Urllist.getLinksForVideo url[%s]" % cItem['url'])
@@ -233,6 +241,12 @@ class IPTVHost(CHostBase):
 
     def __init__(self):
         CHostBase.__init__(self, Urllist(), True)
+        
+    def isProtectedByPinCode(self):
+        if config.plugins.iptvplayer.protectHostWithPin.value == "host":
+            return True
+        else:
+            return False
         
     def _isPicture(self, url):
         def _checkExtension(url): 
