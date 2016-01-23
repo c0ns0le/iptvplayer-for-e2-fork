@@ -28,9 +28,10 @@ platformtester.i386
 hostipla*
 *icons*
 *blocked*
-*hosts*
 *custom*
 gstplayer
 uchardet
 start-urllist
 *.mo
+*Polskie*
+hostrafalcool1.py

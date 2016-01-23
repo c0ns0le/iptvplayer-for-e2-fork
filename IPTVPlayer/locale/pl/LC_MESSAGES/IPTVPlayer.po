@@ -2013,3 +2013,9 @@ msgstr "Akceptuj format mpeg dash"
 
 msgid "Stop playing?"
 msgstr "Zakończyć odtwarzanie?"
+
+msgid "Urllists player"
+msgstr "lokalne listy z filmami"
+
+msgid "Urllists from %s"
+msgstr "Listy filmów z %s"

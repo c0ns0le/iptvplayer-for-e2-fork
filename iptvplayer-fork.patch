@@ -1,6 +1,6 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-12-27 07:42:31.328793000 +0100
-+++ ./IPTVPlayer/components/configbase.py	2016-01-12 13:00:13.286698000 +0100
++++ ./IPTVPlayer/components/configbase.py	2016-01-23 07:21:53.170598001 +0100
 @@ -8,10 +8,9 @@
  ###################################################
  # LOCAL import
@@ -29,7 +29,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif isinstance(currItem, ConfigText):
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-12-16 10:43:24.788841774 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2016-01-12 13:00:13.290695999 +0100
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2016-01-23 07:21:53.174596003 +0100
 @@ -7,12 +7,11 @@
  ###################################################
  # LOCAL import
@@ -238,8 +238,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          player = config.plugins.iptvplayer.NaszPlayer
          alternativePlayer = config.plugins.iptvplayer.NaszPlayer
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py ./IPTVPlayer/components/iptvextmovieplayer.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2016-01-03 07:53:12.145217001 +0100
-+++ ./IPTVPlayer/components/iptvextmovieplayer.py	2016-01-12 13:00:13.294693999 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2016-01-17 07:54:31.803803000 +0100
++++ ./IPTVPlayer/components/iptvextmovieplayer.py	2016-01-23 07:21:53.174596003 +0100
 @@ -1378,7 +1378,7 @@
              
              if config.plugins.iptvplayer.aac_software_decode.value:
@@ -251,7 +251,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              printDBG(">>>>>>>>>>>>>>>>>>>>>>>> audioTrackIdx[%d]" % audioTrackIdx)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-12-29 21:00:23.427137448 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2016-01-12 13:00:13.298691999 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2016-01-23 07:21:53.182592003 +0100
 @@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
@@ -322,9 +322,193 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  return
              elif ret[1] == "IPTVDM":
                  self.runIPTVDM(self.selectHost)
+diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/hosts/hosturllist.py ./IPTVPlayer/hosts/hosturllist.py
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/hosts/hosturllist.py	2016-01-22 10:18:06.044897000 +0100
++++ ./IPTVPlayer/hosts/hosturllist.py	2016-01-23 08:12:02.157352010 +0100
+@@ -5,7 +5,7 @@
+ ###################################################
+ from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
+ from Plugins.Extensions.IPTVPlayer.components.ihost import CHostBase, CBaseHostClass, CDisplayListItem, ArticleContent, RetHost, CUrlItem
+-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir
++from Plugins.Extensions.IPTVPlayer.tools.iptvtools import CSelOneLink, printDBG, printExc, CSearchHistoryHelper, GetLogoDir, GetCookieDir, FreeSpace as iptvtools_FreeSpace
+ from Plugins.Extensions.IPTVPlayer.tools.iptvfilehost import IPTVFileHost
+ from Plugins.Extensions.IPTVPlayer.libs.youtube_dl.utils import clean_html
+ from Plugins.Extensions.IPTVPlayer.libs.urlparserhelper import getDirectM3U8Playlist, getF4MLinksWithMeta
+@@ -22,6 +22,11 @@
+ import time
+ ###################################################
+ 
++j00zekFork=True
++from Plugins.Extensions.IPTVPlayer.libs.crypto.hash.md5Hash import MD5
++from Plugins.Extensions.IPTVPlayer.tools.iptvtools import FreeSpace as iptvtools_FreeSpace, GetIconDirBaseName, GetNewIconsDirName, mkdirs
++from binascii import hexlify
++from os import path, system, remove
+ 
+ ###################################################
+ # E2 GUI COMMPONENTS 
+@@ -36,6 +41,8 @@
+ config.plugins.iptvplayer.grupujurllist  = ConfigYesNo(default = True)
+ config.plugins.iptvplayer.sortuj         = ConfigYesNo(default = True)
+ config.plugins.iptvplayer.urllist_showrafalcool1 = ConfigYesNo(default = True)
++if 'j00zekFork' in globals():
++    config.plugins.iptvplayer.useTMDB = ConfigYesNo(default = True)
+ 
+ def GetConfigList():
+     optionList = [] 
+@@ -43,11 +50,16 @@
+     optionList.append(getConfigListEntry(_('Show recommended by Rafalcool1:'), config.plugins.iptvplayer.urllist_showrafalcool1))
+     optionList.append(getConfigListEntry(_('Sort the list:'), config.plugins.iptvplayer.sortuj))
+     optionList.append(getConfigListEntry(_('Group links into categories: '), config.plugins.iptvplayer.grupujurllist))
++    if 'j00zekFork' in globals():
++        optionList.append(getConfigListEntry(_('Download missing cover and descr from tmdb:'), config.plugins.iptvplayer.useTMDB))    
+     return optionList
+ ###################################################
+ 
+ def gettytul():
+-    return (_('Urllists player'))
++    if 'j00zekFork' in globals():
++        return (_('Urllists from %s') % config.plugins.iptvplayer.Sciezkaurllist.value)
++    else:
++        return (_('Urllists player'))
+ 
+ class Urllist(CBaseHostClass):
+     RAFALCOOL1_FILE  = 'urllist.rafalcool1'
+@@ -161,15 +173,30 @@
+                     self.addVideo(params)
+         elif 'group' in cItem:
+             tmpList = self.currFileHost.getItemsInGroup(cItem['group'], sortList)
++            if 'j00zekFork' in globals():
++                if iptvtools_FreeSpace(config.plugins.iptvplayer.SciezkaCache.value, 10):
++                    downloadPath = config.plugins.iptvplayer.SciezkaCache.value
++                    cacheTMDB = True
++                else:
++                    downloadPath = config.plugins.iptvplayer.NaszaTMP.value
++                    cacheTMDB = False
+             for item in tmpList:
+                 if '' == item['title_in_group']:
+                     title = item['full_title']
+                 else:
+                     title = item['title_in_group']
+-                desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
+-                if item.get('desc', '') != '':
+-                    desc = item['desc']
+-                params = {'title':title, 'url':item['url'], 'desc': desc, 'icon':item.get('icon', '')}
++                if 'j00zekFork' in globals():
++                    if item.get('desc', '') == '' and item.get('icon', '') == '' and config.plugins.iptvplayer.useTMDB.value == True:
++                        desc, cover = downloadData(item['url'], title, config.plugins.iptvplayer.wgetpath.value, downloadPath, cacheTMDB )
++                    else:
++                        desc = item.get('desc', '')
++                        cover = item.get('icon', '')
++                    params = {'title':title, 'url':item['url'], 'desc': desc, 'icon':cover}
++                else:
++                    desc = (_("Hosting: %s, %s")) % (self._getHostingName(item['url']), item['url'])
++                    if item.get('desc', '') != '':
++                        desc = item['desc']
++                    params = {'title':title, 'url':item['url'], 'desc': desc, 'icon':item.get('icon', '')}
+                 self.addVideo(params)
+                 
+     def getLinksForVideo(self, cItem):
+@@ -313,4 +340,95 @@
+             printDBG('setSearchPattern EXCEPTION')
+             self.searchPattern = ''
+             self.searchType = ''
+-        return
+\ No newline at end of file
++        return
++        
++#####################################################################################################
++def ClearMemory(): #avoid GS running os.* (e.g. os.system) on tuners with small RAM
++    with open("/proc/sys/vm/drop_caches", "w") as f: f.write("1\n")
++
++def cleanFile(text):
++    #text=getNameWithoutExtension(text)
++    cutlist = ['x264','h264','720p','1080p','1080i','PAL','GERMAN','ENGLiSH','ENG', 'RUS', 'WS','DVDRiP','UNRATED','RETAIL','Web-DL','DL','LD','MiC','MD','DVDR','BDRiP','BLURAY','DTS','UNCUT',
++                'ANiME','AC3MD','AC3','AC3D','TS','DVDSCR','COMPLETE','INTERNAL','DTSD','XViD','DIVX','DUBBED','LINE.DUBBED','DD51','DVDR9','DVDR5','AVC','WEBHDTVRiP','WEBHDRiP','WEBRiP',
++                'WEBHDTV','WebHD','HDTVRiP','HDRiP','HDTV','ITUNESHD','REPACK','SYNC','REAL','PL']
++    
++    for word in cutlist:
++        #text = re.sub('(\_|\-|\.|\+)'+word+'(\_|\-|\.|\+)','+', text, flags=re.I)
++        text = re.sub('(\_|\-|\.|\+)'+word+'.*','.', text, flags=re.I) #assumtion is everything after garbage is garbadge too. ;)
++    #text = re.sub('(\_|\-|\.|\+)[12][0-9][0-9][0-9]\+.*','', text, flags=re.I) #if there is plus sign after date, date is most probably the garbage, so removing it ;)
++    
++    #let's take a year, if exists
++    try:
++        movieYear=re.sub('(\_|\-|\.|\+|\()','', re.search('(\_|\-|\.|\+|\()[12][09][0-9][0-9]', text, flags=re.I).group() ) #for future use
++    except:
++        movieYear=''
++    
++    #removing exact character combinations
++    ExactCutList = ['(\_|\-|\.|\+|\()[12][09][0-9][0-9](\_|\-|\.|\+|\))','^psig-','^[12][09][0-9]* [0-9][0-9]* - .* - ', '-[ ]*zwiastun']
++    for word in ExactCutList:
++        text = re.sub(word,'', text, flags=re.I) #assumtion is everything after garbage is garbadge too. ;)
++        
++    text = re.sub('(\_|\-|\.|\+)',' ', text, flags=re.I) #cleaning
++    text = re.sub('(  [ ]*)',' ', text, flags=re.I) #merge multiple (2+) spaces into one
++
++    return text, movieYear
++    
++def DecodeNationalLetters(text):
++    #polskie litery
++    text = text.replace('ą','a').replace('ę','e').replace('ś','s').replace('ć','c').replace('ż','z').replace('ź','z').replace('ł','l').replace('ń','n')
++    text = text.replace('Ą','A').replace('Ę','E').replace('Ś','S').replace('Ć','C').replace('Ż','Z').replace('Ź','Z').replace('Ł','L').replace('Ń','N')
++    return text.strip()
++
++def ConvertChars(text):
++    CharsTable={ '\xC2\xB1': '\xC4\x85','\xC2\xB6': '\xC5\x9b','\xC4\xBD': '\xC5\xba'}
++    for i, j in CharsTable.iteritems():
++        text = text.replace(i, j)
++    return text
++
++def downloadData(movieUrl, movieTitle, wgetpath, downloadPath, cacheTMDB = False ):
++    if cacheTMDB == False:
++        cachedDataFileName = '%s/rafalcool1.tmdb' % downloadPath
++    else:
++        hashAlg = MD5()
++        fullPath= '%s/%s1444444441.144441/'.replace('//','/') % (downloadPath, GetIconDirBaseName() )
++        cachedDataFileName = fullPath + hexlify(hashAlg(movieUrl[7:])) + '.jpg'
++        if not path.exists(fullPath):
++            mkdirs(fullPath)
++        
++    descr = ''
++    coverUrl = ''
++    ClearMemory()
++    Webmovie, movieYear =cleanFile(movieTitle)
++    Webmovie=DecodeNationalLetters(Webmovie)
++    Webmovie=ConvertChars(Webmovie)
++    url = "http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=pl" % Webmovie
++    if cacheTMDB == False:
++        system('rm -f %s;%s "%s" -O %s' % (cachedDataFileName, wgetpath, url, cachedDataFileName))
++    else:
++        if not path.exists(cachedDataFileName):
++            system('%s "%s" -O %s' % (wgetpath, url, cachedDataFileName))
++    if path.exists(cachedDataFileName):
++        with open(cachedDataFileName,'r') as tmdbDATA: myData = tmdbDATA.read()
++        list = re.findall('"poster_path":"(.*?)".*?"overview":"(.*?)".*?"release_date":"(.*?)".*?"id":(.*?),.*?"original_title":"(.*?)".*?"original_language":"(.*?)".*?"title":"(.*?)".*?"popularity":([\.0-9]*).*?"vote_average":([\.0-9]*).*?', myData, re.S)
++
++        myData=None # some cleanup, just in case
++        if list is None or len(list) == 0:
++            remove(cachedDataFileName) # kasujemy z cache pliki nie zawierajace danych
++        else:
++            if movieYear != '':
++                printDBG("filtering movies list by release year %s" % movieYear)
++                for coverPath,overview,release_date,id,otitle,original_language,title,popularity,vote_average in list:
++                    if movieYear in release_date:
++                        coverUrl = "http://image.tmdb.org/t/p/w185%s" % coverPath
++                        coverUrl = coverUrl.replace('\/','/')
++                        #print "[CoverFind] " + title, coverUrl
++                        descr=overview + '<br/>' + 'Premiera: ' + release_date + '<br/>' + 'Popularność: ' + popularity + '<br/>' + 'Ocena: ' + vote_average
++                        return descr, coverUrl
++                            
++            coverPath,overview,release_date,id,otitle,original_language,title,popularity,vote_average = list[0]
++            coverUrl = "http://image.tmdb.org/t/p/w185%s" % coverPath
++            coverUrl = coverUrl.replace('\/','/')
++            print "[CoverFind] " + title, coverUrl
++            descr=overview + '<br/>' + 'Premiera: ' + release_date + '<br/>' + 'Popularność: ' + popularity + '<br/>' + 'Ocena: ' + vote_average
++
++    return descr, coverUrl
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:42:31.332790999 +0100
-+++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2016-01-12 13:00:13.310686000 +0100
++++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2016-01-23 07:21:53.182592003 +0100
 @@ -19,7 +19,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -352,7 +536,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self["list"].setSelectionState(enabled = False)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml ./IPTVPlayer/keymap.xml
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml	2015-11-11 07:16:27.439257999 +0100
-+++ ./IPTVPlayer/keymap.xml	2016-01-12 13:00:13.310686000 +0100
++++ ./IPTVPlayer/keymap.xml	2016-01-23 07:21:53.182592003 +0100
 @@ -25,4 +25,23 @@
                  <key id="KEY_RED"   mapto="videooptions" flags="m" />
                  <key id="KEY_MENU"  mapto="menu"         flags="m" />
@@ -380,7 +564,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 \ No newline at end of file
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po ./IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po	2015-12-10 10:58:15.215665999 +0100
-+++ ./IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po	2016-01-12 21:21:32.304050995 +0100
++++ ./IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po	2016-01-23 08:13:19.478672017 +0100
 @@ -14,6 +14,60 @@
  "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
  "X-Poedit-SearchPath-0: ../plugin\n"
@@ -460,9 +644,19 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  
  msgid "Pin protection for plugin"
  msgstr "Chronić wtyczkę kodem pin"
+@@ -1959,3 +2013,9 @@
+ 
+ msgid "Stop playing?"
+ msgstr "Zakończyć odtwarzanie?"
++
++msgid "Urllists player"
++msgstr "lokalne listy z filmami"
++
++msgid "Urllists from %s"
++msgstr "Listy filmów z %s"
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py ./IPTVPlayer/plugin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-17 06:34:21.247824000 +0100
-+++ ./IPTVPlayer/plugin.py	2016-01-12 13:00:13.342670000 +0100
++++ ./IPTVPlayer/plugin.py	2016-01-23 07:21:53.186590002 +0100
 @@ -73,7 +73,9 @@
      #print config.plugins.iptvplayer.rtmpdumppath.value
      #print config.plugins.iptvplayer.f4mdumppath.value
@@ -475,8 +669,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      elif IPTVPlayerNeedInit():
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2016-01-03 07:53:12.145217001 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2016-01-12 13:00:13.342670000 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2016-01-21 08:46:54.031800000 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2016-01-23 07:21:53.194586002 +0100
 @@ -7,7 +7,7 @@
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -620,7 +814,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              sts, retPath = False, ""
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py ./IPTVPlayer/tools/iptvtools.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py	2015-12-20 06:49:33.986133998 +0100
-+++ ./IPTVPlayer/tools/iptvtools.py	2016-01-12 13:00:13.350665999 +0100
++++ ./IPTVPlayer/tools/iptvtools.py	2016-01-23 07:21:53.194586002 +0100
 @@ -47,7 +47,7 @@
      return nice
      
