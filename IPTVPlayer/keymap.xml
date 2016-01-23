@@ -24,6 +24,7 @@
                 <key id="KEY_YELLOW" mapto="audio"        flags="m" />
                 <key id="KEY_RED"   mapto="videooptions" flags="m" />
                 <key id="KEY_MENU"  mapto="menu"         flags="m" />
+                <key id="KEY_8"     mapto="loop"         flags="m" />
         </map> 
   <map context="j00zekHostTreeSelector">
     <key id="KEY_OK"    mapto="selectHost" flags="m" />
