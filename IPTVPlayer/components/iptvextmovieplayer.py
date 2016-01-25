@@ -1388,7 +1388,8 @@ class IPTVExtMoviePlayer(Screen):
                 for key in httpParams:
                     if key == 'User-Agent':
                         cmd += ' -u "%s"' %  httpParams[key]
-                    headers += ('%s: %s\r\n' % (key, httpParams[key]) )
+                    else:
+                        headers += ('%s=%s\r\n' % (key, httpParams[key]) )
                 if len(headers):
                     cmd += ' -h "%s"' % headers
                     
@@ -1397,6 +1398,10 @@ class IPTVExtMoviePlayer(Screen):
             
             if config.plugins.iptvplayer.dts_software_decode.value:
                 cmd += ' -d '
+                
+            if config.plugins.iptvplayer.plarform.value == 'mipsel':
+                if config.plugins.iptvplayer.wma_software_decode.value:
+                    cmd += ' -w '
                 
             if 'lpcm' == config.plugins.iptvplayer.software_decode_as.value: 
                 cmd += ' -l '
