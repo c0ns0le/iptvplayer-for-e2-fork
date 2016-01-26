@@ -141,6 +141,12 @@ def LoadSkin(SkinName):
 ##################################################### CLEAR CACHE - tuners with small amount of memory need it #####################################################
 def ClearMemory(): #avoid GS running os.* (e.g. os.system) on tuners with small amount of RAM
     with open("/proc/sys/vm/drop_caches", "w") as f: f.write("1\n")
+    
+def isGraterlia():
+    if path.exists('/etc/init.d/graterlia_init'):
+        return True
+    else:
+        return False
 ##################################################### getPlatform #####################################################
 def getPlatform():
     fc=''
