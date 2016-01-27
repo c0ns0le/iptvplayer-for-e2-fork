@@ -1,4 +1,4 @@
-# @j00zek 14.01.2016
+# @j00zek 27.01.2016
 #This script installs required packages, it is run once after upgrade
 #
 [ -z "$1" ] && silent=0 || silent=1
@@ -14,7 +14,7 @@ install_package(){
 if ! `opkg list_installed|grep -q "$1 "`;then
   opkg install $1 1>/dev/null 2>&1
   if [ $? -eq 0 ]; then
-    [ $silent -eq 0 ] echo "$1 $installedCorrectly"
+    [ $silent -eq 0 ] && echo "$1 $installedCorrectly"
     echo "$1 installed correctly">>/tmp/IPTV-opkg.log
   else
     echo "$1 NOT available in opkg and NOT installed properly">>/tmp/IPTV-opkg.log

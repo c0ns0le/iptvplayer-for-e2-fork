@@ -143,7 +143,7 @@ def ClearMemory(): #avoid GS running os.* (e.g. os.system) on tuners with small 
     with open("/proc/sys/vm/drop_caches", "w") as f: f.write("1\n")
     
 def isGraterlia():
-    if path.exists('/etc/init.d/graterlia_init'):
+    if os_path.exists('/etc/init.d/graterlia_init'):
         return True
     else:
         return False

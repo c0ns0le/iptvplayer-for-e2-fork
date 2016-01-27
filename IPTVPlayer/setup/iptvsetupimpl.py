@@ -34,7 +34,7 @@ class IPTVSetupImpl:
         self.termination  = False
         
         self.tmpDir = GetTmpDir()
-        self.resourceServers = ["http://iptvplayer.pl/resources/", "http://iptvplayer.vline.pl/resources/", "http://hybrid.xunil.pl/IPTVPlayer_resources/"]
+        self.resourceServers = ["http://hybrid.xunil.pl/IPTVPlayer_resources/", "http://iptvplayer.pl/resources/", "http://iptvplayer.vline.pl/resources/"]
         
         self.ffmpegVersion = ""
         self.gstreamerVersion = ""
@@ -45,7 +45,7 @@ class IPTVSetupImpl:
         # wget members
         self.wgetVersion = 15 # 1.15 
         self.wgetpaths = ["wget", "/usr/bin/wget", "/usr/bin/fullwget", GetBinDir("wget", "")]
-        if isGraterlia == True:
+        if isGraterlia() == True:
             self._wgetInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/wget" + _("recommended")), GetBinDir("wget", "")),
                                           (_('Install into the "%s".') % "/usr/bin/fullwget ", "/usr/bin/fullwget"),
                                           (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
@@ -62,7 +62,7 @@ class IPTVSetupImpl:
         # f4mdump member
         self.f4mdumpVersion = "F4MDump v0.50"
         self.f4mdumppaths = ["/usr/bin/f4mdump", GetBinDir("f4mdump", "")]
-        if isGraterlia == True:
+        if isGraterlia() == True:
             self._f4mdumpInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/f4mdump (%s)" % _("recommended")), GetBinDir("f4mdump", "")),
                                               (_('Install into the "%s".') % "/usr/bin/f4mdump", "/usr/bin/f4mdump"),
                                               (_("Do not install (not recommended)"), "")]
@@ -80,7 +80,7 @@ class IPTVSetupImpl:
         # uchardet member
         self.uchardetVersion = 2
         self.uchardetpaths = ["/usr/bin/uchardet", GetBinDir("uchardet", "")]
-        if isGraterlia == True:
+        if isGraterlia() == True:
             self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/uchardet (%s)" % _("recommended")), GetBinDir("uchardet", "")),
                                               (_('Install into the "%s".') % "/usr/bin/uchardet", "/usr/bin/uchardet"),
                                               (_("Do not install (not recommended)"), "")]
@@ -97,7 +97,7 @@ class IPTVSetupImpl:
         # gstplayer
         self.gstplayerVersion = {'0.10':20, '1.0':10021}
         self.gstplayerpaths = ["/usr/bin/gstplayer", GetBinDir("gstplayer", "")]
-        if isGraterlia == True:
+        if isGraterlia() == True:
             self._gstplayerInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/gstplayer (%s)" % _("recommended")), GetBinDir("gstplayer", "")),
                                                 (_('Install into the "%s".') % "/usr/bin/gstplayer", "/usr/bin/gstplayer"),
                                                 (_("Do not install (not recommended)"), "")]
@@ -108,7 +108,7 @@ class IPTVSetupImpl:
         # exteplayer3
         self.exteplayer3Version = {'sh4': 9, 'mipsel': 20, 'armv7': 11}
         self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
-        if isGraterlia == True:
+        if isGraterlia() == True:
             self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/exteplayer3 (%s)" % _("recommended")), GetBinDir("exteplayer3", "")),
                                                   (_('Install into the "%s".') % "/usr/bin/exteplayer3", "/usr/bin/exteplayer3"),
                                                   (_("Do not install (not recommended)"), "")]

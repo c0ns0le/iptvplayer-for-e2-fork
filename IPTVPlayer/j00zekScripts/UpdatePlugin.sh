@@ -136,8 +136,23 @@ else
   rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh #first deleting, it's part of package
 for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`;do
   echo "_(Starting custom script) $scriptname..."
+  chmod 755 $scriptname 2>/dev/null
   $scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/$version/IPTVPlayer
 done
+#cleaning unnecessary icons
+if `grep -q 'config.plugins.iptvplayer.IconsSize=100' 2>/dev/null </etc/enigma2/settings`;then
+  #delete all icons but 100x100
+  rm -f /tmp/$version/IPTVPlayer/icons/PlayerSelector/*120.png 2>/dev/null
+  rm -f /tmp/$version/IPTVPlayer/icons/PlayerSelector/*135.png 2>/dev/null
+elif `grep -q 'config.plugins.iptvplayer.IconsSize=120' 2>/dev/null </usr/local/e2/etc/enigma2/settings`;then
+  #delete all icons but 120x120
+  rm -f /tmp/$version/IPTVPlayer/icons/PlayerSelector/*100.png 2>/dev/null
+  rm -f /tmp/$version/IPTVPlayer/icons/PlayerSelector/*135.png 2>/dev/null
+else #default e2 option
+  #delete all icons but 135x135
+  rm -f /tmp/$version/IPTVPlayer/icons/PlayerSelector/*120.png 2>/dev/null
+  rm -f /tmp/$version/IPTVPlayer/icons/PlayerSelector/*100.png 2>/dev/null
+fi
 #final copying
   cp -a /tmp/$version/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null
   rm -rf /tmp/j00zek-iptvplayer-for-e2-fork-* 2>/dev/null

@@ -273,11 +273,16 @@ class FileList(MenuList):
         #if config.plugins.iptvplayer.j00zekLastSelectedHost.value != '':
         #    self.changeDir( os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value), os_path.basename(config.plugins.iptvplayer.j00zekLastSelectedHost.value) )
         #self.changeDir(directory) #don't change dir during init, requires refresh onshown event, but speedsup GUI 
-        if getDesktop(0).size().width() == 1920:
-            self.l.setFont(0, gFont("Regular", 36)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
-        else:
-            self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
-        self.l.setItemHeight(42)
+        import skin
+        try:
+            self.l.setFont(0, gFont(skin.fonts["j00zekFileList"][0], skin.fonts["j00zekFileList"][1])) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
+            self.l.setItemHeight(skin.fonts["j00zekFileList"][2])
+        except:
+            if getDesktop(0).size().width() == 1920:
+                self.l.setFont(0, gFont("Regular", 36)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
+            else:
+                self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
+            self.l.setItemHeight(42)
         #self.serviceHandler = eServiceCenter.getInstance()
 
     #def refreshMountpoints(self):
