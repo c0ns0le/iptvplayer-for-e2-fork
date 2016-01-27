@@ -1,6 +1,6 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-12-27 07:42:31.328793000 +0100
-+++ ./IPTVPlayer/components/configbase.py	2016-01-26 20:31:49.705778999 +0100
++++ ./IPTVPlayer/components/configbase.py	2016-01-27 22:02:15.551480000 +0100
 @@ -8,10 +8,9 @@
  ###################################################
  # LOCAL import
@@ -29,7 +29,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif isinstance(currItem, ConfigText):
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2015-12-16 10:43:24.788841774 +0100
-+++ ./IPTVPlayer/components/iptvconfigmenu.py	2016-01-26 20:31:49.705778999 +0100
++++ ./IPTVPlayer/components/iptvconfigmenu.py	2016-01-27 22:02:15.551480000 +0100
 @@ -7,12 +7,11 @@
  ###################################################
  # LOCAL import
@@ -49,27 +49,11 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  config.plugins.iptvplayer.set_curr_title  = ConfigYesNo(default = False)
  config.plugins.iptvplayer.curr_title_file = ConfigText(default = "", fixed_size = False) 
 -config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")), ("armv7", _("armv7")), ("unknown", _("unknown"))])
-+config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")),("arm", _("arm")),("unknown", _("unsupported"))])
++config.plugins.iptvplayer.plarform        = ConfigSelection(default = "auto", choices = [("auto", "auto"),("mipsel", _("mipsel")),("sh4", _("sh4")),("i686", _("i686")), ("armv7", _("armv7")),("arm", _("arm")),("unknown", _("unsupported"))])
  
  config.plugins.iptvplayer.showcover          = ConfigYesNo(default = True)
  config.plugins.iptvplayer.deleteIcons        = ConfigSelection(default = "3", choices = [("0", _("after closing")),("1", _("after day")),("3", _("after three days")),("7", _("after a week"))]) 
-@@ -72,13 +71,13 @@
- 
- 
- def GetMoviePlayerName(player):
--    map = {"auto":_("auto"), "mini": _("internal"), "standard":_("standard"), 'exteplayer': _("external eplayer3"), 'extgstplayer': _("external gstplayer")}
-+    map = {"auto":_("auto"), "mini": _("internal"), "standard":_("standard"), "afp":_("Advanced Free Player"), 'exteplayer': _("external eplayer3"), 'extgstplayer': _("external gstplayer")}
-     return map.get(player, _('unknown'))
-     
- def ConfigPlayer(player):
-     return (player, GetMoviePlayerName(player))
- 
--config.plugins.iptvplayer.NaszPlayer = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"), ConfigPlayer("mini"), ConfigPlayer('extgstplayer'), ConfigPlayer("standard")])
-+config.plugins.iptvplayer.NaszPlayer = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"), ConfigPlayer("mini"), ConfigPlayer("afp"), ConfigPlayer('extgstplayer'), ConfigPlayer("standard")])
- 
- # without buffering mode
- #sh4
-@@ -92,11 +91,12 @@
+@@ -92,6 +91,10 @@
  #i686
  config.plugins.iptvplayer.defaultI686MoviePlayer0        = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
  config.plugins.iptvplayer.alternativeI686MoviePlayer0    = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
@@ -79,26 +63,18 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +config.plugins.iptvplayer.alternativeARMMoviePlayer0    = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
  # end without buffering mode players
  
--#armv7
--config.plugins.iptvplayer.defaultARMV7MoviePlayer0      = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer'),ConfigPlayer('exteplayer')])
--config.plugins.iptvplayer.alternativeARMV7MoviePlayer0  = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer'),ConfigPlayer('exteplayer')])
- 
- # with buffering mode
- #sh4
-@@ -111,9 +111,9 @@
- config.plugins.iptvplayer.defaultI686MoviePlayer        = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
- config.plugins.iptvplayer.alternativeI686MoviePlayer    = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
- 
--#armv7
--config.plugins.iptvplayer.defaultARMV7MoviePlayer      = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer'),ConfigPlayer('exteplayer')])
--config.plugins.iptvplayer.alternativeARMV7MoviePlayer  = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer'),ConfigPlayer('exteplayer')])
-+#i686
+ #armv7
+@@ -114,6 +117,9 @@
+ #armv7
+ config.plugins.iptvplayer.defaultARMV7MoviePlayer      = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer'),ConfigPlayer('exteplayer')])
+ config.plugins.iptvplayer.alternativeARMV7MoviePlayer  = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer'),ConfigPlayer('exteplayer')])
++#arm
 +config.plugins.iptvplayer.defaultARMMoviePlayer        = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
 +config.plugins.iptvplayer.alternativeARMMoviePlayer    = ConfigSelection(default = "auto", choices = [ConfigPlayer("auto"),ConfigPlayer("mini"),ConfigPlayer("standard"),ConfigPlayer('extgstplayer')])
  # end with buffering mode players
  
  config.plugins.iptvplayer.SciezkaCache = ConfigDirectory(default = "/hdd/IPTVCache/") #, fixed_size = False)
-@@ -172,7 +172,9 @@
+@@ -172,7 +178,9 @@
  config.plugins.iptvplayer.autoplay_start_delay  = ConfigInteger(3, (1, 1000000))
  
  ###################################################
@@ -109,7 +85,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ########################################################
  # Generate list of hosts options for Enabling/Disabling
  ########################################################
-@@ -215,6 +217,8 @@
+@@ -215,6 +223,8 @@
          
      @staticmethod
      def fillConfigList(list, hiddenOptions=False):
@@ -118,22 +94,10 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          if hiddenOptions:
              list.append( getConfigListEntry(_("Last checked version"), config.plugins.iptvplayer.updateLastCheckedVersion) )
              list.append( getConfigListEntry(_("Show all version in the update menu"), config.plugins.iptvplayer.hiddenAllVersionInUpdate) )
-@@ -315,17 +319,17 @@
-             players.append(config.plugins.iptvplayer.defaultI686MoviePlayer)
-             list.append(getConfigListEntry(_("Second move player in buffering mode"), config.plugins.iptvplayer.alternativeI686MoviePlayer))
-             players.append(config.plugins.iptvplayer.alternativeI686MoviePlayer)
--
--        elif 'armv7' == config.plugins.iptvplayer.plarform.value:
--            list.append(getConfigListEntry(_("First move player without buffering mode"), config.plugins.iptvplayer.defaultARMV7MoviePlayer0))
--            players.append(config.plugins.iptvplayer.defaultARMV7MoviePlayer0)
--            list.append(getConfigListEntry(_("Second move player without buffering mode"), config.plugins.iptvplayer.alternativeARMV7MoviePlayer0))
--            players.append(config.plugins.iptvplayer.alternativeARMV7MoviePlayer0)
--            
--            list.append(getConfigListEntry(_("First move player in buffering mode"), config.plugins.iptvplayer.defaultARMV7MoviePlayer))
--            players.append(config.plugins.iptvplayer.defaultARMV7MoviePlayer)
--            list.append(getConfigListEntry(_("Second move player in buffering mode"), config.plugins.iptvplayer.alternativeARMV7MoviePlayer))
--            players.append(config.plugins.iptvplayer.alternativeARMV7MoviePlayer)
-+            
+@@ -327,6 +337,17 @@
+             list.append(getConfigListEntry(_("Second move player in buffering mode"), config.plugins.iptvplayer.alternativeARMV7MoviePlayer))
+             players.append(config.plugins.iptvplayer.alternativeARMV7MoviePlayer)
+             
 +        elif 'arm' == config.plugins.iptvplayer.plarform.value:
 +            list.append(getConfigListEntry(_("First move player without buffering mode"), config.plugins.iptvplayer.defaultARMMoviePlayer0))
 +            players.append(config.plugins.iptvplayer.defaultARMMoviePlayer0)
@@ -144,10 +108,11 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +            players.append(config.plugins.iptvplayer.defaultARMMoviePlayer)
 +            list.append(getConfigListEntry(_("Second move player in buffering mode"), config.plugins.iptvplayer.alternativeARMMoviePlayer))
 +            players.append(config.plugins.iptvplayer.alternativeARMMoviePlayer)
-             
++            
          else: 
              list.append(getConfigListEntry(_("Movie player"), config.plugins.iptvplayer.NaszPlayer))
-@@ -343,6 +347,8 @@
+         
+@@ -343,6 +364,8 @@
          list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
          list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
          list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
@@ -156,7 +121,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  
      def runSetup(self):
          self.list = []
-@@ -366,8 +372,12 @@
+@@ -366,8 +389,12 @@
              self.doUpdate()
  
      def doUpdate(self):
@@ -171,7 +136,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          
  
      def save(self):
-@@ -391,7 +401,12 @@
+@@ -391,7 +418,12 @@
          if isinstance(currItem, ConfigDirectory):
              def SetDirPathCallBack(curIndex, newPath):
                  if None != newPath: self["config"].list[curIndex][1].value = newPath
@@ -185,17 +150,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          elif config.plugins.iptvplayer.fakePin == currItem:
              self.changePin(start = True)
          elif config.plugins.iptvplayer.fakeUpdate == currItem:
-@@ -424,16 +439,16 @@
-             players.append(config.plugins.iptvplayer.alternativeMIPSELMoviePlayer0)
-             players.append(config.plugins.iptvplayer.defaultMIPSELMoviePlayer)
-             players.append(config.plugins.iptvplayer.alternativeMIPSELMoviePlayer)
--        elif 'armv7' == config.plugins.iptvplayer.plarform.value:
--            players.append(config.plugins.iptvplayer.defaultARMV7MoviePlayer0)
--            players.append(config.plugins.iptvplayer.alternativeARMV7MoviePlayer0)
--            players.append(config.plugins.iptvplayer.defaultARMV7MoviePlayer)
--            players.append(config.plugins.iptvplayer.alternativeARMV7MoviePlayer)
-         elif 'i686' == config.plugins.iptvplayer.plarform.value:
-             players.append(config.plugins.iptvplayer.defaultI686MoviePlayer0)
+@@ -434,6 +466,11 @@
              players.append(config.plugins.iptvplayer.alternativeI686MoviePlayer0)
              players.append(config.plugins.iptvplayer.defaultI686MoviePlayer)
              players.append(config.plugins.iptvplayer.alternativeI686MoviePlayer)
@@ -207,22 +162,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          else:
              players.append(config.plugins.iptvplayer.NaszPlayer)
          tab.extend(players)
-@@ -505,14 +520,6 @@
-             player = config.plugins.iptvplayer.defaultMIPSELMoviePlayer0
-             alternativePlayer = config.plugins.iptvplayer.alternativeMIPSELMoviePlayer0
- 
--    elif 'armv7' == config.plugins.iptvplayer.plarform.value:
--        if buffering:
--            player = config.plugins.iptvplayer.defaultARMV7MoviePlayer
--            alternativePlayer = config.plugins.iptvplayer.alternativeARMV7MoviePlayer
--        else:
--            player = config.plugins.iptvplayer.defaultARMV7MoviePlayer0
--            alternativePlayer = config.plugins.iptvplayer.alternativeARMV7MoviePlayer0
--
-     elif 'i686' == config.plugins.iptvplayer.plarform.value:
-         if buffering:
-             player = config.plugins.iptvplayer.defaultI686MoviePlayer
-@@ -520,6 +527,14 @@
+@@ -520,6 +557,14 @@
          else:
              player = config.plugins.iptvplayer.defaultI686MoviePlayer0
              alternativePlayer = config.plugins.iptvplayer.alternativeI686MoviePlayer0
@@ -239,7 +179,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          alternativePlayer = config.plugins.iptvplayer.NaszPlayer
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py ./IPTVPlayer/components/iptvextmovieplayer.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2016-01-25 22:44:34.727065999 +0100
-+++ ./IPTVPlayer/components/iptvextmovieplayer.py	2016-01-26 20:31:49.709776999 +0100
++++ ./IPTVPlayer/components/iptvextmovieplayer.py	2016-01-27 22:02:15.559475999 +0100
 @@ -1408,7 +1408,7 @@
              
              if config.plugins.iptvplayer.aac_software_decode.value:
@@ -251,7 +191,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              printDBG(">>>>>>>>>>>>>>>>>>>>>>>> audioTrackIdx[%d]" % audioTrackIdx)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py ./IPTVPlayer/components/iptvplayerwidget.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvplayerwidget.py	2015-12-29 21:00:23.427137448 +0100
-+++ ./IPTVPlayer/components/iptvplayerwidget.py	2016-01-26 20:31:49.713775000 +0100
++++ ./IPTVPlayer/components/iptvplayerwidget.py	2016-01-27 22:02:15.559475999 +0100
 @@ -11,6 +11,10 @@
  from urllib import quote as urllib_quote
  
@@ -263,15 +203,6 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  #                   E2 components
  ####################################################
  from Screens.Screen import Screen
-@@ -319,7 +323,7 @@
-         try:
-             asynccall.gMainFunctionsQueue.setProcFun(None)
-             asynccall.gMainFunctionsQueue.clearQueue()
--            iptv_system('echo 1 > /proc/sys/vm/drop_caches')
-+            ClearMemory()
-         except:
-             printExc()
-         self.activePlayer = None
 @@ -898,10 +902,14 @@
          self.askUpdateAvailable(self.selectHost)
      
@@ -324,7 +255,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
                  self.runIPTVDM(self.selectHost)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/hosts/hosturllist.py ./IPTVPlayer/hosts/hosturllist.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/hosts/hosturllist.py	2016-01-22 10:18:06.044897000 +0100
-+++ ./IPTVPlayer/hosts/hosturllist.py	2016-01-26 20:31:49.713775000 +0100
++++ ./IPTVPlayer/hosts/hosturllist.py	2016-01-27 22:02:15.559475999 +0100
 @@ -5,7 +5,7 @@
  ###################################################
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -508,7 +439,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +    return descr, coverUrl
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:42:31.332790999 +0100
-+++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2016-01-26 20:31:49.717772999 +0100
++++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2016-01-27 22:02:15.563473999 +0100
 @@ -19,7 +19,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -536,7 +467,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self["list"].setSelectionState(enabled = False)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml ./IPTVPlayer/keymap.xml
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/keymap.xml	2016-01-23 20:36:13.231667530 +0100
-+++ ./IPTVPlayer/keymap.xml	2016-01-26 20:31:49.721770999 +0100
++++ ./IPTVPlayer/keymap.xml	2016-01-27 22:02:15.567471999 +0100
 @@ -26,4 +26,23 @@
                  <key id="KEY_MENU"  mapto="menu"         flags="m" />
                  <key id="KEY_8"     mapto="loop"         flags="m" />
@@ -564,7 +495,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 \ No newline at end of file
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po ./IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po	2015-12-10 10:58:15.215665999 +0100
-+++ ./IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po	2016-01-26 20:31:49.721770999 +0100
++++ ./IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po	2016-01-27 22:02:15.567471999 +0100
 @@ -14,6 +14,60 @@
  "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
  "X-Poedit-SearchPath-0: ../plugin\n"
@@ -656,7 +587,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +msgstr "Listy filmów z %s"
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py ./IPTVPlayer/plugin.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/plugin.py	2015-11-17 06:34:21.247824000 +0100
-+++ ./IPTVPlayer/plugin.py	2016-01-26 20:31:49.721770999 +0100
++++ ./IPTVPlayer/plugin.py	2016-01-27 22:02:15.575468000 +0100
 @@ -73,7 +73,9 @@
      #print config.plugins.iptvplayer.rtmpdumppath.value
      #print config.plugins.iptvplayer.f4mdumppath.value
@@ -669,8 +600,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
      elif IPTVPlayerNeedInit():
          session.openWithCallback(boundFunction(doRunMain, session), IPTVSetupMainWidget, True)
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py ./IPTVPlayer/setup/iptvsetupimpl.py
---- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2016-01-26 19:58:34.747756999 +0100
-+++ ./IPTVPlayer/setup/iptvsetupimpl.py	2016-01-27 14:36:48.000000000 +0100
+--- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/setup/iptvsetupimpl.py	2016-01-27 22:02:08.598957998 +0100
++++ ./IPTVPlayer/setup/iptvsetupimpl.py	2016-01-27 22:13:03.179504000 +0100
 @@ -7,7 +7,8 @@
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetuphelper     import CBinaryStepHelper, CCmdValidator, SetupDownloaderCmdCreator
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
@@ -681,7 +612,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
  # FOREIGN import
  ###################################################
-@@ -33,54 +34,86 @@
+@@ -33,56 +34,88 @@
          self.termination  = False
          
          self.tmpDir = GetTmpDir()
@@ -692,32 +623,40 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          self.gstreamerVersion = ""
          self.openSSLVersion = ""
 -        self.supportedPlatforms = ["sh4", "mipsel", "i686", "armv7"]
-+        self.supportedPlatforms = ["sh4", "mipsel", "i686", "arm"]
++        self.supportedPlatforms = ["sh4", "mipsel", "i686", "armv7", "arm"]
          self.platform = "unknown"
          
          # wget members
          self.wgetVersion = 15 # 1.15 
          self.wgetpaths = ["wget", "/usr/bin/wget", "/usr/bin/fullwget", GetBinDir("wget", "")]
 -        self._wgetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/fullwget " + _("recommended")), "/usr/bin/fullwget"),
+-                                       (_('Install into the "%s".') % "IPTVPlayer/bin/wget", GetBinDir("wget", "")),
+-                                       (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
+-                                       (_("Do not install (not recommended)"), "")]
 +        if isGraterlia() == True:
 +            self._wgetInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/wget" + _("recommended")), GetBinDir("wget", "")),
-+                                          (_('Install into the "%s".') % "/usr/bin/fullwget ", "/usr/bin/fullwget"),
-+                                          (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
-+                                          (_("Do not install (not recommended)"), "")]
++                                            (_('Install into the "%s".') % "/usr/bin/fullwget ", "/usr/bin/fullwget"),
++                                            (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
++                                            (_("Do not install (not recommended)"), "")]
 +        else:
 +            self._wgetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/fullwget " + _("recommended")), "/usr/bin/fullwget"),
-                                        (_('Install into the "%s".') % "IPTVPlayer/bin/wget", GetBinDir("wget", "")),
-                                        (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
-                                        (_("Do not install (not recommended)"), "")]
++                                            (_('Install into the "%s".') % "IPTVPlayer/bin/wget", GetBinDir("wget", "")),
++                                            (_('Install into the "%s".') % "/usr/bin/wget", "/usr/bin/wget"),
++                                            (_("Do not install (not recommended)"), "")]
          # rtmpdump members
 -        self.rtmpdumpVersion = {'armv7':'K-S-V patch', 'default':"Compiled by samsamsam@o2.pl 2015-01-11"}
-+        self.rtmpdumpVersion = {'arm':'K-S-V patch', 'default':"Compiled by samsamsam@o2.pl 2015-01-11"}
++        self.rtmpdumpVersion = {'arm':'K-S-V patch', 'armv7':'K-S-V patch', 'default':"Compiled by samsamsam@o2.pl 2015-01-11"}
          self.rtmpdumppaths = ["/usr/bin/rtmpdump", "rtmpdump"]
          
          # f4mdump member
          self.f4mdumpVersion = "F4MDump v0.50"
          self.f4mdumppaths = ["/usr/bin/f4mdump", GetBinDir("f4mdump", "")]
 -        self._f4mdumpInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/f4mdump (%s)" % _("recommended")), "/usr/bin/f4mdump"),
+-                                          (_('Install into the "%s".') % "IPTVPlayer/bin/f4mdump", GetBinDir("f4mdump", "")),
+-                                          (_("Do not install (not recommended)"), "")]
+-        self._f4mdumpInstallChoiseList2 = [(_('Install into the "%s".') % ("/usr/bin/f4mdump static libstdc++ (%s)" % _("recommended")), "/usr/bin/f4mdump"),
+-                                          (_('Install into the "%s".') % "IPTVPlayer/bin/f4mdump _static_libstdc++", GetBinDir("f4mdump", "")),
+-                                          (_("Do not install (not recommended)"), "")]
 +        if isGraterlia() == True:
 +            self._f4mdumpInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/f4mdump (%s)" % _("recommended")), GetBinDir("f4mdump", "")),
 +                                              (_('Install into the "%s".') % "/usr/bin/f4mdump", "/usr/bin/f4mdump"),
@@ -727,58 +666,68 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +                                              (_("Do not install (not recommended)"), "")]
 +        else:
 +            self._f4mdumpInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/f4mdump (%s)" % _("recommended")), "/usr/bin/f4mdump"),
-                                           (_('Install into the "%s".') % "IPTVPlayer/bin/f4mdump", GetBinDir("f4mdump", "")),
-                                           (_("Do not install (not recommended)"), "")]
--        self._f4mdumpInstallChoiseList2 = [(_('Install into the "%s".') % ("/usr/bin/f4mdump static libstdc++ (%s)" % _("recommended")), "/usr/bin/f4mdump"),
++                                              (_('Install into the "%s".') % "IPTVPlayer/bin/f4mdump", GetBinDir("f4mdump", "")),
++                                              (_("Do not install (not recommended)"), "")]
 +            self._f4mdumpInstallChoiseList2 = [(_('Install into the "%s".') % ("/usr/bin/f4mdump static libstdc++ (%s)" % _("recommended")), "/usr/bin/f4mdump"),
-                                           (_('Install into the "%s".') % "IPTVPlayer/bin/f4mdump _static_libstdc++", GetBinDir("f4mdump", "")),
-                                           (_("Do not install (not recommended)"), "")]
++                                              (_('Install into the "%s".') % "IPTVPlayer/bin/f4mdump _static_libstdc++", GetBinDir("f4mdump", "")),
++                                              (_("Do not install (not recommended)"), "")]
                                            
          # uchardet member
 -        self.uchardetVersion = "Version 0.0.2"
 +        self.uchardetVersion = 2
          self.uchardetpaths = ["/usr/bin/uchardet", GetBinDir("uchardet", "")]
 -        self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/uchardet (%s)" % _("recommended")), "/usr/bin/uchardet"),
+-                                          (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet", GetBinDir("uchardet", "")),
+-                                          (_("Do not install (not recommended)"), "")]
+-        self._uchardetInstallChoiseList2 = [(_('Install into the "%s".') % ("/usr/bin/uchardet static libstdc++ (%s)" % _("recommended")), "/usr/bin/uchardet"),
+-                                          (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet _static_libstdc++", GetBinDir("uchardet", "")),
+-                                          (_("Do not install (not recommended)"), "")]
 +        if isGraterlia() == True:
 +            self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/uchardet (%s)" % _("recommended")), GetBinDir("uchardet", "")),
-+                                              (_('Install into the "%s".') % "/usr/bin/uchardet", "/usr/bin/uchardet"),
-+                                              (_("Do not install (not recommended)"), "")]
++                                                (_('Install into the "%s".') % "/usr/bin/uchardet", "/usr/bin/uchardet"),
++                                                (_("Do not install (not recommended)"), "")]
 +            self._uchardetInstallChoiseList2 = [(_('Install into the "%s".') % ("IPTVPlayer/bin/uchardet _static_libstdc++ (%s)" % _("recommended")), GetBinDir("uchardet", "")),
 +                                                (_('Install into the "%s".') % "/usr/bin/uchardet static libstdc++", "/usr/bin/uchardet"),
 +                                                (_("Do not install (not recommended)"), "")]
 +        else:
 +            self._uchardetInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/uchardet (%s)" % _("recommended")), "/usr/bin/uchardet"),
-                                           (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet", GetBinDir("uchardet", "")),
-                                           (_("Do not install (not recommended)"), "")]
--        self._uchardetInstallChoiseList2 = [(_('Install into the "%s".') % ("/usr/bin/uchardet static libstdc++ (%s)" % _("recommended")), "/usr/bin/uchardet"),
++                                                (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet", GetBinDir("uchardet", "")),
++                                                (_("Do not install (not recommended)"), "")]
 +            self._uchardetInstallChoiseList2 = [(_('Install into the "%s".') % ("/usr/bin/uchardet static libstdc++ (%s)" % _("recommended")), "/usr/bin/uchardet"),
-                                           (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet _static_libstdc++", GetBinDir("uchardet", "")),
-                                           (_("Do not install (not recommended)"), "")]
++                                                (_('Install into the "%s".') % "IPTVPlayer/bin/uchardet _static_libstdc++", GetBinDir("uchardet", "")),
++                                                (_("Do not install (not recommended)"), "")]
          # gstplayer
          self.gstplayerVersion = {'0.10':20, '1.0':10021}
          self.gstplayerpaths = ["/usr/bin/gstplayer", GetBinDir("gstplayer", "")]
 -        self._gstplayerInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/gstplayer (%s)" % _("recommended")), "/usr/bin/gstplayer"),
+-                                          (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
+-                                          (_("Do not install (not recommended)"), "")]
 +        if isGraterlia() == True:
 +            self._gstplayerInstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/gstplayer (%s)" % _("recommended")), GetBinDir("gstplayer", "")),
 +                                                (_('Install into the "%s".') % "/usr/bin/gstplayer", "/usr/bin/gstplayer"),
 +                                                (_("Do not install (not recommended)"), "")]
 +        else:
 +            self._gstplayerInstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/gstplayer (%s)" % _("recommended")), "/usr/bin/gstplayer"),
-                                           (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
-                                           (_("Do not install (not recommended)"), "")]
++                                                (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
++                                                (_("Do not install (not recommended)"), "")]
          # exteplayer3
-         self.exteplayer3Version = {'sh4': 9, 'mipsel': 20, 'armv7': 11}
+-        self.exteplayer3Version = {'sh4': 9, 'mipsel': 20, 'armv7': 20}
++        self.exteplayer3Version = {'sh4': 9, 'mipsel': 20, 'armv7': 20, 'armv': 20}
          self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
 -        self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/exteplayer3 (%s)" % _("recommended")), "/usr/bin/exteplayer3"),
+-                                          (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
+-                                          (_("Do not install (not recommended)"), "")]
 +        if isGraterlia() == True:
 +            self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("IPTVPlayer/bin/exteplayer3 (%s)" % _("recommended")), GetBinDir("exteplayer3", "")),
 +                                                  (_('Install into the "%s".') % "/usr/bin/exteplayer3", "/usr/bin/exteplayer3"),
 +                                                  (_("Do not install (not recommended)"), "")]
 +        else:
 +            self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/exteplayer3 (%s)" % _("recommended")), "/usr/bin/exteplayer3"),
-                                           (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
-                                           (_("Do not install (not recommended)"), "")]
++                                                  (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
++                                                  (_("Do not install (not recommended)"), "")]
                                            
+         # flumpegdemux
+         self.flumpegdemuxVersion = "0.10.85"
 @@ -136,7 +169,18 @@
      ###################################################
      def platformDetect(self):
@@ -830,9 +779,18 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              else: return False,True
          def _deprecatedHandler(paths, stsTab, dataTab):
              sts, retPath = False, ""
+@@ -413,7 +465,7 @@
+             self.exteplayer3Step()
+         elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1', '2.8.3', '2.8.5']:
+             self.exteplayer3Step()
+-        elif self.platform in ['armv7'] and self.ffmpegVersion in ['2.8.5']:
++        elif self.platform in ['armv7', 'armv'] and self.ffmpegVersion in ['2.8.5']:
+             self.exteplayer3Step()
+         elif "" != self.gstreamerVersion: self.gstplayerStep()
+         else: self.finish()
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py ./IPTVPlayer/tools/iptvtools.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/tools/iptvtools.py	2015-12-20 06:49:33.986133998 +0100
-+++ ./IPTVPlayer/tools/iptvtools.py	2016-01-26 20:31:49.725769000 +0100
++++ ./IPTVPlayer/tools/iptvtools.py	2016-01-27 22:02:15.575468000 +0100
 @@ -47,7 +47,7 @@
      return nice
      

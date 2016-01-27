@@ -5,7 +5,7 @@
 ###################################################
 from Plugins.Extensions.IPTVPlayer.components.ihost import IHost, CDisplayListItem, RetHost, CUrlItem
 import Plugins.Extensions.IPTVPlayer.libs.pCommon as pCommon
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, CSearchHistoryHelper, CSelOneLink
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, CSearchHistoryHelper, CSelOneLink, GetTmpDir
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdh import DMHelper
 from Plugins.Extensions.IPTVPlayer.libs.urlparser import urlparser 
 from Plugins.Extensions.IPTVPlayer.tools.iptvfilehost import IPTVFileHost
@@ -134,7 +134,7 @@ class IPTVHost(IHost):
     ###################################################
 
 class Host:
-    XXXversion = "19.0.2.5"
+    XXXversion = "19.0.2.7"
     XXXremote  = "0.0.0.0"
     currList = []
     MAIN_URL = ''
@@ -1251,9 +1251,12 @@ class Host:
            return valTab
         if 'UPDATE-NOW' == name:
            printDBG( 'HostXXX listsItems begin name='+name )
+           tmpDir = GetTmpDir() 
            import os
+           source = os.path.join(tmpDir, 'iptv-host-xxx.tar.gz') 
+           dest = os.path.join(tmpDir , '') 
            _url = 'https://gitlab.com/iptv-host-xxx/iptv-host-xxx/repository/archive.tar.gz?ref=master'              
-           output = open('/tmp/iptv-host-xxx.tar.gz','wb')
+           output = open(source,'wb')
            query_data = { 'url': _url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
            try:
               output.write(self.cm.getURLRequestData(query_data))
@@ -1261,28 +1264,26 @@ class Host:
               os.system ('sync')
               printDBG( 'HostXXX pobieranie iptv-host-xxx.tar.gz' )
            except:
-              if os.path.exists('/tmp/iptv-host-xxx.tar.gz'):
-                 os.remove('/tmp/iptv-host-xxx.tar.gz')
+              if os.path.exists(source):
+                 os.remove(source)
               printDBG( 'HostXXX Błąd pobierania master.tar.gz' )
               valTab.append(CDisplayListItem('ERROR - Blad pobierania: '+_url,   'ERROR', CDisplayListItem.TYPE_CATEGORY, [''], '', '', None)) 
               return valTab
-
-           filepath = '/tmp/iptv-host-xxx.tar.gz'
-           if os.path.exists(filepath):
-              printDBG( 'HostXXX Jest plik '+filepath )
+           if os.path.exists(source):
+              printDBG( 'HostXXX Jest plik '+source )
            else:
-              printDBG( 'HostXXX Brak pliku '+filepath )
+              printDBG( 'HostXXX Brak pliku '+source )
 
-           cmd = 'tar -xzf "%s" -C "%s" 2>&1' % ( '/tmp/iptv-host-xxx.tar.gz', '/tmp' )  
+           cmd = 'tar -xzf "%s" -C "%s" 2>&1' % ( source, dest )  
            try: 
               os.system (cmd)
               os.system ('sync')
-              printDBG( 'HostXXX rozpakowanie iptv-host-xxx.tar.gz' )
+              printDBG( 'HostXXX rozpakowanie  ' + cmd )
            except:
               printDBG( 'HostXXX Błąd rozpakowania iptv-host-xxx.tar.gz' )
-              os.system ('rm -f /tmp/iptv-host-xxx.tar.gz')
-              os.system ('rm -rf /tmp/iptv-host-xxx*')
-              valTab.append(CDisplayListItem('ERROR - Blad rozpakowania /tmp/iptv-host-xxx.tar.gz',   'ERROR', CDisplayListItem.TYPE_CATEGORY, [''], '', '', None)) 
+              os.system ('rm -f %s' % source)
+              os.system ('rm -rf %siptv-host-xxx*' % dest)
+              valTab.append(CDisplayListItem('ERROR - Blad rozpakowania %s' % source,   'ERROR', CDisplayListItem.TYPE_CATEGORY, [''], '', '', None)) 
               return valTab
 
            printDBG( 'HostXXX sleep' )
@@ -1290,8 +1291,10 @@ class Host:
 
            try:
               import commands
-              katalog = commands.getoutput('ls /tmp | grep iptv-host-xxx-master*')
-              filepath = "/tmp/%s/IPTVPlayer" % katalog
+              cmd = 'ls '+dest+' | grep iptv-host-xxx-master*'
+              katalog = commands.getoutput(cmd)
+              printDBG( 'HostXXX katalog list > '+ cmd )
+              filepath = '%s%s/IPTVPlayer' % (dest, katalog)
               if os.path.exists(filepath):
                  printDBG( 'HostXXX Jest rozpakowany katalog '+filepath )
               else:
@@ -1299,22 +1302,22 @@ class Host:
            except:
               printDBG( 'HostXXX error commands.getoutput ' )
 
-           printDBG( 'HostXXX sleep' )
-           sleep(2) 
+           #printDBG( 'HostXXX sleep' )
+           #sleep(2) 
 
            try:
-              os.system ('cp -rf /tmp/iptv-host-xxx*/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/')
+              os.system ('cp -rf %siptv-host-xxx*/IPTVPlayer/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/' % dest)
               os.system ('sync')
               printDBG( 'HostXXX kopiowanie hostXXX do IPTVPlayer' )
            except:
               printDBG( 'HostXXX blad kopiowania' )
-              os.system ('rm -f /tmp/iptv-host-xxx.tar.gz')
-              os.system ('rm -rf /tmp/iptv-host-xxx*')
+              os.system ('rm -f %s' % source)
+              os.system ('rm -rf %siptv-host-xxx*' % dest)
               valTab.append(CDisplayListItem('ERROR - blad kopiowania',   'ERROR', CDisplayListItem.TYPE_CATEGORY, [''], '', '', None)) 
               return valTab
 
-           printDBG( 'HostXXX sleep' )
-           sleep(2) 
+           #printDBG( 'HostXXX sleep' )
+           #sleep(2) 
 
            try:
               cmd = '/usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/hosts/hostXXX.py'
@@ -1328,8 +1331,8 @@ class Host:
 
 
            printDBG( 'HostXXX usuwanie plikow tymczasowych' )
-           os.system ('rm -f /tmp/iptv-host-xxx.tar.gz')
-           os.system ('rm -rf /tmp/iptv-host-xxx*')
+           os.system ('rm -f %s' % source)
+           os.system ('rm -rf %siptv-host-xxx*' % dest)
 
            if url:
               try:
@@ -1787,17 +1790,25 @@ class Host:
               printDBG( 'Host listsItems query error url: '+url )
               return valTab
            #printDBG( 'Host listsItems data: '+data )
-           #valTab.append(CDisplayListItem('REFRESH ', 'REFRESH ', CDisplayListItem.TYPE_CATEGORY, [self.MAIN_URL], name, 'http://www.clker.com/cliparts/3/e/7/7/11954451921942476621jean_victor_balin_refresh.svg.hi.png', self.MAIN_URL))                
-           Movies = re.findall('name":"(.*?)".*?"age":(.*?),.*?streamUrl":"(.*?)".*?av_640":"(.*?)".*?"ile":(.*?),', data, re.S)
-           if Movies:
-              for (Title, Age, Url, Image, Views) in Movies:
-                  Url = Url.replace('\/','/') 
-                  Image = Image.replace('\/','/') 
-                  printDBG( 'Host listsItems page Title: '+Title )
+           parse = re.search('"rooms":(.*?),"status":"OK"', data, re.S)
+           result = simplejson.loads(parse.group(1))
+           if result:
+              for item in result:
+                  Name = item["name"]
+                  Age = str(item["age"])
+                  Url = item["streamUrl"].replace('\/','/') 
+                  dateStart = item["dateStart"].replace('T',' ')[:19]   
+                  Image = item["av_126"].replace('\/','/') 
+                  Title = item["title"]
+                  Viewers = str(item["viewers"])
+                  printDBG( 'Host listsItems page Name: '+Name )
                   printDBG( 'Host listsItems page Age: '+Age )
                   printDBG( 'Host listsItems page Url: '+Url )
+                  printDBG( 'Host listsItems page dateStart: '+dateStart )
                   printDBG( 'Host listsItems page Image: '+Image )
-                  valTab.append(CDisplayListItem(Title,'[Age : '+Age+']'+'         Views:  '+Views, CDisplayListItem.TYPE_VIDEO, [CUrlItem('', Url, 0)], 0, Image, None)) 
+                  printDBG( 'Host listsItems page Title: '+Title )
+                  printDBG( 'Host listsItems page viewers: '+Viewers )
+                  valTab.append(CDisplayListItem(Name,'[Age : '+Age+']'+'   [Views:  '+Viewers+']   [Date Start: '+dateStart+']', CDisplayListItem.TYPE_VIDEO, [CUrlItem('', Url, 0)], 0, Image, None)) 
            printDBG( 'Host listsItems end' )
            return valTab
 

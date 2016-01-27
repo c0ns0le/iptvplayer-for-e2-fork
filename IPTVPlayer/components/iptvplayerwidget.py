@@ -323,7 +323,7 @@ class IPTVPlayerWidget(Screen):
         try:
             asynccall.gMainFunctionsQueue.setProcFun(None)
             asynccall.gMainFunctionsQueue.clearQueue()
-            ClearMemory()
+            iptv_system('echo 1 > /proc/sys/vm/drop_caches')
         except:
             printExc()
         self.activePlayer = None
