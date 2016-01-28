@@ -59,7 +59,7 @@ def GetConfigList():
 ###################################################
 
 def gettytul():
-    return 'Ipla'
+    return 'Ipla-brak licencji'
 
 class Ipla(CBaseHostClass):
     HOST       = 'mipla/23'
