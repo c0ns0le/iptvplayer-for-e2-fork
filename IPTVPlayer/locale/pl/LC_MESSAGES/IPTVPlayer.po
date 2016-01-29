@@ -14,8 +14,74 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Poedit-SearchPath-0: ../plugin\n"
 
+msgid "Required program 'curl' is not installed. Trying to install it via OPKG."
+msgstr "Wymagany program 'curl jest niezainstalowany. Próbuję go zainstalować z OPKG."
+
+msgid "Required program 'curl' is not available. Please install it first manually."
+msgstr "Wymagany program 'curl' jest niedostępny. Proszę zainstaluj go ręcznie."
+
+msgid "Checking installation mode..."
+msgstr "Sprawdzam tryb instalacji..."
+
 msgid "Starting custom script"
-msgstr "Uruchamiam skrypt "
+msgstr "Uruchamiam skrypt użytkownika"
+
+msgid "IPTVPlayer controlled by OPKG. Please use it for updates."
+msgstr "IPTVPlayer jest kontrolowany przez OPKG. Użyj OPKG do aktualizacji."
+
+msgid "IPTVPlayer has been updated. Please restart GUI"
+msgstr "IPTVPlayer został zaktualizowany. Proszę zrestartuj tuner."
+
+msgid "Latest version already installed"
+msgstr "Najnowsza wersja jest już zainstalowana"
+
+msgid "Update type:"
+msgstr "Typ aktualizacji:"
+
+msgid "Checking internet connection..."
+msgstr "Sprawdzam połączenie internetowe..."
+
+msgid "github server unavailable, update impossible!!!"
+msgstr "Serwer github niedostępny, aktualizacja niemożliwa!!!"
+
+msgid "Checking web version..."
+msgstr "Sprawdzam wersję na web..."
+
+msgid "Version installed:"
+msgstr "Wersja zainstalowana:"
+
+msgid "Version available:"
+msgstr "Wersja dostępna:"
+
+msgid "Error checking web version"
+msgstr "Błąd sprawdzania wersji na web"
+
+msgid "Latest version already installed. Press OK to close the window"
+msgstr "Najnowsza wersja jest już zainstalowana. Naciśnij OK, aby zamknąć okno"
+
+msgid "Vew version available on the web"
+msgstr "Nowa wersja dostępna na web"
+
+msgid "Downloading latest plugin version..."
+msgstr "Pobieram najnowszą wersję wtyczki..."
+
+msgid "Archive downloaded improperly"
+msgstr "Błąd pobierania archiwum"
+
+msgid "No archive downloaded, check your curl version"
+msgstr "Nie pobrano archiwum, sprawdź swoją wersję programu 'curl'"
+
+msgid "Unpacking new version..."
+msgstr "Rozpakowywanie nowej wersji..."
+
+msgid "Archive unpacked improperly"
+msgstr "Archiwum rozpakowane niepoprawnie"
+
+msgid "Installing new version..."
+msgstr "Instalacja nowej wersji..."
+
+msgid "Success: Restart GUI manually to use new plugin version"
+msgstr "Sukces: zrestartuj tuner ręcznie, aby uruchomić najnowszą wersję wtyczki"
 
 msgid "IPTV Player"
 msgstr "Odtwarzacz IPTV"

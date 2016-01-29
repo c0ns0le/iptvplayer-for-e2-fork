@@ -9,6 +9,7 @@ elif `grep -q 'config.plugins.iptvplayer.debugprint=' 2>/dev/null </usr/local/e2
 else
   UpdateType='public'
 fi
+
 if [ -z "$1" ];then
   CurrentPublic='version-unknown'
 else
@@ -39,14 +40,15 @@ if `opkg list-installed 2>/dev/null | grep -q 'iptvplayer'`;then
     myPKG=`opkg list-installed 2>/dev/null | grep 'iptvplayer'|cut -d ' ' -f1`
     if `opkg list-upgradable|grep -q $myPKG`;then
       #first copy all custom data running custom user scripts
-      rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/MyScriptUniqueName.sh #first deleting, it's part of opkg package
-      rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh #first deleting, it's part of opkg package
+      rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/MyScriptUniqueName.sh 2>/dev/null #first deleting, it's part of opkg package
+      rm -rf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/xxx.sh 2>/dev/null #first deleting, it's part of opkg package
+      [ -d /tmp/IPTVPlayerOPKG ] && rm -rf /tmp/IPTVPlayerOPKG
+      mkdir /tmp/IPTVPlayerOPKG
       mkdir -p /tmp/IPTVPlayerOPKG/iptvupdate/custom/
       mkdir -p /tmp/IPTVPlayerOPKG/icons/logos
       mkdir -p /tmp/IPTVPlayerOPKG/icons/PlayerSelector
       mkdir -p /tmp/IPTVPlayerOPKG/hosts
-      mkdir /tmp/IPTVPlayerOPKG
-for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh`;do
+for scriptname in `ls /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/iptvupdate/custom/*.sh 2>/dev/null`;do
   echo "_(Starting custom script) $scriptname..."
   $scriptname /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer /tmp/IPTVPlayerOPKG
 done
@@ -58,6 +60,7 @@ done
         cp -a /tmp/IPTVPlayerOPKG/* /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/ 2>/dev/null #moving back
         rm -rf /tmp/IPTVPlayerOPKG #cleaning
         echo "_(IPTVPlayer has been updated. Please restart GUI)"
+        touch /tmp/.rebootGUI
         exit 0
       fi
     else
@@ -94,7 +97,7 @@ fi
 echo "_(Downloading latest plugin version...)"
 curl -kLs https://api.github.com/repos/j00zek/iptvplayer-for-e2-fork/tarball/master -o /tmp/iptvp.tar.gz
 if [ $? -gt 0 ]; then
-  echo "_(Archive downloaded improperly"
+  echo "_(Archive downloaded improperly)"
   exit 0
 fi
 
@@ -112,14 +115,14 @@ if [ $? -gt 0 ]; then
 fi
 
 if [ ! -e /tmp/j00zek-iptvplayer-for-e2-fork-* ]; then
-  echo "Archive downloaded improperly)"
+  echo "_(Archive downloaded improperly)"
   exit 0
 fi
 rm -rf /tmp/iptvp.tar.gz
 
 version=`ls /tmp/ | grep j00zek-iptvplayer-for-e2-fork-`
 if [ -f /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/$version ];then
-  echo "_(Latest version already installed. Press OK to exit.)"
+  echo "_(Latest version already installed. Press OK to close the window)"
   exit 0
 fi
 
