@@ -310,6 +310,7 @@ class urlparser:
                        'ok.ru':                self.pp.parserOKRU          ,
                        'putstream.com':        self.pp.parserPUTSTREAM     ,
                        'live-stream.tv':       self.pp.parserLIVESTRAMTV   ,
+                       'zerocast.tv':          self.pp.parserZEROCASTTV    ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -896,6 +897,7 @@ class pageParser:
             
         vidMarker = '/video/'
         videoUrls = []
+        uniqUrls  = []
         tmpUrls = []
         if vidMarker not in inUrl:
             sts, data = self.cm.getPage(inUrl)
@@ -906,8 +908,7 @@ class pageParser:
                 if match.startswith('http'): inUrl = match
         if vidMarker in inUrl: 
             vid = inUrl.split('/video/')[1]
-            inUrl = 'http://www.cda.pl/video/' + vid
-        else: tmpUrls.append(inUrl)
+            inUrl = 'http://ebd.cda.pl/620x368/' + vid
         
         # extract qualities
         sts, data = self.cm.getPage(inUrl)
@@ -917,23 +918,42 @@ class pageParser:
                 data = re.findall('<a[^>]+?href="([^"]+?)"[^>]*?>([^<]+?)</a>', data)
                 for urlItem in data:
                     tmpUrls.append({'name':'cda.pl ' + urlItem[1], 'url':urlItem[0]})
+        
         if 0 == len(tmpUrls):
             tmpUrls.append({'name':'cda.pl', 'url':inUrl})
+            
+        def __appendVideoUrl(params):
+            if params['url'] not in uniqUrls:
+                videoUrls.append(params)
+                uniqUrls.append(params['url'])
+        
         for urlItem in tmpUrls:
             if urlItem['url'].startswith('/'): inUrl = 'http://www.cda.pl/' + urlItem['url']
             else: inUrl = urlItem['url']
             sts, pageData = self.cm.getPage(inUrl)
-            if sts:
-                data = CParsingHelper.getDataBeetwenMarkers(pageData, "modes:", ']', False)[1]
-                data = re.compile("""file: ['"]([^'^"]+?)['"]""").findall(data)
-                if 0 < len(data) and data[0].startswith('http'): videoUrls.append( {'name': urlItem['name'] + ' flv', 'url':_decorateUrl(data[0], 'cda.pl', urlItem['url']) } )
-                if 1 < len(data) and data[1].startswith('http'): videoUrls.append( {'name': urlItem['name'] + ' mp4', 'url':_decorateUrl(data[1], 'cda.pl', urlItem['url']) } )
-                if 0 == len(data):
-                    data = CParsingHelper.getDataBeetwenMarkers(pageData, 'video: {', '}', False)[1]
-                    data = self.cm.ph.getSearchGroups(data, "'(http[^']+?\.mp4[^']*?)'")[0] 
-                    if '' != data:
-                        videoUrls.append( {'name': urlItem['name'] + ' mp4', 'url':_decorateUrl(data, 'cda.pl', urlItem['url']) } )
-        
+            if not sts: continue
+            
+            #with open('/home/sulge/movie/test.txt', 'r') as cfile:
+            #    pageData = cfile.read()
+            
+            tmpData = self.cm.ph.getDataBeetwenMarkers(pageData, "eval(", '</script>', False)[1]
+            if tmpData != '':
+                tmpData = unpackJSPlayerParams(tmpData, TEAMCASTPL_decryptPlayerParams, 0)
+            tmpData += pageData
+                
+            data = CParsingHelper.getDataBeetwenMarkers(tmpData, "modes:", ']', False)[1]
+            data = re.compile("""file: ['"]([^'^"]+?)['"]""").findall(data)
+            if 0 < len(data) and data[0].startswith('http'): __appendVideoUrl( {'name': urlItem['name'] + ' flv', 'url':_decorateUrl(data[0], 'cda.pl', urlItem['url']) } )
+            if 1 < len(data) and data[1].startswith('http'): __appendVideoUrl( {'name': urlItem['name'] + ' mp4', 'url':_decorateUrl(data[1], 'cda.pl', urlItem['url']) } )
+            if 0 == len(data):
+                data = CParsingHelper.getDataBeetwenReMarkers(tmpData, re.compile('video:[\s]*{'), re.compile('}'), False)[1]
+                data = self.cm.ph.getSearchGroups(data, "'(http[^']+?(:?\.mp4|\.flv)[^']*?)'")[0]
+                if '' != data:
+                    type = ' flv '
+                    if '.mp4' in data:
+                        type = ' mp4 '
+                    __appendVideoUrl( {'name': urlItem['name'] + type, 'url':_decorateUrl(data, 'cda.pl', urlItem['url']) } )
+    
         #if len(videoUrls):
         #    videoUrls = [videoUrls[0]]
         return videoUrls
@@ -4511,6 +4531,37 @@ class pageParser:
                 item['url'] = strwithmeta(item['url'], {'iptv_m3u8_skip_seg':2, 'iptv_refresh_cmd':pyCmd, 'Referer':'http://static.live-stream.tv/player/player.swf', 'User-Agent':HTTP_HEADER['User-Agent']})
                 urlsTab.append(item)
             return urlsTab
+        return False
+        
+    def parserZEROCASTTV(self, baseUrl):
+        printDBG("parserZEROCASTTV baseUrl[%r]" % baseUrl)
+        if 'embed.php' in baseUrl:
+            url = baseUrl
+        elif 'chan.php?' in baseUrl:
+            sts, data = self.cm.getPage(baseUrl)
+            if not sts: return False
+            data = self.cm.ph.getDataBeetwenMarkers(data, '<body ', '</body>', False)[1]
+            url = self.cm.ph.getSearchGroups(data, r'''src=['"](http[^"^']+)['"]''')[0]
+            
+        if 'embed.php' not in url:
+            sts, data = self.cm.getPage(url)
+            if not sts: return False
+            url = self.cm.ph.getSearchGroups(data, r'''var [^=]+?=[^'^"]*?['"](http[^'^"]+?)['"];''')[0]
+            
+        if url == '': return False
+        sts, data = self.cm.getPage(url)
+        if not sts: return False
+        
+        channelData = self.cm.ph.getSearchGroups(data, r'''unescape\(['"]([^'^"]+?)['"]\)''')[0]
+        channelData = urllib.unquote(channelData)
+        
+        if channelData == '':
+            data = self.cm.ph.getSearchGroups(data, '<h1[^>]*?>([^<]+?)<')[0]
+            SetIPTVPlayerLastHostError(data)
+        
+        if channelData.startswith('rtmp'):
+            channelData += ' live=1 '
+            return channelData
         return False
         
     def parserCLOUDYEC(self, baseUrl):
