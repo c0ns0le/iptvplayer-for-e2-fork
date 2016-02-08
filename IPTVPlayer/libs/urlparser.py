@@ -223,6 +223,7 @@ class urlparser:
                        'fxstream.biz':         self.pp.parserFXSTREAMBIZ   ,
                        'webcamera.pl':         self.pp.parserWEBCAMERAPL   ,
                        'flashx.tv':            self.pp.parserFLASHXTV      ,
+                       'flashx.pw':            self.pp.parserFLASHXTV      , 
                        'myvideo.de':           self.pp.parserMYVIDEODE     ,
                        'vidzi.tv':             self.pp.parserVIDZITV       ,
                        'tvp.pl':               self.pp.parserTVP           ,
@@ -311,6 +312,8 @@ class urlparser:
                        'putstream.com':        self.pp.parserPUTSTREAM     ,
                        'live-stream.tv':       self.pp.parserLIVESTRAMTV   ,
                        'zerocast.tv':          self.pp.parserZEROCASTTV    ,
+                       'vid.ag':               self.pp.parserVIDAG         ,
+                       'albfilm.com':          self.pp.parserALBFILMCOM    ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -673,8 +676,9 @@ class pageParser:
         if '' != videoUrl: return strwithmeta(videoUrl, {'Referer':baseUrl})
         return False
         
-    def _parserUNIVERSAL_A(self, baseUrl, embedUrl, _findLinks, _preProcessing=None):
-        HTTP_HEADER= { 'User-Agent':"Mozilla/5.0", 'Referer':baseUrl }
+    def _parserUNIVERSAL_A(self, baseUrl, embedUrl, _findLinks, _preProcessing=None, httpHeader={}):
+        HTTP_HEADER = { 'User-Agent':"Mozilla/5.0", 'Referer':baseUrl }
+        HTTP_HEADER.update(httpHeader)
         if 'embed' not in baseUrl:
             video_id = self.cm.ph.getSearchGroups(baseUrl+'/', '/([A-Za-z0-9]{12})[/.]')[0]
             url = embedUrl.format(video_id)
@@ -689,13 +693,19 @@ class pageParser:
         #printDBG(data)
         
         # get JS player script code from confirmation page
-        sts, tmpData = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>', False)
+        m1 = ">eval("
+        if m1 not in data:
+            m1 = "eval("
+        sts, tmpData = CParsingHelper.getDataBeetwenMarkers(data, m1, '</script>', False)
         if sts:
             data = tmpData
             tmpData = None
             # unpack and decode params from JS player script code
-            data = unpackJSPlayerParams(data, VIDUPME_decryptPlayerParams)
-            #printDBG(data)
+            tmpData = unpackJSPlayerParams(data, VIDUPME_decryptPlayerParams)
+            if tmpData == '':
+                tmpData = unpackJSPlayerParams(data, VIDUPME_decryptPlayerParams, 0)
+            data = tmpData
+            printDBG(data)
         return _findLinks(data)
         
     def _parserUNIVERSAL_B(self, url):
@@ -1557,7 +1567,7 @@ class pageParser:
             HTTP_HEADER['Referer'] = 'http://nocnyseans.pl/film/chemia-2015/15471'
             sts, data = self.cm.getPage(url, params)
             if not sts: 
-                return False
+                continue
             if 'dmca ' in data:
                 DMCA = True
                 SetIPTVPlayerLastHostError("'Digital Millennium Copyright Act' detected.")
@@ -1583,21 +1593,26 @@ class pageParser:
             
             linksTab = []
             fakeLinkVideo  = self.cm.ph.getSearchGroups(data, 'src="([^"]+?)"[^>]+?type="video')[0]
-            #if linkVideo.startswith('http'):
-            #    linksTab.append({'name': 'videomega_1', 'url':urlparser.decorateUrl(linkVideo, {'external_sub_tracks':subTracks, "Orgin": "http://videomega.tv/", 'Range':'bytes=', 'Referer': referer, 'User-Agent':HTTP_HEADER['User-Agent'], 'iptv_buffering':'required'})})
-                
-            #data = data[data.rfind('}(')+2:-2]
-            #data = unpackJS(data, SAWLIVETV_decryptPlayerParams)
             
             # get JS player script code from confirmation page
             sts, data = CParsingHelper.getDataBeetwenMarkers(data, "eval(", '</script>')
-            if not sts: return False
-            # unpack and decode params from JS player script code
-            data = unpackJSPlayerParams(data, VIDUPME_decryptPlayerParams, 0)
+            if not sts: continue
             
-            printDBG('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            printDBG(data)
-            printDBG('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            #printDBG('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            #printDBG(data)
+            #printDBG('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            
+            # unpack and decode params from JS player script code
+            decrypted = False
+            for decryptor in [SAWLIVETV_decryptPlayerParams, VIDUPME_decryptPlayerParams]:
+                try:
+                    data = unpackJSPlayerParams(data, decryptor, 0)
+                    if len(data):
+                        decrypted = True
+                    break
+                except:
+                    continue
+            if not decrypted: continue
             
             linkVideo  = self.cm.ph.getSearchGroups(data, '"(http[^"]+?\.mp4\?[^"]+?)"')[0]
             
@@ -2382,17 +2397,41 @@ class pageParser:
         if 'exashare.com' in url:
             sts, data = self.cm.getPage(url)
             if not sts: return
-            url = self.cm.ph.getSearchGroups(data, '''<iframe[^>]+?src=["'](http[^"^']+?)["']''', 1, True)[0]
+            url = self.cm.ph.getSearchGroups(data, '''<iframe[^>]+?src=["'](http[^"^']+?)["']''', 1, True)[0].replace('\n', '').replace('\r', '')
         def _findLinks(data):
-            return self._findLinks(data, 'openload.info', m1='setup(', m2=')')
-        return self.__parseJWPLAYER_A(url, 'openload.info', _findLinks)
+            return self._findLinks(data, 'exashare.com', m1='setup(', m2=')')
+        return self.__parseJWPLAYER_A(url, 'exashare.com', _findLinks)
         
-    def parserALLVIDCH(self, url):
-        printDBG("parserALLVIDCH url[%r]" % url)
+    def parserALLVIDCH(self, baseUrl):
+        printDBG("parserALLVIDCH baseUrl[%r]" % baseUrl)
         # example video: http://allvid.ch/embed-fhpd7sk5ac2o-830x500.html
         def _findLinks(data):
             return self._findLinks(data, 'allvid.ch', m1='setup(', m2='image:')
-        return self.__parseJWPLAYER_A(url, 'allvid.ch', _findLinks)
+        return self._parserUNIVERSAL_A(baseUrl, 'http://allvid.ch/embed-{0}-830x500.html', _findLinks)
+        #return self.__parseJWPLAYER_A(baseUrl, 'allvid.ch', _findLinks)
+        
+    def parserALBFILMCOM(self, baseUrl):
+        printDBG("parserALBFILMCOM baseUrl[%r]" % baseUrl)
+        # www.albfilm.com/video/?m=endless_love_2014
+        def _findLinks(data):
+            videoUrl = self.cm.ph.getSearchGroups(data, '''<source[^>]+?src=["'](http[^"^']+?)["']''', 1, True)[0]
+            if videoUrl == '': return []
+            return [{'name':'albfilm.com', 'url':videoUrl}]
+        url = baseUrl
+        return self._parserUNIVERSAL_A(baseUrl, url, _findLinks)
+        
+    def parserVIDAG(self, baseUrl):
+        printDBG("parserVIDAG baseUrl[%r]" % baseUrl)
+        # example video: http://vid.ag/embed-24w6kstkr3zt-540x360.html
+        def _findLinks(data):
+            tab = []
+            tmp = self._findLinks(data, 'vid.ag', m1='setup(', m2='image:')
+            for item in tmp:
+                if not item['url'].split('?')[0].endswith('.m3u8'):
+                    tab.append(item)
+            return tab
+        HTTP_HEADER= { 'User-Agent':"Mozilla/5.0", 'Referer':'http://www.streaming-series.xyz/', 'Cookie':'__test' }
+        return self._parserUNIVERSAL_A(baseUrl, 'http://vid.ag/embed-{0}-540x360.html', _findLinks, None, HTTP_HEADER)
         
     def parserVODLOCKER(self, url):
         printDBG("parserVODLOCKER url[%r]" % url)
@@ -3135,10 +3174,19 @@ class pageParser:
             else: url = action
             sts, data = self.cm.getPage(url, {'header' : HTTP_HEADER}, post_data)
             if not sts: return False
+            
+        if 'fxplay' not in url and 'fxplay' in data:
+            url = self.cm.ph.getSearchGroups(data, '"(http[^"]+?fxplay[^"]+?)"')[0]
+            sts, data = self.cm.getPage(url)
+            if not sts: return False
         
-        sts, data = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>')
-        if not sts: return False
-        data = unpackJSPlayerParams(data, VIDUPME_decryptPlayerParams)
+        try:
+            tmp = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>')[1]
+            tmp = unpackJSPlayerParams(tmp, VIDUPME_decryptPlayerParams)
+            data = tmp + data
+        except:
+            pass
+        
         data = self.cm.ph.getSearchGroups(data, """["']*file["']*[ ]*?:[ ]*?["']([^"^']+?)['"]""")[0]
         if data.startswith('http'):
             if data.split('?')[0].endswith('.smil'):

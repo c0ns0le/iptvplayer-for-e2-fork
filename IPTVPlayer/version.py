@@ -3,8 +3,8 @@
 #QQ-dodanie nowego hosta
 #XX-dodanie nowej funkcjonalnosci
 #YY-poprawka dzialania
-#ZZ-poprawki kosmetyczne
+#ZZ-poprawki kosmetyczne 
 #zmiana YY powoduje wyzerowanie ZZ
 #zmiana XX powoduje wyzerowanie YY i ZZ
 #usunięcie/zablokowanie hosta nie powoduje zmiany QQ
-IPTV_VERSION="j98.05.00.00"
+IPTV_VERSION="j102.01.01.00"
