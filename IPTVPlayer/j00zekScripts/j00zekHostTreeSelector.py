@@ -4,10 +4,12 @@ from Plugins.Extensions.IPTVPlayer.version import IPTV_VERSION
 
 from Components.ActionMap import ActionMap
 from Components.config import config
+from Components.GUIComponent import GUIComponent
 from Components.Label import Label
 from Components.MenuList import MenuList
 from Components.Pixmap import Pixmap
 from Components.Sources.StaticText import StaticText
+from skin import parseFont, parseColor
 from Tools.LoadPixmap import LoadPixmap
 
 from re import compile as re_compile
@@ -237,22 +239,25 @@ class j00zekHostTreeSelector(Screen):
         self.close(None)
 ##################################################### treeSelector #####################################################
 
-def FileEntryComponent(name, absolute = None, isDir = False):
+def FileEntryComponent(name, absolute = None, isDir = False, goBack = False, DimFolderText = (40, 7, 1020, 40), DimFolderPIC = (5, 7, 25, 25), DimFileText = (170, 7, 1020, 40), DimFilePIC = (40, 1, 120, 40) ):
     res = [ (absolute, isDir) ]
     #res.append((eListboxPythonMultiContent.TYPE_TEXT, 130, 1, 1020, 50, 0, RT_HALIGN_LEFT, name))
     if isDir:
-        res.append((eListboxPythonMultiContent.TYPE_TEXT, 40, 7, 1020, 40, 0, RT_HALIGN_LEFT, name))
-        png = LoadPixmap(cached=True, path="%s/icons/folder.png" % PluginPath)
-        res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHATEST, 5, 7, 25, 25, png))
+        res.append((eListboxPythonMultiContent.TYPE_TEXT, DimFolderText[0], DimFolderText[1], DimFolderText[2], DimFolderText[3], 0, RT_HALIGN_LEFT, name))
+        if goBack == True:
+            png = LoadPixmap(cached=True, path="%s/icons/back.png" % PluginPath)
+        else:
+            png = LoadPixmap(cached=True, path="%s/icons/folder.png" % PluginPath)
+        res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHATEST, DimFolderPIC[0], DimFolderPIC[1], DimFolderPIC[2], DimFolderPIC[3], png))
     else:
-        res.append((eListboxPythonMultiContent.TYPE_TEXT, 170, 7, 1020, 40, 0, RT_HALIGN_LEFT, name))
+        res.append((eListboxPythonMultiContent.TYPE_TEXT, DimFileText[0], DimFileText[1], DimFileText[2], DimFileText[3], 0, RT_HALIGN_LEFT, name))
         if os_path.exists("%s/icons/logos/%slogo.png" % (PluginPath,absolute[4:-4])):
             #print "%s/icons/logos/%slogo.png" % (PluginPath,absolute[4:-4])
             png = LoadPixmap("%s/icons/logos/%slogo.png" % (PluginPath,absolute[4:-4]))
         else:
             png = None
         if png is not None:
-            res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHATEST, 40, 1, 120, 40, png))
+            res.append((eListboxPythonMultiContent.TYPE_PIXMAP_ALPHATEST, DimFilePIC[0], DimFilePIC[1], DimFilePIC[2], DimFilePIC[3], png))
     return res
 
 class FileList(MenuList):
@@ -269,26 +274,39 @@ class FileList(MenuList):
         self.inhibitDirs = []
         self.inhibitMounts = []
 
-        #self.refreshMountpoints()
-        #if config.plugins.iptvplayer.j00zekLastSelectedHost.value != '':
-        #    self.changeDir( os_path.dirname(config.plugins.iptvplayer.j00zekLastSelectedHost.value), os_path.basename(config.plugins.iptvplayer.j00zekLastSelectedHost.value) )
-        #self.changeDir(directory) #don't change dir during init, requires refresh onshown event, but speedsup GUI 
-        import skin
-        try:
-            self.l.setFont(0, gFont(skin.fonts["j00zekFileList"][0], skin.fonts["j00zekFileList"][1])) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
-            self.l.setItemHeight(skin.fonts["j00zekFileList"][2])
-        except:
-            if getDesktop(0).size().width() == 1920:
-                self.l.setFont(0, gFont("Regular", 36)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
-            else:
-                self.l.setFont(0, gFont("Regular", 26)) #int(config.plugins.AdvancedFreePlayer.FileListFontSize.value)))
-            self.l.setItemHeight(42)
-        #self.serviceHandler = eServiceCenter.getInstance()
-
-    #def refreshMountpoints(self):
-    #    self.mountpoints = [os_path.join(p.mountpoint, "") for p in harddiskmanager.getMountedPartitions()]
-    #    self.mountpoints.sort(reverse = True)
-
+        #default values:
+        self.Font = gFont("Regular",26)
+        self.itemHeight = 42
+        self.DimFolderText = (40, 7, 1020, 40)
+        self.DimFolderPIC = (5, 7, 25, 25)
+        self.DimFileText = (170, 7, 1020, 40)
+        self.DimFilePIC = (40, 1, 120, 40)
+        
+    def applySkin(self, desktop, parent):
+        def Font(value):
+            self.Font = parseFont(value, ((1,1),(1,1)))
+        def itemHeight(value):
+            self.itemHeight = int(value)
+        def DimFolderText(value):
+            self.DimFolderText = ( int(value.split(',')[0]), int(value.split(',')[1]), int(value.split(',')[2]), int(value.split(',')[3]) )
+        def DimFileText(value):
+            self.DimFileText = ( int(value.split(',')[0]), int(value.split(',')[1]), int(value.split(',')[2]), int(value.split(',')[3]) )
+        def DimFolderPIC(value):
+            self.DimFolderPIC = ( int(value.split(',')[0]), int(value.split(',')[1]), int(value.split(',')[2]), int(value.split(',')[3]) )
+        def DimFilePIC(value):
+            self.DimFilePIC = ( int(value.split(',')[0]), int(value.split(',')[1]), int(value.split(',')[2]), int(value.split(',')[3]) )
+          
+        for (attrib, value) in list(self.skinAttributes):
+            try:
+                locals().get(attrib)(value)
+                self.skinAttributes.remove((attrib, value))
+            except:
+                pass
+              
+        self.l.setFont(0,self.Font)
+        self.l.setItemHeight(self.itemHeight)
+        return GUIComponent.applySkin(self, desktop, parent)
+        
     def getMountpoint(self, file):
         file = os_path.join(os_path.realpath(file), "")
         for m in self.mountpoints:
@@ -362,13 +380,15 @@ class FileList(MenuList):
 
         if directory is not None and self.showDirectories:
             if (directory != self.rootDirectory) and not (self.inhibitMounts and self.getMountpoint(directory) in self.inhibitMounts):
-                self.list.append(FileEntryComponent(name = "<" +_("Parent Category") + ">", absolute = '/'.join(directory.split('/')[:-2]) + '/', isDir = True))
+                self.list.append(FileEntryComponent(name = _("Parent Category"), absolute = '/'.join(directory.split('/')[:-2]) + '/', isDir = True, goBack = True,
+                                                     DimFolderText = self.DimFolderText, DimFolderPIC = self.DimFolderPIC, DimFileText = self.DimFileText, DimFilePIC = self.DimFilePIC))
 
         if self.showDirectories:
             for x in directories:
                 if not (self.inhibitMounts and self.getMountpoint(x) in self.inhibitMounts) and not self.inParentDirs(x, self.inhibitDirs):
                     name = x.split('/')[-2]
-                    self.list.append(FileEntryComponent(name = name, absolute = x, isDir = True))
+                    self.list.append(FileEntryComponent(name = name, absolute = x, isDir = True, 
+                                      DimFolderText = self.DimFolderText, DimFolderPIC = self.DimFolderPIC, DimFileText = self.DimFileText, DimFilePIC = self.DimFilePIC))
 
         if self.showFiles:
             for x in files:
@@ -380,7 +400,8 @@ class FileList(MenuList):
                     for host in self.Hostslist:
                         if name == host[1]:
                             name = host[0]
-                            self.list.append(FileEntryComponent(name = name, absolute = x , isDir = False))
+                            self.list.append(FileEntryComponent(name = name, absolute = x , isDir = False,
+                                              DimFolderText = self.DimFolderText, DimFolderPIC = self.DimFolderPIC, DimFileText = self.DimFileText, DimFilePIC = self.DimFilePIC))
                             break
 
         self.l.setList(self.list)
