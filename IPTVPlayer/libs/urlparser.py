@@ -23,6 +23,7 @@ from Plugins.Extensions.IPTVPlayer.libs.urlparserhelper import unpackJSPlayerPar
                                                                VIDEOMEGA_decryptPlayerParams, \
                                                                OPENLOADIO_decryptPlayerParams, \
                                                                TEAMCASTPL_decryptPlayerParams, \
+                                                               VIDEOWEED_decryptPlayerParams, \
                                                                captchaParser, \
                                                                getDirectM3U8Playlist, \
                                                                decorateUrl, \
@@ -4133,7 +4134,6 @@ class pageParser:
                 
         # start https://github.com/whitecream01/WhiteCream-V0.0.1/blob/master/plugin.video.uwc/plugin.video.uwc-1.0.51.zip?raw=true
         def decodeOpenLoad(html):
-
             aastring = re.search(r"<video(?:.|\s)*?<script\s[^>]*?>((?:.|\s)*?)</script", html, re.DOTALL | re.IGNORECASE).group(1)
             aastring = aastring.replace("((ﾟｰﾟ) + (ﾟｰﾟ) + (ﾟΘﾟ))", "9")
             aastring = aastring.replace("((ﾟｰﾟ) + (ﾟｰﾟ))","8")
@@ -4144,12 +4144,15 @@ class pageParser:
             aastring = aastring.replace("((o^_^o) - (ﾟΘﾟ))","2")
             aastring = aastring.replace("(o^_^o)","3")
             aastring = aastring.replace("(ﾟΘﾟ)","1")
+            aastring = aastring.replace("(+!+[])","1")
             aastring = aastring.replace("(c^_^o)","0")
+            aastring = aastring.replace("(0+0)","0")
             aastring = aastring.replace("(ﾟДﾟ)[ﾟεﾟ]","\\")
             aastring = aastring.replace("(3 +3 +0)","6")
             aastring = aastring.replace("(3 - 1 +0)","2")
-            aastring = aastring.replace("(1 -0)","1")
-            aastring = aastring.replace("(4 -0)","4")
+            aastring = aastring.replace("(!+[]+!+[])","2")
+            aastring = aastring.replace("(-~-~2)","4")
+            aastring = aastring.replace("(-~-~1)","3")
             
             #printDBG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n %s <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n" % aastring)
 
@@ -4574,13 +4577,30 @@ class pageParser:
         sts, data = self.cm.getPage(baseUrl, params)
         if not sts: return
         
-        upData = self.cm.ph.getDataBeetwenMarkers(data, 'updateStreamStatistics', ';', False)[1]
-        upData = re.compile('''['"]([^'^"]+?)['"]''').findall(upData)
+        tmpData = self.cm.ph.getDataBeetwenMarkers(data, "eval(", '</script>', True)[1]
+        printDBG(tmpData)
+        upData = None
+        vidUrl = None
+        while 'eval' in tmpData and (upData == None or vidUrl == None):
+            tmp = tmpData.split('eval(')
+            if len(tmp): del tmp[0]
+            tmpData = ''
+            for item in tmp:
+                for decFun in [VIDEOWEED_decryptPlayerParams, SAWLIVETV_decryptPlayerParams]:
+                    tmpData = unpackJSPlayerParams('eval('+item, decFun, 0)
+                    if '' != tmpData: break
+                printDBG(tmpData)
+                if 'updateStreamStatistics' in tmpData:
+                    upData = self.cm.ph.getDataBeetwenMarkers(tmpData, 'updateStreamStatistics', ';', False)[1]
+                    upData = re.compile('''['"]([^'^"]+?)['"]''').findall(upData)
+                    if 0 == len(upData): upData = None
+                if 'html5' in tmpData:
+                    vidUrl = self.cm.ph.getSearchGroups(tmpData, r'''['"]?file['"]?[ ]*:[ ]*['"](http[^"^']+)['"]''')[0]
+                    if '' == vidUrl: vidUrl = None
+        
+        params['timeout'] = 5
         upBaseUrl = updateStreamStatistics(upData[0], upData[1], upData[2])
-        
         pyCmd = GetPyScriptCmd('livestreamtv') + ' "%s" "%s" ' % (upBaseUrl, baseUrl)
-        
-        vidUrl = self.cm.ph.getSearchGroups(data, r'''['"]?file['"]?[ ]*:[ ]*['"](http[^"^']+)['"]''')[0]
         if vidUrl.split('?')[0].endswith('.m3u8'):
             tab = getDirectM3U8Playlist(vidUrl)
             urlsTab = []
@@ -4803,10 +4823,20 @@ class pageParser:
         #http://netu.tv/watch_video.php?v=ODM4R872W3S9
         match = re.search("=([0-9A-Z]+?)[^0-9^A-Z]", url + '|' )
         vid = match.group(1)
-        playerUrl = "http://hqq.tv/player/embed_player.php?vid=%s&autoplay=no" % vid
         
-        HTTP_HEADER= { 'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:21.0) Gecko/20100101 Firefox/21.0',
+        HTTP_HEADER= { 'User-Agent':'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10', #'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:21.0) Gecko/20100101 Firefox/21.0',
                        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+        
+        #http://hqq.tv/player/hash.php?hash=229221213221211228239245206208212229194271217271255
+        if 'hash.php?hash' in url:
+            sts, data = self.cm.getPage(url, {'header' : HTTP_HEADER})
+            if not sts: return False
+            data = re.sub('document\.write\(unescape\("([^"]+?)"\)', lambda m: urllib.unquote(m.group(1)), data)
+            vid = re.search('''var[ ]+%s[ ]*=[ ]*["']([^"]*?)["']''' % 'vid', data).group(1)
+        
+        playerUrl = "http://hqq.tv/player/embed_player.php?vid=%s&autoplay=no" % vid
+        referer = strwithmeta(url).meta.get('Referer', playerUrl)
+        
         #HTTP_HEADER['Referer'] = url
         sts, data = self.cm.getPage(playerUrl, {'header' : HTTP_HEADER})
         data = base64.b64decode(re.search('base64\,([^"]+?)"', data).group(1))
@@ -4823,11 +4853,12 @@ class pageParser:
         for idx in range(len(data)):
             post_data[ data[idx][0] ] = data[idx][1]
             
-        secPlayerUrl = "http://hqq.tv/sec/player/embed_player.php?vid=%s&at=%s&autoplayed=%s&referer=on&http_referer=%s&pass=" % (vid, post_data.get('at', ''),  post_data.get('autoplayed', ''), urllib.quote(playerUrl))
-        HTTP_HEADER['Referer'] = playerUrl
+        secPlayerUrl = "http://hqq.tv/sec/player/embed_player.php?vid=%s&at=%s&autoplayed=%s&referer=on&http_referer=%s&pass=" % (vid, post_data.get('at', ''),  post_data.get('autoplayed', ''), urllib.quote(referer))
+        HTTP_HEADER['Referer'] = referer
         sts, data = self.cm.getPage(secPlayerUrl, {'header' : HTTP_HEADER}, post_data)
+        
         data = re.sub('document\.write\(unescape\("([^"]+?)"\)', lambda m: urllib.unquote(m.group(1)), data)
-        #CParsingHelper.writeToFile('/home/sulge/test.html', data)
+        CParsingHelper.writeToFile('/mnt/new2/test.html', data)
         def getUtf8Str(st):
             idx = 0
             st2 = ''
@@ -4845,6 +4876,26 @@ class pageParser:
                 match = re.search('''["']([^"]*?)["']''', file_var)
                 if match: file_url += match.group(1)
                 else: file_url += re.search('''var[ ]+%s[ ]*=[ ]*["']([^"]*?)["']''' % file_var, data).group(1)
+        if file_url == '':
+            playerData = self.cm.ph.getDataBeetwenMarkers(data, 'get_md5.php', '})')[1]
+            playerData = self.cm.ph.getDataBeetwenMarkers(playerData, '{', '}', False)[1]
+            playerData = playerData.split(',')
+            getParams = {}
+            for p in playerData:
+                tmp = p.split(':')
+                printDBG(tmp)
+                key = tmp[0].replace('"', '').strip()
+                val = tmp[1].strip()
+                if '"' not in val:
+                    v = re.search('''var[ ]+%s[ ]*=[ ]*["']([^"]*?)["']''' % val, data).group(1)
+                    if '' != val: val = v
+                getParams[key] = val
+            playerUrl = 'http://hqq.tv/player/get_md5.php?' + urllib.urlencode(getParams)
+            sts, data = self.cm.getPage(playerUrl)
+            if not sts: return False
+            data = byteify( json.loads(data) )
+            file_url = data['html5_file']
+        
         if file_url.startswith('#') and 3 < len(file_url): file_url = getUtf8Str(file_url[1:])
         #printDBG("[[[[[[[[[[[[[[[[[[[[[[%r]" % file_url)
         if file_url.startswith('http'): return urlparser.decorateUrl(file_url, {'iptv_livestream':False, 'User-Agent':HTTP_HEADER['User-Agent']})
