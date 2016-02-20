@@ -34,6 +34,10 @@ cat ./IPTVPlayer/version.py|grep IPTV_VERSION|grep -o "[0-9]*\.[0-9][0-9]\.[0-9]
 cp -af ~/iptvplayerXXX-GitLab-master-version/IPTVPlayer/* $myDir/IPTVPlayer/
 #sed -i "s/\(self.exteplayer3Version = {'sh4': [0-9]*, 'mipsel': [0-9]*\), 'armv7': 11}/\1}/" ./IPTVPlayer/setup/iptvsetupimpl.py
 #rm -rf $myDir/IPTVPlayer/iptvupdate/custom/xxx.sh
+#>> patch in case ;)
+if ! `grep "AUDIO_FILES_EXTENSIONS.*'flac'" < $myDir/IPTVPlayer/hosts/hostlocalmedia.py`; then
+  sed -i "s/^\(.*AUDIO_FILES_EXTENSIONS.*\)]/\1, 'flac']/" $myDir/IPTVPlayer/hosts/hostlocalmedia.py
+fi
 
 #>>>>>patching
 patch -p1 < ./iptvplayer-fork.patch
