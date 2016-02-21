@@ -139,14 +139,18 @@ class IPTVPlayerWidget(Screen):
             except: printExc("Skin read error: " + path)
                 
         Screen.__init__(self, session)
-        self.recorderMode = False #j00zek
+        self.recorderMode = self.recorderMode = config.plugins.iptvplayer.recorderMode.value #j00zek
+        if self.recorderMode == False:
+            self["key_green"]  = StaticText(_("Player > Recorder"))
+        else:
+            self["key_green"]  = StaticText(_("Recorder > Player"))
 
         self.currentService = self.session.nav.getCurrentlyPlayingServiceReference()
         if config.plugins.iptvplayer.disable_live.value:
             self.session.nav.stopService()
 
         self["key_red"]    = StaticText(_("Exit"))
-        self["key_green"]  = StaticText(_("Player > Recorder"))
+        #self["key_green"]  = StaticText(_("Player > Recorder"))
         self["key_yellow"] = StaticText(_("Refresh"))
         self["key_blue"]   = StaticText(_("More"))
 
