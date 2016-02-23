@@ -177,7 +177,6 @@ config.plugins.iptvplayer.hidden_ext_player_def_aspect_ratio = ConfigSelection(d
 config.plugins.iptvplayer.search_history_size  = ConfigInteger(50, (0, 1000000))
 config.plugins.iptvplayer.autoplay_start_delay  = ConfigInteger(3, (1, 1000000))
 
-config.plugins.iptvplayer.recorderMode =  ConfigYesNo(default = False)
 ###################################################
 j00zekFork=True
 from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import AlternateOptionsList, ExtendConfigsList, RemoveDuplicatesFromList
@@ -285,7 +284,6 @@ class ConfigMenu(ConfigBaseWidget):
         list.append(getConfigListEntry(_("Start download manager per default"), config.plugins.iptvplayer.IPTVDMRunAtStart))
         list.append(getConfigListEntry(_("Show download manager after adding new item"), config.plugins.iptvplayer.IPTVDMShowAfterAdd))
         list.append(getConfigListEntry(_("Number of downloaded files simultaneously"), config.plugins.iptvplayer.IPTVDMMaxDownloadItem))
-        list.append(getConfigListEntry(_("Start IPTVPlater in recorder mode"), config.plugins.iptvplayer.recorderMode))
         
         list.append(getConfigListEntry("opensubtitles.org " + _("login"), config.plugins.iptvplayer.opensuborg_login))
         list.append(getConfigListEntry("opensubtitles.org " + _("password"), config.plugins.iptvplayer.opensuborg_password))

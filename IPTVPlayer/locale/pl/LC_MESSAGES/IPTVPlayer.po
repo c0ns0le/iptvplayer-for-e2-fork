@@ -14,6 +14,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Poedit-SearchPath-0: ../plugin\n"
 
+msgid "Urllists player"
+msgstr "lokalne listy z filmami"
+
+msgid "Urllists from %s"
+msgstr "Listy filmów z %s"
+
 msgid "Required program 'curl' is not installed. Trying to install it via OPKG."
 msgstr "Wymagany program 'curl jest niezainstalowany. Próbuję go zainstalować z OPKG."
 
@@ -1693,7 +1699,7 @@ msgid "Login user \"%s\" into %s"
 msgstr "Logowanie użytkownika \"%s\" do %s"
 
 msgid "Request token from %s"
-msgstr "żądanie symbolu z %s"
+msgstr "Pobieranie tokenu z %s"
 
 msgid ""
 "Error occurs.\n"
@@ -1708,9 +1714,6 @@ msgstr "wiadomość"
 msgid "Confirm title of the movie"
 msgstr "Potwierdź tytuł filmu"
 
-msgid "Search for movie \"%s\""
-msgstr "Szukam filmu \"%s\""
-
 msgid "Movie \"%s\" has not been found."
 msgstr "Film \"%s\" nie został odnaleziony."
 
@@ -1718,10 +1721,10 @@ msgid "Get supported languages list."
 msgstr "Pobierz listę obsługiwanych języków."
 
 msgid "Get item type."
-msgstr "Pobierz typ pozycji."
+msgstr "Sprawdzanie typu elementu."
 
 msgid "Get episodes list."
-msgstr "Pobierz wykaz odcinków."
+msgstr "Pobieranie listy odcinków."
 
 msgid "An unknown error has occurred."
 msgstr "Wystąpił nieznany błąd."
@@ -2017,7 +2020,7 @@ msgid "Subtitles not found."
 msgstr "Nie znaleziono napisów."
 
 msgid "Download subtitle \"%s\""
-msgstr "Pobierz napisy \"%s\""
+msgstr "Pobieranie napisów \"%s\""
 
 msgid "Previous"
 msgstr "Poprzedni"
@@ -2080,8 +2083,16 @@ msgstr "Akceptuj format mpeg dash"
 msgid "Stop playing?"
 msgstr "Zakończyć odtwarzanie?"
 
-msgid "Urllists player"
-msgstr "lokalne listy z filmami"
+msgid "Simplify the title and try again."
+msgstr "Uprość tytuł i spróbuj ponownie."
 
-msgid "Urllists from %s"
-msgstr "Listy filmów z %s"
+msgid "Error occurs.\n[%s]."
+msgstr "Wystąpił problem.\n[%s]."
+
+msgid "Login user \"%s\" into %s."
+msgstr "Logowanie użytkownika \"%s\" do %s."
+
+msgid "Search for movie \"%s\""
+msgstr "Wyszukiwanie filmu \"%s\""
+
+

@@ -139,18 +139,21 @@ class IPTVPlayerWidget(Screen):
             except: printExc("Skin read error: " + path)
                 
         Screen.__init__(self, session)
-        self.recorderMode = self.recorderMode = config.plugins.iptvplayer.recorderMode.value #j00zek
-        if self.recorderMode == False:
-            self["key_green"]  = StaticText(_("Player > Recorder"))
+        if 'j00zekFork' in globals():
+            self.recorderMode = self.recorderMode = config.plugins.iptvplayer.recorderMode.value #j00zek
+            if self.recorderMode == False:
+                self["key_green"]  = StaticText(_("Player > Recorder"))
+            else:
+                self["key_green"]  = StaticText(_("Recorder > Player"))
         else:
-            self["key_green"]  = StaticText(_("Recorder > Player"))
+            self.recorderMode = False #j00zek
+            self["key_green"]  = StaticText(_("Player > Recorder"))
 
         self.currentService = self.session.nav.getCurrentlyPlayingServiceReference()
         if config.plugins.iptvplayer.disable_live.value:
             self.session.nav.stopService()
 
         self["key_red"]    = StaticText(_("Exit"))
-        #self["key_green"]  = StaticText(_("Player > Recorder"))
         self["key_yellow"] = StaticText(_("Refresh"))
         self["key_blue"]   = StaticText(_("More"))
 
@@ -822,7 +825,11 @@ class IPTVPlayerWidget(Screen):
                     printDBG( "ok_pressed selected TYPE_CATEGORY" )
                     self.stopAutoPlaySequencer()
                     self.currSelIndex = currSelIndex
-                    self.requestListFromHost('ForItem', currSelIndex, '')
+                    if item.pinLocked:
+                        from iptvpin import IPTVPinWidget
+                        self.session.openWithCallback(boundFunction(self.checkDirPin, self.requestListFromHost, 'ForItem', currSelIndex, ''), IPTVPinWidget, title=_("Enter pin"))
+                    else:
+                        self.requestListFromHost('ForItem', currSelIndex, '')
                 elif item.type == CDisplayListItem.TYPE_MORE:
                     printDBG( "ok_pressed selected TYPE_MORE" )
                     self.currSelIndex = currSelIndex
@@ -838,6 +845,13 @@ class IPTVPlayerWidget(Screen):
         else:
             self.showWindow()
     #end ok_pressed(self):
+    
+    def checkDirPin(self, callbackFun, arg1, arg2, arg3, pin=None):
+        if pin != None:
+            if pin == config.plugins.iptvplayer.pin.value:
+                callbackFun(arg1, arg2, arg3);
+            else:
+                self.session.open(MessageBox, _("Pin incorrect!"), type = MessageBox.TYPE_INFO, timeout = 5 )
     
     def leaveArticleView(self):
         printDBG("leaveArticleView")

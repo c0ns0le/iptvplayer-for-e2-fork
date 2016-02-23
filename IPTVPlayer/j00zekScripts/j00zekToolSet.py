@@ -60,6 +60,13 @@ def AlternateOptionsList(list):
     list.append( getConfigListEntry(_("gstplayerpath"), config.plugins.iptvplayer.gstplayerpath))
     #
     list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
+    list.append( getConfigListEntry(_("--- Download options ---"), config.plugins.iptvplayer.j00zekSeparator))
+    list.append( getConfigListEntry(_("Start download manager per default"), config.plugins.iptvplayer.IPTVDMRunAtStart))
+    list.append( getConfigListEntry(_("Show download manager after adding new item"), config.plugins.iptvplayer.IPTVDMShowAfterAdd))
+    list.append( getConfigListEntry(_("Number of downloaded files simultaneously"), config.plugins.iptvplayer.IPTVDMMaxDownloadItem))
+    list.append( getConfigListEntry(_("Start IPTVPlayer in recorder mode"), config.plugins.iptvplayer.recorderMode))
+    #
+    list.append( getConfigListEntry("", config.plugins.iptvplayer.j00zekSeparator))
     list.append( getConfigListEntry(_("--- Debug ---"), config.plugins.iptvplayer.j00zekSeparator))
     list.append( getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
     list.append( getConfigListEntry(_("Disable host protection (error == GS)"), config.plugins.iptvplayer.devHelper))
@@ -96,6 +103,7 @@ def ExtendConfigsList():
     config.plugins.iptvplayer.j00zekSeparator = NoSave(ConfigNothing())
     config.plugins.iptvplayer.j00zekTreeHostsSelector = ConfigYesNo(default = True)
     config.plugins.iptvplayer.j00zekTreeHostsSelectorOnly = ConfigYesNo(default = False)
+    config.plugins.iptvplayer.recorderMode =  ConfigYesNo(default = False)
     
     #setting default values, we do not need from original plugin
     config.plugins.iptvplayer.downgradePossible.value = False

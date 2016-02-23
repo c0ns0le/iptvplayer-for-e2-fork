@@ -315,6 +315,9 @@ class urlparser:
                        'zerocast.tv':          self.pp.parserZEROCASTTV    ,
                        'vid.ag':               self.pp.parserVIDAG         ,
                        'albfilm.com':          self.pp.parserALBFILMCOM    ,
+                       'hdfilmstreaming.com':  self.pp.parserHDFILMSTREAMING,
+                       'allocine.fr':          self.pp.parserALLOCINEFR    ,
+                       'video.meta.ua':        self.pp.parseMETAUA         ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -1626,7 +1629,7 @@ class pageParser:
             #printDBG("DMCA [%r]" % DMCA)
 
             if linkVideo.startswith('http'):
-                linksTab.append({'name': 'videomega_2', 'url':urlparser.decorateUrl(linkVideo, {'external_sub_tracks':subTracks, "Orgin": "http://videomega.tv/", 'Range':'bytes=', 'Referer': url, 'User-Agent':HTTP_HEADER['User-Agent'], 'iptv_buffering':'required'})})
+                linksTab.append({'name': 'videomega_2', 'url':urlparser.decorateUrl(linkVideo, {'external_sub_tracks':subTracks, "iptv_wget_continue":True, "iptv_wget_timeout":10, "Orgin": "http://videomega.tv/", 'Referer': url, 'User-Agent':HTTP_HEADER['User-Agent'], 'iptv_buffering':'required'})})
             #"Cookie": "__cfduid=1", "Range": "bytes=0-",
         return linksTab
 
@@ -2871,12 +2874,25 @@ class pageParser:
         HTTP_HEADER = {}
         videoUrl = strwithmeta(linkUrl)
         HTTP_HEADER['Referer'] = videoUrl.meta.get('Referer', videoUrl)
-        HTTP_HEADER['User-Agent'] = "Mozilla/5.0"
-        sts, data = self.cm.getPage(videoUrl, {'header': HTTP_HEADER})
+        HTTP_HEADER['User-Agent'] = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:44.0) Gecko/20100101 Firefox/44.0"
+        COOKIE_FILE = GetCookieDir('p2pcasttv.cookie')
+        params = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'save_cookie':True}
+        
+        sts, data = self.cm.getPage(videoUrl, params)
         if not sts: return False
         url = self.cm.ph.getSearchGroups(data, 'curl[^"]*?=[^"]*?"([^"]+?)"')[0]
+        if '' == url: url = self.cm.ph.getSearchGroups(data, 'murl[^"]*?=[^"]*?"([^"]+?)"')[0]
         url = base64.b64decode(url)
-        return urlparser.decorateUrl(url, {'Referer':'http://cdn.p2pcast.tv/jwplayer.flash.swf', "User-Agent": HTTP_HEADER['User-Agent']})
+        
+        if url.endswith('token='):
+            params['header']['Referer'] = linkUrl
+            params['header']['X-Requested-With'] = 'XMLHttpRequest'
+            params['load_cookie'] = True
+            sts, data = self.cm.getPage('http://p2pcast.tech/getTok.php', params)
+            if not sts: return False
+            data = byteify(json.loads(data))
+            url += data['token']
+        return urlparser.decorateUrl(url, {'Referer':'http://cdn.webplayer.pw/jwplayer.flash.swf', "User-Agent": HTTP_HEADER['User-Agent']})
     
     def parserGOOGLE(self, linkUrl):
         printDBG("parserGOOGLE linkUrl[%s]" % linkUrl)
@@ -4415,6 +4431,26 @@ class pageParser:
                 linksTab.append({'name':item, 'url': strwithmeta(url, {'external_sub_tracks':sub_tracks})})
         return linksTab
         
+    def parserHDFILMSTREAMING(self, baseUrl):
+        printDBG("parserHDFILMSTREAMING baseUrl[%r]" % baseUrl)
+        sts, data = self.cm.getPage(baseUrl)
+        if not sts: return False
+        
+        sub_tracks = []
+        subData = self.cm.ph.getDataBeetwenMarkers(data, 'tracks:', ']', False)[1].split('}')
+        for item in subData:
+            if '"captions"' in item:
+                label   = self.cm.ph.getSearchGroups(item, 'label:[ ]*?"([^"]+?)"')[0]
+                src     = self.cm.ph.getSearchGroups(item, 'file:[ ]*?"([^"]+?)"')[0]
+                if not src.startswith('http'): continue
+                sub_tracks.append({'title':label, 'url':src, 'lang':'unk', 'format':'srt'})
+        
+        linksTab = self._findLinks(data, serverName='hdfilmstreaming.com')
+        for idx in range(len(linksTab)):
+            linksTab[idx]['url'] = urlparser.decorateUrl(linksTab[idx]['url'], {'external_sub_tracks':sub_tracks})
+        
+        return linksTab
+                    
     def parserSUPERFILMPL(self, baseUrl):
         printDBG("parserSUPERFILMPL baseUrl[%r]" % baseUrl)
         sts, data = self.cm.getPage(baseUrl)
@@ -4539,14 +4575,18 @@ class pageParser:
         
     def parserOKRU(self, baseUrl):
         printDBG("parserOKRU baseUrl[%r]" % baseUrl)
-        video_id = self.cm.ph.getSearchGroups(baseUrl+'/', '/([0-9]+)/')[0]
-        if video_id == '': return False
+        if 'videoPlayerMetadata' not in baseUrl:
+            video_id = self.cm.ph.getSearchGroups(baseUrl+'/', '/([0-9]+)/')[0]
+            if video_id == '': return False
+            url = 'http://ok.ru/dk?cmd=videoPlayerMetadata&mid=%s' % video_id
+        else:
+            url = baseUrl
+        
         HTTP_HEADER= { 'User-Agent':'Mozilla/5.0',
                        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                        'Referer':baseUrl,
                        'Cookie':'_flashVersion=18',
                        'X-Requested-With':'XMLHttpRequest'}
-        url = 'http://ok.ru/dk?cmd=videoPlayerMetadata&mid=%s' % video_id
         sts, data = self.cm.getPage(url, {'header':HTTP_HEADER})
         if not sts: return False
         data = byteify(json.loads(data))
@@ -4556,6 +4596,42 @@ class pageParser:
             url = strwithmeta(url, {'Referer':baseUrl, 'User-Agent':HTTP_HEADER['User-Agent']})
             urlsTab.append({'name':item['name'], 'url':url})
         return urlsTab[::-1]
+        
+    def parserALLOCINEFR(self, baseUrl):
+        printDBG("parserOKRU baseUrl[%r]" % baseUrl)
+        # based on https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/allocine.py
+        _VALID_URL = r'https?://(?:www\.)?allocine\.fr/_?(?P<typ>article|video|film|video|film)/(iblogvision.aspx\?cmedia=|fichearticle_gen_carticle=|player_gen_cmedia=|fichefilm_gen_cfilm=|video-)(?P<id>[0-9]+)(?:\.html)?'
+        mobj = re.match(_VALID_URL, baseUrl)
+        typ = mobj.group('typ')
+        display_id = mobj.group('id')
+
+        sts, webpage = self.cm.getPage(baseUrl)
+        if not sts: return False
+
+        if 'film' == type:
+            video_id = self.cm.ph.getSearchGroups(webpage, r'href="/video/player_gen_cmedia=([0-9]+).+"')[0]
+        else:
+            player = self.cm.ph.getSearchGroups(webpage, r'data-player=\'([^\']+)\'>')[0]
+            if player != '':
+                player_data = byteify(json.loads(player))
+                video_id = player_data['refMedia']
+            else:
+                model = self.cm.ph.getSearchGroups(webpage, r'data-model="([^"]+)">')[0] 
+                model_data = byteify(json.loads(unescapeHTML(model)))
+                video_id = model_data['id']
+
+        sts, data = self.cm.getPage('http://www.allocine.fr/ws/AcVisiondataV5.ashx?media=%s' % video_id)
+        if not sts: return False
+        
+        data = byteify(json.loads(data))
+        quality = ['hd', 'md', 'ld']
+        urlsTab = []
+        for item in quality:
+            url = data['video'].get(item + 'Path', '')
+            if not url.startswith('http'):
+                continue
+            urlsTab.append({'name':item, 'url':url})
+        return urlsTab
         
     def parserLIVESTRAMTV(self, baseUrl):
         printDBG("parserLIVESTRAMTV baseUrl[%r]" % baseUrl)
@@ -4814,9 +4890,34 @@ class pageParser:
         printDBG("------------------------------------------------------------------------------------")
         printDBG(data)
         printDBG("------------------------------------------------------------------------------------")
+
+    def parseMETAUA(self, baseUrl):
+        printDBG("parseMETAUA baseUrl[%s]" % baseUrl)
+        HTTP_HEADER= { 'User-Agent':'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10', #'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:21.0) Gecko/20100101 Firefox/21.0',
+                       'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
+        sts, data = self.cm.getPage(baseUrl, {'header' : HTTP_HEADER})
+        if not sts: return False
+        file_url = self.cm.ph.getSearchGroups(data, '''st_html5=['"]([^'^"]+?)['"]''')[0]
+        
+        def getUtf8Str(st):
+            idx = 0
+            st2 = ''
+            while idx < len(st):
+                st2 += '\\u0' + st[idx:idx + 3]
+                idx += 3
+            return st2.decode('unicode-escape').encode('UTF-8')
+        
+        if file_url.startswith('#') and 3 < len(file_url):
+            file_url = getUtf8Str(file_url[1:])
+            file_url = byteify(json.loads(file_url))['file']
+        
+        if file_url.startswith('http'): 
+            return urlparser.decorateUrl(file_url, {'iptv_livestream':False, 'User-Agent':HTTP_HEADER['User-Agent']})
+        
+        return False   
         
     def parseNETUTV(self, url):
-        printDBG("parserDIVEXPRESS url[%s]" % url)
+        printDBG("parseNETUTV url[%s]" % url)
         # example video: http://netu.tv/watch_video.php?v=WO4OAYA4K758
     
         printDBG("parseNETUTV url[%s]\n" % url)
@@ -4858,7 +4959,7 @@ class pageParser:
         sts, data = self.cm.getPage(secPlayerUrl, {'header' : HTTP_HEADER}, post_data)
         
         data = re.sub('document\.write\(unescape\("([^"]+?)"\)', lambda m: urllib.unquote(m.group(1)), data)
-        CParsingHelper.writeToFile('/mnt/new2/test.html', data)
+        #CParsingHelper.writeToFile('/mnt/new2/test.html', data)
         def getUtf8Str(st):
             idx = 0
             st2 = ''

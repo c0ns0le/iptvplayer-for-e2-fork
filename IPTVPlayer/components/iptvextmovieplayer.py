@@ -844,6 +844,13 @@ class IPTVExtMoviePlayer(Screen):
     def updateInfo(self):
         self.extPlayerCmddDispatcher.doUpdateInfo()
         if None != self.downloader:
+            if self.downloader.getName() == "wget m3u8" and self.downloader.getTotalFileDuration() > 0:
+                totalDuration = self.downloader.getTotalFileDuration()
+                downloadDuration = self.downloader.getDownloadedFileDuration()
+                if 0 < totalDuration and 0 < downloadDuration:
+                    self['bufferingBar'].value = (downloadDuration * 100000) / totalDuration
+                return
+        
             remoteFileSize = self.downloader.getRemoteFileSize()
             if 0 < remoteFileSize:
                 localFileSize = self.downloader.getLocalFileSize(True) 
@@ -897,6 +904,9 @@ class IPTVExtMoviePlayer(Screen):
                     tmpLength = self.playback['CurrentTime']
                     if val > self.playback['CurrentTime']: tmpLength = val
                     if 0 < tmpLength:
+                        if None != self.downloader and self.downloader.getName() == "wget m3u8"\
+                           and self.downloader.getTotalFileDuration() > tmpLength:
+                           tmpLength = self.downloader.getTotalFileDuration()
                         self.playback['Length'] = tmpLength
                         self['progressBar'].range = (0, tmpLength)
                         self['lengthTimeLabel'].setText( str(timedelta(seconds=tmpLength)) )
