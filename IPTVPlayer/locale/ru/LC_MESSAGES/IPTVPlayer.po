@@ -296,7 +296,7 @@ msgid "Browse"
 msgstr "Смотреть"
 
 msgid "Buffer path"
-msgstr "Буфер путь"
+msgstr "Каталог буфера обмена"
 
 msgid "CATEGORY"
 msgstr "КАТЕГОРИИ"
@@ -1417,7 +1417,7 @@ msgid "Recorder > Player"
 msgstr "Запись > Плеер"
 
 msgid "Records path"
-msgstr "Местоположении записи"
+msgstr "Каталог для загрузки"
 
 msgid "Refresh"
 msgstr "Обновление"
@@ -3485,5 +3485,23 @@ msgstr "Проблема с входом пользователя \"%s\".\n"
 msgid "Randomize a playlist"
 msgstr "Функция случайного воспроизведения"
 
-msgid "youtube.com"
-msgstr "ютубе.com"
+msgid "New Releases"
+msgstr "Новые релизы"
+
+msgid "Categorization:"
+msgstr "Категоризации:"
+
+msgid "Use proxy gateway"
+msgstr "Использовать прокси-шлюз"
+
+msgid "show iframe for audio item"
+msgstr "Включить заставку в режиме ауди"
+
+msgid "Iframe file"
+msgstr "Расположение заставки"
+
+msgid "Clear iframe file"
+msgstr "Расположение очистить заставки"
+
+msgid "Recently Added"
+msgstr "Недавно добавленный"

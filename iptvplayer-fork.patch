@@ -1,21 +1,22 @@
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py ./IPTVPlayer/components/configbase.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/configbase.py	2015-12-27 07:42:31.328793000 +0100
 +++ ./IPTVPlayer/components/configbase.py	2016-02-23 20:52:53.311585000 +0100
-@@ -8,10 +8,9 @@
+@@ -8,10 +8,10 @@
  ###################################################
  # LOCAL import
  ###################################################
 -from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc
--from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget
+-from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVDirectorySelectorWidget, IPTVFileSelectorWidget
 +from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, IsExecutable, GetBinDir
++from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVFileSelectorWidget
  ###################################################
 -
 +from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
  ###################################################
  # FOREIGN import
  ###################################################
-@@ -220,6 +219,12 @@
-         if isinstance(currItem, ConfigDirectory):
+@@ -244,6 +253,12 @@
+         elif isinstance(currItem, ConfigDirectory):
              def SetDirPathCallBack(curIndex, newPath):
                  if None != newPath: self["config"].list[curIndex][1].value = newPath
 +            if IsExecutable(GetBinDir('lsdir')):
@@ -180,7 +181,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py ./IPTVPlayer/components/iptvextmovieplayer.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvextmovieplayer.py	2016-02-23 20:49:15.795585000 +0100
 +++ ./IPTVPlayer/components/iptvextmovieplayer.py	2016-02-23 20:52:53.315585000 +0100
-@@ -1447,7 +1447,7 @@
+@@ -1489,7 +1489,7 @@
              
              if config.plugins.iptvplayer.aac_software_decode.value:
                  cmd += ' -a -p 10'

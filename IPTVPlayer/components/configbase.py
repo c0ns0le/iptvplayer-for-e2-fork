@@ -9,11 +9,13 @@
 # LOCAL import
 ###################################################
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, IsExecutable, GetBinDir
+from Plugins.Extensions.IPTVPlayer.components.iptvdirbrowser import IPTVFileSelectorWidget
 ###################################################
 from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import *
 ###################################################
 # FOREIGN import
 ###################################################
+import re
 from enigma import getDesktop
 
 from Screens.MessageBox import MessageBox
@@ -27,6 +29,11 @@ from Components.ConfigList import ConfigListScreen
 from Tools.BoundFunction import boundFunction
 ###################################################
 
+class ConfigIPTVFileSelection(ConfigDirectory):
+    def __init__(self, ignoreCase=True, fileMatch=None, default="", visible_width=60):
+        self.fileMatch = fileMatch
+        self.ignoreCase = ignoreCase
+        ConfigDirectory.__init__(self, default, visible_width)
 
 class ConfigBaseWidget(Screen, ConfigListScreen):
     screenwidth = getDesktop(0).size().width()
@@ -216,7 +223,25 @@ class ConfigBaseWidget(Screen, ConfigListScreen):
 
         curIndex = self["config"].getCurrentIndex()
         currItem = self["config"].list[curIndex][1]
-        if isinstance(currItem, ConfigDirectory):
+        
+        if isinstance(currItem, ConfigIPTVFileSelection):
+            def SetFilePathCallBack(curIndex, newPath):
+                if None != newPath: self["config"].list[curIndex][1].value = newPath
+            try:
+                if None != currItem.fileMatch:
+                    if currItem.ignoreCase:
+                        fileMatch = re.compile(currItem.fileMatch, re.IGNORECASE)
+                    else:
+                        fileMatch = re.compile(currItem.fileMatch)
+                else:
+                    fileMatch = None
+            except:
+                printExc()
+                return
+            self.session.openWithCallback(boundFunction(SetFilePathCallBack, curIndex), IPTVFileSelectorWidget, currItem.value,  _('Select the file'), fileMatch)
+            return
+        
+        elif isinstance(currItem, ConfigDirectory):
             def SetDirPathCallBack(curIndex, newPath):
                 if None != newPath: self["config"].list[curIndex][1].value = newPath
             if IsExecutable(GetBinDir('lsdir')):
