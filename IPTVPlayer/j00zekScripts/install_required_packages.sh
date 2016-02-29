@@ -47,6 +47,6 @@ install_package python-textutils
 if [ -f /etc/init.d/graterlia_init ]; then
   install_package gst-plugins-bad-gos
   install_package gst-plugins-good-gos
-  install_package enigma2-multiframework
+  #install_package enigma2-multiframework
 fi
 rm -f $0
