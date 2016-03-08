@@ -1493,8 +1493,52 @@ class pageParser:
             else:
                 params['header']['Referer'] = url
                 url = self.cm.ph.getSearchGroups(data, '<iframe[^>]*?src="(http[^"]+?)"', 1, True)[0].replace('\n', '')
-        #printDBG(data)
-        return self._findLinks(data)
+        try:       
+            linksTab = self._findLinks(data)
+            if len(linksTab):
+                for idx in range(len(linksTab)):
+                    linksTab[idx]['url'] = urlparser.decorateUrl(linksTab[idx]['url'], {'User-Agent':HTTP_HEADER['User-Agent'],'Referer': url})
+                return linksTab
+        except:
+            pass
+        
+        def rc4(e, code):
+            d = base64.b64decode(base64.b64decode(base64.b64decode(code)))
+            b = []
+            for a in range(256):
+                b.append(a)
+            c = 0
+            for a in range(256):
+                c = (c + b[a] + ord(d[a % len(d)])) % 256
+                f = b[a]
+                b[a] = b[c]
+                b[c] = f
+            a = 0
+            c = 0
+            d = 0
+            g = ""
+            for d in range(len(e)): 
+                a = (a + 1) % 256
+                c = (c + b[a]) % 256
+                f = b[a]
+                b[a] = b[c]
+                b[c] = f
+                g += chr(ord(e[d]) ^ b[(b[a] + b[c]) % 256])
+            return g
+        
+        def link(e, code):
+            e = base64.b64decode(base64.b64decode(e))
+            return rc4(e, code)
+        
+        jsUrl = self.cm.ph.getSearchGroups(data, '"(http[^"]+?==\.js)"', 1, True)[0]
+        sts, data = self.cm.getPage(jsUrl, params)
+        printDBG(data)
+        code = self.cm.ph.getSearchGroups(data, 'code[ ]*?\=[ ]*?"([^"]+?)"')[0]
+        direct_link = self.cm.ph.getSearchGroups(data, 'direct_link[ ]*?\=[^"]*?"([^"]+?)"')[0]    
+        videoUrl = link(direct_link, code)
+        if not videoUrl.strtswith("http"): return False
+        videoUrl = urlparser.decorateUrl(videoUrl, {'User-Agent':HTTP_HEADER['User-Agent'],'Referer': url})
+        return videoUrl
 
     def parserPLAYEDTO(self, baseUrl):
         if 'embed' in baseUrl:
@@ -4140,6 +4184,8 @@ class pageParser:
         sts, data = self.cm.getPage(linkUrl, params)
         if not sts: return False 
         
+        if '<div id="loginbox">' in data:
+            SetIPTVPlayerLastHostError(_("Only logged in user have access.\nPlease set login data in the host configuration under blue button."))
         # get token
         token = CParsingHelper.getDataBeetwenMarkers(data, 'var token="";', '});', False)[1]
         token = self.cm.ph.getSearchGroups(token, '"([^"]+?/server.php[^"]+?)"')[0]
@@ -4230,8 +4276,30 @@ class pageParser:
                 subTracks.append({'title':subLabel + '_' + subLang, 'url':subUrl, 'lang':subLang, 'format':'srt'})
                 
         # start https://github.com/whitecream01/WhiteCream-V0.0.1/blob/master/plugin.video.uwc/plugin.video.uwc-1.0.51.zip?raw=true
+        def decode(encoded):
+            for octc in (c for c in re.findall(r'\\(\d{2,3})', encoded)):
+                encoded = encoded.replace(r'\%s' % octc, chr(int(octc, 8)))
+            return encoded.decode('utf8')
+        def base10toN(num,n):
+            num_rep={10:'a', 11:'b',12:'c',13:'d',14:'e',15:'f',16:'g',17:'h',18:'i',19:'j',20:'k',21:'l',22:'m',23:'n',24:'o',25:'p',26:'q',27:'r',28:'s',29:'t',30:'u',31:'v',32:'w',33:'x',34:'y',35:'z'}
+            new_num_string=''
+            current=num
+            while current!=0:
+                remainder=current%n
+                if 36>remainder>9:
+                    remainder_string=num_rep[remainder]
+                elif remainder>=36:
+                    remainder_string='('+str(remainder)+')'
+                else:
+                    remainder_string=str(remainder)
+                new_num_string=remainder_string+new_num_string
+                current=current/n
+            return new_num_string
         def decodeOpenLoad(html):
+            # decodeOpenLoad made by mortael, please leave this line for proper credit :)
             aastring = re.search(r"<video(?:.|\s)*?<script\s[^>]*?>((?:.|\s)*?)</script", html, re.DOTALL | re.IGNORECASE).group(1)
+
+            aastring = aastring.replace("(ﾟДﾟ)[ﾟεﾟ]+(oﾟｰﾟo)+ ((c^_^o)-(c^_^o))+ (-~0)+ (ﾟДﾟ) ['c']+ (-~-~1)+","")
             aastring = aastring.replace("((ﾟｰﾟ) + (ﾟｰﾟ) + (ﾟΘﾟ))", "9")
             aastring = aastring.replace("((ﾟｰﾟ) + (ﾟｰﾟ))","8")
             aastring = aastring.replace("((ﾟｰﾟ) + (o^_^o))","7")
@@ -4244,34 +4312,40 @@ class pageParser:
             aastring = aastring.replace("(+!+[])","1")
             aastring = aastring.replace("(c^_^o)","0")
             aastring = aastring.replace("(0+0)","0")
-            aastring = aastring.replace("(ﾟДﾟ)[ﾟεﾟ]","\\")
+            aastring = aastring.replace("(ﾟДﾟ)[ﾟεﾟ]","\\")  
             aastring = aastring.replace("(3 +3 +0)","6")
             aastring = aastring.replace("(3 - 1 +0)","2")
             aastring = aastring.replace("(!+[]+!+[])","2")
             aastring = aastring.replace("(-~-~2)","4")
             aastring = aastring.replace("(-~-~1)","3")
-            
-            #printDBG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n %s <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n" % aastring)
+            aastring = aastring.replace("(-~0)","1")
+            aastring = aastring.replace("(-~1)","2")
+            aastring = aastring.replace("(-~3)","4")
+            aastring = aastring.replace("(0-0)","0")
 
             decodestring = re.search(r"\\\+([^(]+)", aastring, re.DOTALL | re.IGNORECASE).group(1)
             decodestring = "\\+"+ decodestring
             decodestring = decodestring.replace("+","")
             decodestring = decodestring.replace(" ","")
-            
+
             decodestring = decode(decodestring)
             decodestring = decodestring.replace("\\/","/")
-            
-            #printDBG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> \n %s <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n" % decodestring)
-            
-            videourl = self.cm.ph.getSearchGroups(decodestring, '''src=['"](http[^"^']+?)['"]''', 1, True)[0]
-            if '' == videourl: videourl = self.cm.ph.getSearchGroups(decodestring, '''['"](http[^"^']*?openload[^"^']+?)['"]''', 1, True)[0]
-            if '' == videourl: videourl = self.cm.ph.getSearchGroups(decodestring, '''['"](http[^"^']+?)['"]''', 1, True)[0]
-            return videourl
 
-        def decode(encoded):
-            for octc in (c for c in re.findall(r'\\(\d{2,3})', encoded)):
-                encoded = encoded.replace(r'\%s' % octc, chr(int(octc, 8)))
-            return encoded.decode('utf8')
+            if 'toString' in decodestring:
+                base = re.compile(r"toString\(a\+(\d+)", re.DOTALL | re.IGNORECASE).findall(decodestring)[0]
+                base = int(base)
+                match = re.compile(r"(\(\d[^)]+\))", re.DOTALL | re.IGNORECASE).findall(decodestring)
+                for repl in match:
+                    match1 = re.compile(r"(\d+),(\d+)", re.DOTALL | re.IGNORECASE).findall(repl)
+                    base2 = base + int(match1[0][0])
+                    repl2 = base10toN(int(match1[0][1]),base2)
+                    decodestring = decodestring.replace(repl,repl2)
+                decodestring = decodestring.replace("+","")
+                decodestring = decodestring.replace("\"","")
+                videourl = re.search(r"(http[^\}]+)", decodestring, re.DOTALL | re.IGNORECASE).group(1)
+            else:
+                videourl = re.search(r"vr\s?=\s?\"|'([^\"']+)", decodestring, re.DOTALL | re.IGNORECASE).group(1)
+            return videourl
         # end https://github.com/whitecream01/WhiteCream-V0.0.1/blob/master/plugin.video.uwc/plugin.video.uwc-1.0.51.zip?raw=true
 
         try:
@@ -5153,7 +5227,7 @@ class pageParser:
         sts, data = self.cm.getPage(secPlayerUrl, {'header' : HTTP_HEADER}, post_data)
         
         data = re.sub('document\.write\(unescape\("([^"]+?)"\)', lambda m: urllib.unquote(m.group(1)), data)
-        CParsingHelper.writeToFile('/mnt/new2/test.html', data)
+        #CParsingHelper.writeToFile('/mnt/new2/test.html', data)
         def getUtf8Str(st):
             idx = 0
             st2 = ''
