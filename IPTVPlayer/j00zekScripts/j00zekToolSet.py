@@ -111,6 +111,8 @@ def ExtendConfigsList():
     config.plugins.iptvplayer.deleteIcons.value = "0"
     
     config.plugins.iptvplayer.j00zekLastSelectedHost = NoSave(ConfigText(default = "", fixed_size = False))
+    
+    config.plugins.iptvplayer.devHelper = ConfigYesNo(default = False)
 
 ##################################################### LOAD SKIN DEFINITION #####################################################
 def LoadSkin(SkinName):
