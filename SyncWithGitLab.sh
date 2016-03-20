@@ -20,9 +20,11 @@ fi
 
 echo 'Syncing Github...'
 rm -rf $myDir/IPTVPlayer/hosts/*
+rm -rf $myDir/IPTVPlayer/bin/armv7
 cp -a ~/iptvplayer-GitLab-master-version/IPTVPlayer $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup_translate.py $myDir/
 cp -a ~/iptvplayer-GitLab-master-version/setup.py $myDir/
+mv -f $myDir/IPTVPlayer/bin/armv7/* $myDir/IPTVPlayer/bin/arm/
 rm -rf $myDir/IPTVPlayer/bin/armv7
 ln -sf /usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer/bin/arm $myDir/IPTVPlayer/bin/armv7
 cd $myDir
@@ -42,7 +44,7 @@ fi
 #>>>>>patching
 patch -p1 < ./iptvplayer-fork.patch
 msgfmt $myDir/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.po -o $myDir/IPTVPlayer/locale/pl/LC_MESSAGES/IPTVPlayer.mo
-mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTVPlayer/hosts/hostipla.py
+[ -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py ] && mv -f $myDir/IPTVPlayer/hosts/hostipla_blocked_due_privacy_policy.py $myDir/IPTVPlayer/hosts/hostipla.py
 sed -i "s/return 'Ipla'/return 'Ipla-brak licencji'/" $myDir/IPTVPlayer/hosts/hostipla.py
 #dodatkowe hosty
 cp -R $myDir/Hosts2Include/* $myDir/IPTVPlayer/

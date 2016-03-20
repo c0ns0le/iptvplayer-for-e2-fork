@@ -323,9 +323,28 @@ class CSelOneLink():
     def _cmpLinks(self, item1, item2):
         val1 = self.getQualiyFun(item1)
         val2 = self.getQualiyFun(item2)
-        if val1 < val2:   return -1
-        elif val1 > val2: return 1
-        else:             return 0
+        if val1 < val2:   ret = -1
+        elif val1 > val2: ret = 1
+        else:             ret = 0
+        return ret
+        
+    def _cmpLinksBest(self, item1, item2):
+        return -1 * self._cmpLinks(item1, item2)
+        
+    def getBestSortedList(self):
+        printDBG('getBestSortedList')
+        sortList = self.listOfLinks[::-1]
+        sortList.sort( self._cmpLinksBest )
+        retList = []
+        tmpList = []
+        for item in sortList:
+            linkRes = self.getQualiyFun( item )
+            if linkRes <= self.maxRes:
+                retList.append(item)
+            else:
+                tmpList.insert(0, item)
+        retList.extend(tmpList)
+        return retList
         
     def getSortedLinks(self, defaultFirst=True):
         printDBG('getSortedLinks defaultFirst[%r]' % defaultFirst)
@@ -399,26 +418,59 @@ def printDBG( DBGtxt ):
 #####################################################
 # get host list based on files in /hosts folder
 #####################################################
-def GetHostsList( subfolder = '' ):
+def GetHostsList(fromList=True, fromHostFolder=True, subfolder = '' ):
     printDBG('getHostsList begin')
     HOST_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/hosts/%s' % subfolder)
+    BLOCKED_MARKER = '_blocked_'  
     lhosts = [] 
     
-    try:
-        fileList = os.listdir( HOST_PATH )
-        for wholeFileName in fileList:
-            # separate file name and file extension
-            fileName, fileExt = os.path.splitext(wholeFileName)
-            nameLen = len( fileName )
-            if fileExt in ['.pyo', '.pyc', '.py'] and nameLen >  4 and fileName[:4] == 'host' and fileName.find('_blocked_') == -1:
-                if fileName[4:] not in lhosts:
-                    lhosts.append( fileName[4:] )
-                    printDBG('getHostsList add host with fileName: "%s"' % fileName[4:])
-        printDBG('getHostsList end')
-        lhosts.sort()
-    except:
-        printDBG('GetHostsList EXCEPTION')
+    def __isHostNameValid(hostName):
+        if len(hostName) > 4 and BLOCKED_MARKER not in hostName and hostName.startswith("host"):
+            return True
+        return False
+    
+    if fromHostFolder:
+        try:
+            fileList = os.listdir( HOST_PATH )
+            for wholeFileName in fileList:
+                # separate file name and file extension
+                fileName, fileExt = os.path.splitext(wholeFileName)
+                nameLen = len( fileName )
+                if fileExt in ['.pyo', '.pyc', '.py'] and nameLen >  4 and __isHostNameValid(fileName):
+                    if fileName[4:] not in lhosts:
+                        lhosts.append( fileName[4:] )
+                        printDBG('getHostsList add host with fileName: "%s"' % fileName[4:])
+            printDBG('getHostsList end')
+            lhosts.sort()
+        except:
+            printDBG('GetHostsList EXCEPTION')
+    
+    # when new option to remove not enabled host is enabled 
+    # on list should be also host which are not normally in 
+    # the folder, so we will read first predefined list 
+    if fromList:
+        try:
+            sts, data = ReadTextFile(HOST_PATH + '/list.txt')
+            if sts:
+                data = data.split('\n')
+                for item in data:
+                    line = item.strip()
+                    if __isHostNameValid(line):
+                        if line[4:] not in lhosts:
+                            lhosts.append( line[4:] )
+                            printDBG('getHostsList add host from list.txt hostName: "%s"' % line[4:])
+        except:
+            printExc()
+    
     return lhosts
+    
+def GetEnabledHostsList():
+    hostsList = GetHostsList(fromList=True, fromHostFolder=True)
+    enabledHostsList = []
+    for hostName in hostsList:
+        if IsHostEnabled(hostName):
+            enabledHostsList.append(hostName)
+    return enabledHostsList
     
 def SortHostsList(hostsList):
     hostsList = list(hostsList)
@@ -908,6 +960,17 @@ def ReadTextFile(filePath, encode='utf-8', errors='ignore'):
     except:
         printExc()
     return sts, ret
+    
+def WriteTextFile(filePath, text, encode='utf-8', errors='ignore'):
+    sts = False
+    try:
+        file = codecs.open(filePath, 'w', encode, errors)
+        file.write(text)
+        file.close()
+        sts = True
+    except:
+        printExc()
+    return sts
 
 class CFakeMoviePlayerOption():
     def __init__(self, value, text):

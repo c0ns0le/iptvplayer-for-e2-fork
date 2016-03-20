@@ -15,7 +15,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
  # FOREIGN import
  ###################################################
-@@ -244,6 +253,12 @@
+@@ -252,6 +261,12 @@
          elif isinstance(currItem, ConfigDirectory):
              def SetDirPathCallBack(curIndex, newPath):
                  if None != newPath: self["config"].list[curIndex][1].value = newPath
@@ -31,12 +31,12 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py ./IPTVPlayer/components/iptvconfigmenu.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/components/iptvconfigmenu.py	2016-02-17 05:05:39.501766999 +0100
 +++ ./IPTVPlayer/components/iptvconfigmenu.py	2016-02-23 20:52:53.311585000 +0100
-@@ -7,12 +7,11 @@
- ###################################################
+@@ -8,12 +8,11 @@
  # LOCAL import
  ###################################################
--from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, IsHostEnabled, IsExecutable, CFakeMoviePlayerOption, GetAvailableIconSize
-+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, IsHostEnabled, IsExecutable, GetBinDir, CFakeMoviePlayerOption, GetAvailableIconSize
+ from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, GetSkinsList, GetHostsList, GetEnabledHostsList, \
+-                                                          IsHostEnabled, IsExecutable, CFakeMoviePlayerOption, GetAvailableIconSize
++                                                          IsHostEnabled, IsExecutable, CFakeMoviePlayerOption, GetAvailableIconSize, GetBinDir
  from Plugins.Extensions.IPTVPlayer.iptvupdate.updatemainwindow import IPTVUpdateWindow, UpdateMainAppImpl
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _, IPTVPlayerNeedInit
  from Plugins.Extensions.IPTVPlayer.components.configbase import ConfigBaseWidget
@@ -45,7 +45,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  from Plugins.Extensions.IPTVPlayer.setup.iptvsetupwidget import IPTVSetupMainWidget
  ###################################################
  
-@@ -46,7 +45,7 @@
+@@ -47,7 +46,7 @@
  config.plugins.iptvplayer.uchardetpath    = ConfigText(default = "", fixed_size = False)
  config.plugins.iptvplayer.set_curr_title  = ConfigYesNo(default = False)
  config.plugins.iptvplayer.curr_title_file = ConfigText(default = "", fixed_size = False) 
@@ -86,7 +86,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ########################################################
  # Generate list of hosts options for Enabling/Disabling
  ########################################################
-@@ -215,6 +223,8 @@
+@@ -220,6 +228,8 @@
          
      @staticmethod
      def fillConfigList(list, hiddenOptions=False):
@@ -95,7 +95,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          if hiddenOptions:
              list.append( getConfigListEntry(_("Last checked version"), config.plugins.iptvplayer.updateLastCheckedVersion) )
              list.append( getConfigListEntry(_("Show all version in the update menu"), config.plugins.iptvplayer.hiddenAllVersionInUpdate) )
-@@ -327,6 +337,17 @@
+@@ -332,6 +332,17 @@
              list.append(getConfigListEntry(_("Second movie player in buffering mode"), config.plugins.iptvplayer.alternativeARMV7MoviePlayer))
              players.append(config.plugins.iptvplayer.alternativeARMV7MoviePlayer)
              
@@ -113,7 +113,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          else: 
              list.append(getConfigListEntry(_("Movie player"), config.plugins.iptvplayer.NaszPlayer))
          
-@@ -343,6 +364,8 @@
+@@ -348,6 +369,8 @@
          list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
          list.append(getConfigListEntry(_("Allow downgrade"), config.plugins.iptvplayer.downgradePossible))
          list.append(getConfigListEntry(_("Update packet type"), config.plugins.iptvplayer.possibleUpdateType))
@@ -122,20 +122,17 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  
      def runSetup(self):
          self.list = []
-@@ -366,8 +389,12 @@
+@@ -371,6 +394,10 @@
              self.doUpdate()
  
-     def doUpdate(self):
--        printDBG("ConfigMenu.doUpdate")
--        self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
+     def doUpdate(self, forced=False):
 +        if 'j00zekFork' in globals():
 +            from Plugins.Extensions.IPTVPlayer.j00zekScripts.j00zekToolSet import j00zekIPTVPlayerConsole, j00zekRunUpdateList
 +            self.session.open(j00zekIPTVPlayerConsole, title = _("Updating plugin"), cmdlist = j00zekRunUpdateList)
-+        else:
-+            printDBG("ConfigMenu.doUpdate")
-+            self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
-         
- 
++            return
+         printDBG("ConfigMenu.doUpdate")
+         if not forced:
+             self.session.open(IPTVUpdateWindow, UpdateMainAppImpl(self.session))
      def save(self):
 @@ -391,7 +418,12 @@
          if isinstance(currItem, ConfigDirectory):
@@ -253,7 +250,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              and self.lastPluginVersion != config.plugins.iptvplayer.updateLastCheckedVersion.value:
              
              message = _('There is a new version available do you want to update? \nYour version [%s], latest version on server [%s]') % (GetIPTVPlayerVerstion(), self.lastPluginVersion)
-@@ -1014,7 +1029,10 @@
+@@ -1005,7 +1020,10 @@
          return
  
      def displayListOfHosts(self, arg = None):
@@ -265,7 +262,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              self.session.openWithCallback(self.selectHostCallback, ChoiceBox, title=_("Select service"), list = self.displayHostsList)
          else:
              from playerselector import PlayerSelectorWidget
-@@ -1052,7 +1070,11 @@
+@@ -1043,7 +1061,11 @@
                  self.close()
                  return
              elif ret[1] == "update":
@@ -465,7 +462,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py ./IPTVPlayer/iptvupdate/updatemainwindow.py
 --- /home/j00zek/iptvplayer-GitLab-master-version/IPTVPlayer/iptvupdate/updatemainwindow.py	2015-12-27 07:42:31.332790999 +0100
 +++ ./IPTVPlayer/iptvupdate/updatemainwindow.py	2016-02-23 20:52:53.319585000 +0100
-@@ -19,7 +19,7 @@
+@@ -21,7 +21,7 @@
  from Plugins.Extensions.IPTVPlayer.libs.pCommon             import common
  from Plugins.Extensions.IPTVPlayer.components.iptvplayerinit import TranslateTXT as _
  ###################################################
@@ -474,7 +471,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
  # FOREIGN import
  ###################################################
-@@ -35,7 +35,6 @@
+@@ -37,7 +37,6 @@
  try:    import json
  except: import simplejson as json
  
@@ -482,7 +479,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
  ###################################################
  
  
-@@ -88,6 +87,7 @@
+@@ -90,6 +89,7 @@
          self["list"].setList([])
  
      def layoutFinished(self):
@@ -798,8 +795,8 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
 +                                                (_('Install into the "%s".') % "IPTVPlayer/bin/gstplayer", GetBinDir("gstplayer", "")),
 +                                                (_("Do not install (not recommended)"), "")]
          # exteplayer3
--        self.exteplayer3Version = {'sh4': 9, 'mipsel': 21, 'armv7': 21}
-+        self.exteplayer3Version = {'sh4': 9, 'mipsel': 21, 'armv7': 21, 'armv': 20}
+-        self.exteplayer3Version = {'sh4': 9, 'mipsel': 22, 'armv7': 21}
++        self.exteplayer3Version = {'sh4': 9, 'mipsel': 22, 'armv7': 21, 'armv': 20}
          self.exteplayer3paths = ["/usr/bin/exteplayer3", GetBinDir("exteplayer3", "")]
 -        self._exteplayer3InstallChoiseList = [(_('Install into the "%s".') % ("/usr/bin/exteplayer3 (%s)" % _("recommended")), "/usr/bin/exteplayer3"),
 -                                          (_('Install into the "%s".') % "IPTVPlayer/bin/exteplayer3", GetBinDir("exteplayer3", "")),
@@ -868,7 +865,7 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
              sts, retPath = False, ""
 @@ -413,7 +465,7 @@
              self.exteplayer3Step()
-         elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1', '2.8.3', '2.8.5']:
+         elif self.platform in ['mipsel'] and self.ffmpegVersion in ['2.8', '2.8.1', '2.8.3', '2.8.5', '3.0']:
              self.exteplayer3Step()
 -        elif self.platform in ['armv7'] and self.ffmpegVersion in ['2.8.5']:
 +        elif self.platform in ['armv7', 'armv'] and self.ffmpegVersion in ['2.8.5']:
@@ -887,15 +884,15 @@ diff -Naur -X ./exclude.pats /home/j00zek/iptvplayer-GitLab-master-version/IPTVP
          return 'nice -n %d %s' % (GetNice()+2, cmd)
      else:
          return cmd
-@@ -399,9 +399,9 @@
+@@ -418,9 +418,9 @@
  #####################################################
  # get host list based on files in /hosts folder
  #####################################################
--def GetHostsList():
-+def GetHostsList( subfolder = '' ):
+-def GetHostsList(fromList=True, fromHostFolder=True):
++def GetHostsList(fromList=True, fromHostFolder=True, subfolder = '' ):
      printDBG('getHostsList begin')
 -    HOST_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/hosts/')
 +    HOST_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/hosts/%s' % subfolder)
+     BLOCKED_MARKER = '_blocked_'  
      lhosts = [] 
      
-     try:

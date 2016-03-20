@@ -147,6 +147,7 @@ class urlparser:
                        'streamo.tv':           self.pp.parserIITV          ,
                        'divxstage.eu':         self.pp.parserDIVXSTAGE     ,
                        'divxstage.to':         self.pp.parserDIVXSTAGE     ,
+                       'movdivx.com':          self.pp.parserMODIVXCOM     ,
                        'movshare.net':         self.pp.parserWHOLECLOUD     ,
                        'wholecloud.net':       self.pp.parserWHOLECLOUD    ,
                        'tubecloud.net':        self.pp.parserTUBECLOUD     ,
@@ -320,6 +321,8 @@ class urlparser:
                        'video.meta.ua':        self.pp.parseMETAUA         ,
                        'xvidstage.com':        self.pp.parseXVIDSTAGECOM   ,
                        'speedvideo.net':       self.pp.parseSPEEDVICEONET  ,
+                       'vid.me':               self.pp.parseVIDME          ,
+                       'veehd.com':            self.pp.parseVEEHDCOM       ,
                        #'billionuploads.com':   self.pp.parserBILLIONUPLOADS ,
                     }
         return
@@ -623,7 +626,7 @@ class pageParser:
         self.vevoIE = None
         
         #config
-        self.COOKIE_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/IPTVPlayer/cache/')
+        self.COOKIE_PATH = GetCookieDir('')
         #self.hd3d_login = config.plugins.iptvplayer.hd3d_login.value
         #self.hd3d_password = config.plugins.iptvplayer.hd3d_password.value
     
@@ -693,6 +696,11 @@ class pageParser:
         post_data = None
         sts, data = self.cm.getPage(url, {'header':HTTP_HEADER}, post_data)
         if not sts: return False
+        
+        errMarkers = ['File was deleted', 'File Removed', 'File Deleted.', 'File Not Found']
+        for errMarker in errMarkers:
+            if errMarker in data:
+                SetIPTVPlayerLastHostError(errMarker)
         
         if _preProcessing != None:
             data = _preProcessing(data)
@@ -845,27 +853,6 @@ class pageParser:
                 return False
         else:
             return False
-
-    #def parserHD3D(self,url):
-    #    if not 'html' in url:
-    #        url = url + '.html?i'
-    #    else:
-    #        url = url
-    #    username = self.hd3d_login
-    #    password = self.hd3d_password
-    #    urlL = 'http://hd3d.cc/login.html'
-    #    self.COOKIEFILE = self.COOKIE_PATH + "hd3d.cookie"
-    #    query_dataL = { 'url': urlL, 'use_host': False, 'use_cookie': True, 'save_cookie': True, 'load_cookie': False, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
-    #    postdata = {'user_login': username, 'user_password': password}
-    #    data = self.cm.getURLRequestData(query_dataL, postdata)
-    #    query_data = { 'url': url, 'use_host': False, 'use_cookie': True, 'save_cookie': False, 'load_cookie': True, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
-    #    link = self.cm.getURLRequestData(query_data)
-    #    match = re.compile("""url: ["'](.+?)["'],.+?provider:""").findall(link)
-    #    if len(match) > 0:
-    #        ret = match[0]
-    #    else:
-    #     ret = False
-    #    return ret
 
     def parserSPROCKED(self,url):
         url = url.replace('embed', 'show')
@@ -1964,37 +1951,12 @@ class pageParser:
                     urlTab = self.parserYOUTUBE(url)
         return urlTab
             
-    def parserVIDUPME(self, url):
-        COOKIE_FILE = GetCookieDir('vidupme.cookie')
-        HTTP_HEADER= { 'Host':'vidup.me',
-                       'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:21.0) Gecko/20100101 Firefox/21.0',
-                       'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' }
-        params = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'save_cookie':True}
-        # get embedded video page and save returned cookie
-        sts, data = self.cm.getPage(url, params)
-        if not sts: return False
-        
-        # get confirmation "Watch as Free User" url 
-        data = re.search('<form method="get" action="([^"]+?)">', data)
-        if not data: return False
-
-        HTTP_HEADER['Referer'] = url
-        params = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'load_cookie':True, 'save_cookie':False} 
-        # send confirmation 
-        sts, data = self.cm.getPage('http://vidup.me' + data.group(1) + "?play=1&confirm=Close+Ad+and+Watch+as+Free+User", params)
-        if not sts: return False
-        # get JS player script code from confirmation page
-        sts, data = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>')
-        if not sts: return False
-        # unpack and decode params from JS player script code
-        data = unpackJSPlayerParams(data, VIDUPME_decryptPlayerParams)
-        # get direct link to file from params
-        data = re.search('file:"([^"]+?)"', data)
-        if data:
-            directURL = data.group(1) + "?start=0"
-            printDBG("VIDUPME DIRECT URL: [%s]" % directURL )
-            return directURL
-        return False
+    def parserVIDUPME(self, baseUrl):
+        printDBG("parserVIDUPME baseUrl[%r]" % baseUrl)
+        # example video: http://beta.vidup.me/embed-p1ko9zqn5e4h-640x360.html
+        def _findLinks(data):
+            return self._findLinks(data, 'beta.vidup.me', m1='setup(', m2='image:')
+        return self._parserUNIVERSAL_A(baseUrl, 'http://beta.vidup.me/embed-{0}-640x360.html', _findLinks)
         
     def parserTRILULILU(self, baseUrl):
         def getTrack(userid, hash):
@@ -2278,9 +2240,10 @@ class pageParser:
         HTTP_HEADER = {"User-Agent":"Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"}
         sts, data = self.cm.getPage(baseUrl, {'header' : HTTP_HEADER})
         if sts:
-            errMarker = 'File was deleted'
-            if errMarker in data:
-                SetIPTVPlayerLastHostError(errMarker)
+            errMarkers = ['File was deleted', 'File Removed', 'File Deleted.']
+            for errMarker in errMarkers:
+                if errMarker in data:
+                    SetIPTVPlayerLastHostError(errMarker)
             vidTab = getPageUrl(data)
             if 0 == len(vidTab):
                 cookies_data = ''
@@ -3232,8 +3195,11 @@ class pageParser:
         HTTP_HEADER = dict(self.HTTP_HEADER) 
         HTTP_HEADER['Referer'] = baseUrl
         SWF_URL = 'http://static.flashx.tv/player6/jwplayer.flash.swf'
-        sts, data = self.cm.getPage(baseUrl)
-        if not sts: return False
+        
+        sts, response = self.cm.getPage(baseUrl, {'return_data':False})
+        redirectUrl = response.geturl() 
+        data = response.read()
+        HTTP_HEADER['Referer'] = redirectUrl
         
         def _first_of_each(*sequences):
             return (next((x for x in sequence if x), '') for sequence in sequences)
@@ -3245,7 +3211,7 @@ class pageParser:
             path = '/'.join(x.strip('/') for x in paths if x)
             return urlunsplit((scheme, netloc, path, query, fragment))
         
-        url = baseUrl
+        url = redirectUrl
         post_data = None
         if 'Proceed to video' in data:
             sts, data = self.cm.ph.getDataBeetwenMarkers(data, '<Form method="POST"', '</Form>', True)
@@ -3273,9 +3239,10 @@ class pageParser:
         try:
             tmp = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>')[1]
             tmp = unpackJSPlayerParams(tmp, VIDUPME_decryptPlayerParams)
+            printDBG(tmp)
             data = tmp + data
         except:
-            pass
+            printExc()
         
         data = self.cm.ph.getSearchGroups(data, """["']*file["']*[ ]*?:[ ]*?["']([^"^']+?)['"]""")[0]
         if data.startswith('http'):
@@ -3288,7 +3255,7 @@ class pageParser:
                     #if ':' in src:
                     #    src = src.split(':')[1]   
                     if base.startswith('rtmp'):
-                        return base + '/' + src + ' swfUrl=%s live=1 pageUrl=%s' % (SWF_URL, baseUrl)
+                        return base + '/' + src + ' swfUrl=%s live=1 pageUrl=%s' % (SWF_URL, redirectUrl)
             else:
                 return data
         return False
@@ -3394,15 +3361,24 @@ class pageParser:
             vid = CParsingHelper.getDataBeetwenMarkers(baseUrl, '.tv/', '.html', False)[1]
             baseUrl = 'http://vidzi.tv/embed-%s-682x500.html' % vid
         sts, data = self.cm.getPage(baseUrl)
+        if not sts: return False
+        
+        # get JS player script code from confirmation page
+        sts, tmp = CParsingHelper.getDataBeetwenMarkers(data, ">eval(", '</script>', False)
         if sts:
-            data = CParsingHelper.getDataBeetwenMarkers(data, 'sources: [', ']', False)[1]
-            data = re.findall('file: "([^"]+?)"', data)
-            for item in data:
-                if item.split('?')[0].endswith('m3u8'):
-                    tmp = getDirectM3U8Playlist(item)
-                    videoTab.extend(tmp)
-                else:
-                    videoTab.insert(0, {'name':'vidzi.tv mp4', 'url':item})
+            try:
+                tmp = unpackJSPlayerParams(tmp, VIDUPME_decryptPlayerParams)
+                data = tmp + data
+            except: printExc()
+        
+        data = CParsingHelper.getDataBeetwenMarkers(data, 'sources:', ']', False)[1]
+        data = re.findall('file:[ ]*"([^"]+?)"', data)
+        for item in data:
+            if item.split('?')[0].endswith('m3u8'):
+                tmp = getDirectM3U8Playlist(item)
+                videoTab.extend(tmp)
+            else:
+                videoTab.append({'name':'vidzi.tv mp4', 'url':item})
         return videoTab
         
     def parserTVP(self, baseUrl):
@@ -3599,6 +3575,22 @@ class pageParser:
             videoUrl = self.cm.ph.getSearchGroups(pageData, r"""['"]?file['"]?[ ]*?\:[ ]*?['"]([^"^']+?)['"]""")[0]
             if videoUrl.startswith('http'): return urlparser.decorateUrl(videoUrl)
         return False
+    
+    def parserMODIVXCOM(self, baseUrl):
+        printDBG("parserMODIVXCOM baseUrl[%s]" % baseUrl)
+        serverName='movdivx.com'
+        def __customLinksFinder(pageData):
+            #printDBG(pageData)
+            sts, data = CParsingHelper.getDataBeetwenMarkers(pageData, ">eval(", '</script>', False)
+            if sts:
+                mark1 = "}("
+                idx1 = data.find(mark1)
+                if -1 == idx1: return False
+                idx1 += len(mark1)
+                pageData = unpackJS(data[idx1:-3], VIDUPME_decryptPlayerParams)
+                return self._findLinks(pageData, serverName)
+            else: return []
+        return self.__parseJWPLAYER_A(baseUrl, serverName, customLinksFinder=__customLinksFinder)
             
     def parserXAGEPL(self, baseUrl):
         printDBG("parserXAGEPL baseUrl[%s]" % baseUrl)
@@ -3789,12 +3781,25 @@ class pageParser:
         params_s  = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'save_cookie':True}
         params_l  = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'load_cookie':True} 
         
-        sts, data = self.cm.getPage(baseUrl, params_s)
+        params_s['return_data'] =  False
+        sts, response = self.cm.getPage(baseUrl, params_s)
+        redirectUrl = response.geturl() 
+        data = response.read()
         if not sts: return False
         
         if 'method_free' in data:
             sts, data = self.cm.getPage(baseUrl, params_l, {'method_free':'Free'})
             if not sts: return False
+            
+        if 'id="go-next"' in data:
+            url = self.cm.ph.getSearchGroups(data, '<a[^>]+?id="go-next"[^>]+?href="([^"]+?)"')[0]
+            baseUrl = self.cm.ph.getSearchGroups(redirectUrl, '(https?://[^/]+?)/')[0]
+            if url.startswith('/'): url = baseUrl + url
+            sts, data = self.cm.getPage(url, params_l)
+            if not sts: return False
+            
+        data = self.cm.ph.getDataBeetwenMarkers(data, 'jwplayer', 'play(')[1]
+        printDBG(data)
             
         videoMarker = self.cm.ph.getSearchGroups(data, r"""['"]?file['"]?[ ]*?:[ ]*?([^ ^,]+?),""")[0]
         videoUrl    = self.cm.ph.getSearchGroups(data, r"""['"]?%s['"]?[ ]*?\=[ ]*?['"](http[^'^"]+?)["']""" % videoMarker)[0]
@@ -3944,6 +3949,48 @@ class pageParser:
         def _findLinks(data):
             return self._findLinks2(data, baseUrl)
         return self._parserUNIVERSAL_A(baseUrl, 'http://hdvid.tv/embed-{0}-950x480.html', _findLinks)
+        
+    def parseVIDME(self, baseUrl):
+        printDBG("parseVIDME baseUrl[%s]" % baseUrl)
+        # from: https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/vidme.py
+        _VALID_URL = r'https?://vid\.me/(?:e/)?(?P<id>[\da-zA-Z]{,5})(?:[^\da-zA-Z]|$)'
+        mobj = re.match(_VALID_URL, baseUrl)
+        id = mobj.group('id')
+        sts, data = self.cm.getPage('https://api.vid.me/videoByUrl/' + id)
+        if not sts: return False
+        data = byteify( json.loads(data) )['video']
+        if 'formats' in data:
+            urlTab = []
+            for item in data['formats']:
+                if '-clip' in item['type']: continue
+                try: urlTab.append({'name':item['type'], 'url':item['uri']})
+                except: pass
+            return urlTab
+        else:
+            return urlparser().getVideoLinkExt(data['source'])
+        return False
+        
+    def parseVEEHDCOM(self, baseUrl):
+        printDBG("parseVEEHDCOM baseUrl[%s]" % baseUrl)
+        COOKIE_FILE = GetCookieDir('veehdcom.cookie')
+        HTTP_HEADER= { 'User-Agent':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.120 Chrome/37.0.2062.120 Safari/537.36',
+                       'Referer':baseUrl}
+        params = {'header':HTTP_HEADER, 'cookiefile':COOKIE_FILE, 'use_cookie': True, 'save_cookie':True}
+        
+        sts, data = self.cm.getPage(baseUrl, params)
+        if not sts: return False
+        data = self.cm.ph.getDataBeetwenMarkers(data, 'playeriframe', ';', False)[1]
+        url = self.cm.ph.getSearchGroups(data, '''src[ ]*?:[ ]*?['"]([^"^']+?)['"]''')[0]
+        if not url.startswith('http'):
+            if not url.startswith('/'):
+                url = '/' + url 
+            url = 'http://veehd.com' + url 
+        sts, data = self.cm.getPage(url, params)
+        if not sts: return False
+        vidUrl = self.cm.ph.getSearchGroups(data, '''type=['"]video[^"^']*?["'][^>]+?src=["']([^'^"]+?)['"]''')[0]
+        if vidUrl.startswith('http'):
+            return vidUrl
+        return False
         
     def parseSPEEDVICEONET(self, baseUrl):
         printDBG("parseSPEEDVICEONET baseUrl[%s]" % baseUrl)
@@ -4835,6 +4882,14 @@ class pageParser:
         sts, data = self.cm.getPage(baseUrl, params)
         if not sts: return
         
+        def _getUpData(dat):
+            upData = self.cm.ph.getDataBeetwenMarkers(dat, 'updateStreamStatistics', ';', False)[1]
+            upData = re.compile('''['"]([^'^"]+?)['"]''').findall(upData)
+            return upData
+            
+        def _getVidUrl(dat):
+            return self.cm.ph.getSearchGroups(dat, r'''['"]?file['"]?[ ]*:[ ]*['"](http[^"^']+)['"]''')[0]
+        
         tmpData = self.cm.ph.getDataBeetwenMarkers(data, "eval(", '</script>', True)[1]
         printDBG(tmpData)
         upData = None
@@ -4849,13 +4904,18 @@ class pageParser:
                     if '' != tmpData: break
                 printDBG(tmpData)
                 if 'updateStreamStatistics' in tmpData:
-                    upData = self.cm.ph.getDataBeetwenMarkers(tmpData, 'updateStreamStatistics', ';', False)[1]
-                    upData = re.compile('''['"]([^'^"]+?)['"]''').findall(upData)
+                    upData = _getUpData(tmpData)
                     if 0 == len(upData): upData = None
                 if 'html5' in tmpData:
-                    vidUrl = self.cm.ph.getSearchGroups(tmpData, r'''['"]?file['"]?[ ]*:[ ]*['"](http[^"^']+)['"]''')[0]
+                    vidUrl = _getVidUrl(tmpData)
                     if '' == vidUrl: vidUrl = None
         
+        if None == upData:
+            upData = _getUpData(data)
+            
+        if None == vidUrl:
+            vidUrl = _getVidUrl(data)
+            
         params['timeout'] = 5
         upBaseUrl = updateStreamStatistics(upData[0], upData[1], upData[2])
         pyCmd = GetPyScriptCmd('livestreamtv') + ' "%s" "%s" ' % (upBaseUrl, baseUrl)
